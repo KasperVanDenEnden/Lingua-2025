@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IUser } from '@lingua/api';
 import { AuthService } from '@lingua/services';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'lingua-header',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })

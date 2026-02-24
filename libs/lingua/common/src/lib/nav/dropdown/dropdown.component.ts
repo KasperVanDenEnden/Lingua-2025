@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 
 @Component({
   selector: 'lingua-dropdown',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.css',
 })

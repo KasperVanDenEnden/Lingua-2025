@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'lingua-modal-delete',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './modal-delete.component.html',
   styleUrl: './modal-delete.component.css',
 })

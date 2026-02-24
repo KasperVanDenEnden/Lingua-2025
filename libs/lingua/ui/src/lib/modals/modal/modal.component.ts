@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'lingua-modal',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.css',
 })

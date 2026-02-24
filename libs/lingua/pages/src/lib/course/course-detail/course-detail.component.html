@@ -1,105 +1,111 @@
 <lingua-header [pageTitle]="'Courses'"></lingua-header>
 
 <main class="mx-auto p-4 mx-4">
-    <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
-        <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Details</h2>
-                <div>
-                    <a [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
-                        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-pencil"></i>
-                        Edit
-                    </a>
-                    <button (click)="handleDelete()"
-                        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-trash"></i>
-                        Delete
-                    </button>
-                    <a [routerLink]="['/courses']"
-                        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-xmark"></i>
-                        Previous
-                    </a>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <span class="text-sm font-medium text-center border rounded-lg p-1"
-                    [ngClass]="(course$ | async)?.status === 'Active' ? 'text-green-500 border-green-500' : 'text-red-500 border-red-500'">{{
-                    (course$ | async)?.status || 'No street available' }} </span>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-gray-600">Title: </span>
-                    <span class="text-sm text-gray-800">{{ (course$ | async)?.title || 'No slug available' }} </span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-gray-600">Description: </span>
-                    <span class="text-sm text-gray-800">{{ (course$ | async)?.description || 'No street available' }}
-                    </span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-gray-600">Language: </span>
-                    <span class="text-sm text-gray-800">{{ (course$ | async)?.language || 'No language available' }}
-                    </span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-gray-600">Teacher: </span>
-                    <span class="text-sm text-gray-800">{{ teacher?.firstname || 'No street available' }} {{
-                        teacher?.lastname || 'No street available' }} </span>
-                </div>
-                <div class="flex flex-col gap-md">
-                    <h3 class="text-sm font-bold">Assistants: </h3>
-                    <div *ngIf="assistants?.length === 0" class="text-sm text-gray-800">
-                        No assistants
-                    </div>
-                    <div *ngFor="let assistant of assistants"
-                        class="p-3 flex justify-between items-center border border-primary-dark rounded-lg max-w-xs">
-                        <span class="text-sm text-gray-800">
-                            {{ assistant?.firstname || 'No name available' }}
-                            {{ assistant?.lastname || 'No lastname available' }}
-                        </span>
-                        <button (click)="removeAssistant(assistant)" class="text-red-500 text-sm hover:underline">
-                            Remove
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Child component (formulier verschijnt hier als hij actief is) -->
+  <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
+    <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Details</h2>
         <div>
-            <router-outlet></router-outlet>
+          <a [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
+            class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition">
+            <i class="fa-solid fa-pencil"></i>
+            Edit
+          </a>
+          <button (click)="handleDelete()"
+            class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
+            <i class="fa-solid fa-trash"></i>
+            Delete
+          </button>
+          <a [routerLink]="['/courses']"
+            class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
+            <i class="fa-solid fa-xmark"></i>
+            Previous
+          </a>
         </div>
-    </div>
-
-    <div class="grid mt-4">
-
-        <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6 max-w-md">
-            <h2 class="text-xl font-medium">Assign Assistant</h2>
-            @if(availableTeachers && availableTeachers.length > 0) {
-            <div>
-                <!-- Dropdown voor beschikbare docenten -->
-                <select [(ngModel)]="selectedTeacher"
-                    class="w-full p-2 mt-2 border border-gray-300 rounded-md max-w-xs">
-                    <option *ngFor="let assistant of availableTeachers" [ngValue]="assistant">
-                        {{ assistant?.firstname || 'No name available' }} {{ assistant?.lastname || 'No lastname
-                        available'
-                        }}
-                    </option>
-                </select>
+      </div>
+      <div class="space-y-4">
+        <span class="text-sm font-medium text-center border rounded-lg p-1"
+          [ngClass]="(course$ | async)?.status === 'Active' ? 'text-green-500 border-green-500' : 'text-red-500 border-red-500'">{{
+        (course$ | async)?.status || 'No street available' }} </span>
+        <div class="flex gap-md">
+          <span class="text-sm font-medium text-gray-600">Title: </span>
+          <span class="text-sm text-gray-800">{{ (course$ | async)?.title || 'No slug available' }} </span>
+        </div>
+        <div class="flex gap-md">
+          <span class="text-sm font-medium text-gray-600">Description: </span>
+          <span class="text-sm text-gray-800">{{ (course$ | async)?.description || 'No street available' }}
+          </span>
+        </div>
+        <div class="flex gap-md">
+          <span class="text-sm font-medium text-gray-600">Language: </span>
+          <span class="text-sm text-gray-800">{{ (course$ | async)?.language || 'No language available' }}
+          </span>
+        </div>
+        <div class="flex gap-md">
+          <span class="text-sm font-medium text-gray-600">Teacher: </span>
+          <span class="text-sm text-gray-800">{{ teacher?.firstname || 'No street available' }} {{
+          teacher?.lastname || 'No street available' }} </span>
+        </div>
+        <div class="flex flex-col gap-md">
+          <h3 class="text-sm font-bold">Assistants: </h3>
+          @if (assistants?.length === 0) {
+            <div class="text-sm text-gray-800">
+              No assistants
             </div>
-
-            <!-- Button om de geselecteerde docent toe te wijzen -->
-            <button (click)="selectedTeacher && assignAssistant(selectedTeacher)" [disabled]="!selectedTeacher"
-                class="mt-4 bg-primary-dark text-white px-4 py-2 rounded-md">
-                Assign
-            </button>
-            } @else {
-            <span>No more teachers to assign!</span>
-            }
+          }
+          @for (assistant of assistants; track assistant) {
+            <div
+              class="p-3 flex justify-between items-center border border-primary-dark rounded-lg max-w-xs">
+              <span class="text-sm text-gray-800">
+                {{ assistant?.firstname || 'No name available' }}
+                {{ assistant?.lastname || 'No lastname available' }}
+              </span>
+              <button (click)="removeAssistant(assistant)" class="text-red-500 text-sm hover:underline">
+                Remove
+              </button>
+            </div>
+          }
         </div>
+      </div>
     </div>
+
+    <!-- Child component (formulier verschijnt hier als hij actief is) -->
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <div class="grid mt-4">
+
+    <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6 max-w-md">
+      <h2 class="text-xl font-medium">Assign Assistant</h2>
+      @if(availableTeachers && availableTeachers.length > 0) {
+        <div>
+          <!-- Dropdown voor beschikbare docenten -->
+          <select [(ngModel)]="selectedTeacher"
+            class="w-full p-2 mt-2 border border-gray-300 rounded-md max-w-xs">
+            @for (assistant of availableTeachers; track assistant) {
+              <option [ngValue]="assistant">
+                {{ assistant?.firstname || 'No name available' }} {{ assistant?.lastname || 'No lastname
+                available'
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <!-- Button om de geselecteerde docent toe te wijzen -->
+        <button (click)="selectedTeacher && assignAssistant(selectedTeacher)" [disabled]="!selectedTeacher"
+          class="mt-4 bg-primary-dark text-white px-4 py-2 rounded-md">
+          Assign
+        </button>
+      } @else {
+        <span>No more teachers to assign!</span>
+      }
+    </div>
+  </div>
 </main>
 
 <lingua-modal-delete [isOpen]="isModalOpen"
-    [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.title + '?' : ''"
-    title="Delete Record" (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
+  [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.title + '?' : ''"
+title="Delete Record" (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
