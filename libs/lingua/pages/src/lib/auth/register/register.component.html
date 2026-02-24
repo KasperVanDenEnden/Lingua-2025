@@ -1,59 +1,77 @@
 <lingua-header [pageTitle]="'Register'"></lingua-header>
 <main class="flex justify-center">
-    <div class="m-4 p-4 h-auto border border-primary-dark bg-secondary-light rounded-lg">
-        <h1 class="font-semibold text-xl mb-3">Create account</h1>
+  <div class="m-4 p-4 h-auto border border-primary-dark bg-secondary-light rounded-lg">
+    <h1 class="font-semibold text-xl mb-3">Create account</h1>
 
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
-            
-            <div class="grid grid-cols-2 gap-md">
-                <div class="form-group">
-                    <label for="firstname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Firstname</label>
-                    <input id="firstname" type="firstname" formControlName="firstname"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
-                    <div *ngIf="registerForm.get('firstname')?.touched && registerForm.get('firstname')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="registerForm.get('firstname')?.errors?.['required']">Firstname is required</span>
-                    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label for="firstname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Firstname</label>
+          <input id="firstname" type="firstname" formControlName="firstname"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
+            @if (registerForm.get('firstname')?.touched && registerForm.get('firstname')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (registerForm.get('firstname')?.errors?.['required']) {
+                  <span>Firstname is required</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="lastname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Lastname</label>
+            <input id="lastname" type="lastname" formControlName="lastname"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
+              @if (registerForm.get('lastname')?.touched && registerForm.get('lastname')?.invalid) {
+                <div
+                  class="text-red-500 text-sm mt-1">
+                  @if (registerForm.get('lastname')?.errors?.['required']) {
+                    <span>Lastname is required</span>
+                  }
                 </div>
-
-                <div class="form-group">
-                    <label for="lastname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Lastname</label>
-                    <input id="lastname" type="lastname" formControlName="lastname"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
-                    <div *ngIf="registerForm.get('lastname')?.touched && registerForm.get('lastname')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="registerForm.get('lastname')?.errors?.['required']">Lastname is required</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold">E-mail</label>
-                    <input id="email" type="email" formControlName="email"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
-                    <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
-                        <span *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email format</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password" class="mb-1.5 ml-2.5 block text-sm font-semibold">Password</label>
-                    <input id="password" type="password" formControlName="password"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
-                    <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
-                    </div>
-                </div>
-
+              }
             </div>
-            <button type="submit"
+
+            <div class="form-group">
+              <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold">E-mail</label>
+              <input id="email" type="email" formControlName="email"
+                class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
+                @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+                  <div
+                    class="text-red-500 text-sm mt-1">
+                    @if (registerForm.get('email')?.errors?.['required']) {
+                      <span>Email is required</span>
+                    }
+                    @if (registerForm.get('email')?.errors?.['email']) {
+                      <span>Invalid email format</span>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="mb-1.5 ml-2.5 block text-sm font-semibold">Password</label>
+                <input id="password" type="password" formControlName="password"
+                  class="form-input border border-primary-dark rounded-md block px-2 h-8" required>
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+                    <div
+                      class="text-red-500 text-sm mt-1">
+                      @if (registerForm.get('password')?.errors?.['required']) {
+                        <span>Password is required</span>
+                      }
+                    </div>
+                  }
+                </div>
+
+              </div>
+              <button type="submit"
                 [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !registerForm.invalid, 'bg-gray-300 text-gray-500': registerForm.invalid }"
                 class="py-sm px-md text-white flex self-end" [disabled]="registerForm.invalid">
                 Register
-            </button>
+              </button>
 
-        </form>
-    </div>
-</main>
+            </form>
+          </div>
+        </main>

@@ -7,8 +7,10 @@
   </button>
 
   <!-- Dropdown items -->
-  <div *ngIf="isOpen" (mouseenter)="cancelCloseTimer()" (mouseleave)="startCloseTimer()"
-    class="absolute top-full -left-3 z-50 mt-3 max-w-md overflow-hidden rounded-xl bg-secondary-light border border-primary-dark shadow-lg ring-1 ring-gray-900/5">
-    <ng-content select="[dropdown-items]"></ng-content>
-  </div>
+  @if (isOpen) {
+    <div (mouseenter)="cancelCloseTimer()" (mouseleave)="startCloseTimer()"
+      class="absolute top-full -left-3 z-50 mt-3 max-w-md overflow-hidden rounded-xl bg-secondary-light border border-primary-dark shadow-lg ring-1 ring-gray-900/5">
+      <ng-content select="[dropdown-items]"></ng-content>
+    </div>
+  }
 </div>

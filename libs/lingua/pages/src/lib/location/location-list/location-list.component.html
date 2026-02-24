@@ -32,47 +32,51 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr *ngFor="let location of locations" class="hover:bg-gray-100">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ location.slug }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ location.street }} {{ location.number }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ location.city }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ location.province }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ location.postal }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                  <a [routerLink]="['/locations', location._id]" class="text-primary-dark hover:text-primary-light mr-4"
-                    title="Show"><i class="fa-solid fa-eye fa-lg"></i></a>
-                  <a [routerLink]="['/locations', location._id, 'edit']"
-                    class="text-primary-dark hover:text-primary-light mr-4" title="Edit"><i
+              @for (location of locations; track location) {
+                <tr class="hover:bg-gray-100">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ location.slug }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">{{ location.street }} {{ location.number }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">{{ location.city }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">{{ location.province }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">{{ location.postal }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <a [routerLink]="['/locations', location._id]" class="text-primary-dark hover:text-primary-light mr-4"
+                      title="Show"><i class="fa-solid fa-eye fa-lg"></i></a>
+                      <a [routerLink]="['/locations', location._id, 'edit']"
+                        class="text-primary-dark hover:text-primary-light mr-4" title="Edit"><i
                       class="fa-solid fa-pencil fa-lg"></i></a>
-                  <button (click)="handleDelete(location)" class="text-primary-dark hover:text-primary-light mr-4"
-                  title="Delete"><i class="fa-solid fa-trash fa-lg"></i></button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      <button (click)="handleDelete(location)" class="text-primary-dark hover:text-primary-light mr-4"
+                        title="Delete"><i class="fa-solid fa-trash fa-lg"></i></button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+          @if (locations) {
+            <div>Showing: {{ locations.length }} entries</div>
+          }
+        </div>
+
+        <!-- Child component (formulier verschijnt hier als hij actief is) -->
+        <div>
+          <router-outlet></router-outlet>
         </div>
       </div>
-      <div *ngIf="locations">Showing: {{ locations.length }} entries</div>
-    </div>
-
-    <!-- Child component (formulier verschijnt hier als hij actief is) -->
-    <div>
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</main>
+    </main>
 
 
-<lingua-modal-delete [isOpen]="isModalOpen"
-  [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.slug + '?' : ''" title="Delete Record"
-  (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
+    <lingua-modal-delete [isOpen]="isModalOpen"
+      [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.slug + '?' : ''" title="Delete Record"
+    (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>

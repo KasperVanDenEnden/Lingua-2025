@@ -1,106 +1,142 @@
 <main class="flex justify-center">
-    <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
-        <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-xl mb-3">Room Form</h1>
-            <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
-                <i class="fa-solid fa-xmark fa-lg"></i>
-            </button>
-        </div>
-        
-        <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="space-y-4">
-            
-            <div class="grid grid-cols-2 gap-md">
-                <div class="form-group">
-                    <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
-                    <select id="status" formControlName="status"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                    <div *ngIf="roomForm.get('status')?.touched && roomForm.get('status')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('status')?.errors?.['required']">Select an option</span>
-                    </div>
-                </div>
+  <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
+    <div class="flex justify-between items-center">
+      <h1 class="font-semibold text-xl mb-3">Room Form</h1>
+      <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
+        <i class="fa-solid fa-xmark fa-lg"></i>
+      </button>
+    </div>
 
-                <div class="form-group">
-                    <label for="slug" class="mb-1.5 ml-2.5 block text-sm font-semibold">Slug</label>
-                    <input id="slug" type="text" formControlName="slug"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-                    <div *ngIf="roomForm.get('slug')?.touched && roomForm.get('slug')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('slug')?.errors?.['required']">slug is required</span>
-                    </div>
-                </div>
-            
+    <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="space-y-4">
 
-                <div class="form-group">
-                    <label for="location" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Location</label>
-                    <select id="location" formControlName="location" (change)="updateFloorOptions()"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option *ngFor="let location of locations" [value]="location._id">{{ location.slug }} - {{ location.street }}</option>
-                    </select>
-                    <div *ngIf="roomForm.get('location')?.touched && roomForm.get('location')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('location')?.errors?.['required']">Select a location</span>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="floor" class="mb-1.5 ml-2.5 block text-sm font-semibold">Floor</label>
-                    <select id="floor" formControlName="floor"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-                        <option *ngFor="let floor of availableFloors" [value]="floor">{{ floor }}</option>
-                    </select>
-                    <div *ngIf="roomForm.get('floor')?.touched && roomForm.get('floor')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('floor')?.errors?.['required']">Floor is required</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="capacity" class="mb-1.5 ml-2.5 block text-sm font-semibold">Capacity</label>
-                    <input id="capacity" type="number" formControlName="capacity" min="0" placeholder="0"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-                    <div *ngIf="roomForm.get('capacity')?.touched && roomForm.get('capacity')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('capacity')?.errors?.['required']">capacity is required</span>
-                        <span *ngIf="roomForm.get('capacity')?.errors?.['number']">Invalid number format</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="hasMonitor" class="mb-1.5 ml-2.5 block text-sm font-semibold">Has Monitor</label>
-                    <select id="hasMonitor" formControlName="hasMonitor"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option [value]="true">Ja</option>
-                        <option [value]="false">Nee</option>
-                    </select>
-                    <div *ngIf="roomForm.get('hasMonitor')?.touched && roomForm.get('hasMonitor')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('hasMonitor')?.errors?.['required']">Select an option</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="location" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Location</label>
-                    <select id="location" formControlName="location"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option *ngFor="let location of locations" [value]="location._id">{{ location.slug }} - {{ location.street }}</option>
-                    </select>
-                    <div *ngIf="roomForm.get('location')?.touched && roomForm.get('location')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="roomForm.get('location')?.errors?.['required']">Select a location</span>
-                    </div>
-                </div>
-
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
+          <select id="status" formControlName="status"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            <option value="Available">Available</option>
+            <option value="Unavailable">Unavailable</option>
+          </select>
+          @if (roomForm.get('status')?.touched && roomForm.get('status')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (roomForm.get('status')?.errors?.['required']) {
+                <span>Select an option</span>
+              }
             </div>
-            <button type="submit"
-                [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !roomForm.invalid, 'bg-gray-300 text-gray-500': roomForm.invalid }"
-                class="py-sm px-md text-white flex self-end" [disabled]="roomForm.invalid">
-                {{ isEditMode ? 'Save' : 'Submit'}}
-            </button>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="slug" class="mb-1.5 ml-2.5 block text-sm font-semibold">Slug</label>
+          <input id="slug" type="text" formControlName="slug"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
+            @if (roomForm.get('slug')?.touched && roomForm.get('slug')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (roomForm.get('slug')?.errors?.['required']) {
+                  <span>slug is required</span>
+                }
+              </div>
+            }
+          </div>
+
+
+          <div class="form-group">
+            <label for="location" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Location</label>
+            <select id="location" formControlName="location" (change)="updateFloorOptions()"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              @for (location of locations; track location) {
+                <option [value]="location._id">{{ location.slug }} - {{ location.street }}</option>
+              }
+            </select>
+            @if (roomForm.get('location')?.touched && roomForm.get('location')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (roomForm.get('location')?.errors?.['required']) {
+                  <span>Select a location</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="floor" class="mb-1.5 ml-2.5 block text-sm font-semibold">Floor</label>
+            <select id="floor" formControlName="floor"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
+              @for (floor of availableFloors; track floor) {
+                <option [value]="floor">{{ floor }}</option>
+              }
+            </select>
+            @if (roomForm.get('floor')?.touched && roomForm.get('floor')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (roomForm.get('floor')?.errors?.['required']) {
+                  <span>Floor is required</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="capacity" class="mb-1.5 ml-2.5 block text-sm font-semibold">Capacity</label>
+            <input id="capacity" type="number" formControlName="capacity" min="0" placeholder="0"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
+              @if (roomForm.get('capacity')?.touched && roomForm.get('capacity')?.invalid) {
+                <div
+                  class="text-red-500 text-sm mt-1">
+                  @if (roomForm.get('capacity')?.errors?.['required']) {
+                    <span>capacity is required</span>
+                  }
+                  @if (roomForm.get('capacity')?.errors?.['number']) {
+                    <span>Invalid number format</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="hasMonitor" class="mb-1.5 ml-2.5 block text-sm font-semibold">Has Monitor</label>
+              <select id="hasMonitor" formControlName="hasMonitor"
+                class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+                <option [value]="true">Ja</option>
+                <option [value]="false">Nee</option>
+              </select>
+              @if (roomForm.get('hasMonitor')?.touched && roomForm.get('hasMonitor')?.invalid) {
+                <div
+                  class="text-red-500 text-sm mt-1">
+                  @if (roomForm.get('hasMonitor')?.errors?.['required']) {
+                    <span>Select an option</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="location" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Location</label>
+              <select id="location" formControlName="location"
+                class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+                @for (location of locations; track location) {
+                  <option [value]="location._id">{{ location.slug }} - {{ location.street }}</option>
+                }
+              </select>
+              @if (roomForm.get('location')?.touched && roomForm.get('location')?.invalid) {
+                <div
+                  class="text-red-500 text-sm mt-1">
+                  @if (roomForm.get('location')?.errors?.['required']) {
+                    <span>Select a location</span>
+                  }
+                </div>
+              }
+            </div>
+
+          </div>
+          <button type="submit"
+            [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !roomForm.invalid, 'bg-gray-300 text-gray-500': roomForm.invalid }"
+            class="py-sm px-md text-white flex self-end" [disabled]="roomForm.invalid">
+            {{ isEditMode ? 'Save' : 'Submit'}}
+          </button>
 
         </form>
-    </div>
-</main>
+      </div>
+    </main>
