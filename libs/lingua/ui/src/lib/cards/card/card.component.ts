@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'lingua-card',
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './card.component.html',
   styleUrl: './card.component.css',
 })

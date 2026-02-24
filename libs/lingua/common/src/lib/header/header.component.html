@@ -1,8 +1,10 @@
 <header class="px-xl py-md bg-primary-light text-xl font-bold shadow-md flex justify-between items-center">
-    <h1 class="text-xl rounded-lg bg-secondary-base px-2 py-1">{{ pageTitle }}</h1>
-    <div class="flex items-center gap-3 text-base">
-        <span *ngIf="currentUser" class="font-normal text-secondary-light">
-            {{ currentUser.email }}
-        </span>
-    </div>
+  <h1 class="text-xl rounded-lg bg-secondary-base px-2 py-1">{{ pageTitle }}</h1>
+  <div class="flex items-center gap-3 text-base">
+    @if (currentUser) {
+      <span class="font-normal text-secondary-light">
+        {{ currentUser.email }}
+      </span>
+    }
+  </div>
 </header>

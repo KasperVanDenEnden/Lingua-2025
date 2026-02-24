@@ -1,127 +1,169 @@
 <main class="flex justify-center">
-    <div class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg">
-        <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-xl mb-3">Lesson Form</h1>
-            <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
-                <i class="fa-solid fa-xmark fa-lg"></i>
-            </button>
-        </div>
+  <div class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg">
+    <div class="flex justify-between items-center">
+      <h1 class="font-semibold text-xl mb-3">Lesson Form</h1>
+      <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
+        <i class="fa-solid fa-xmark fa-lg"></i>
+      </button>
+    </div>
 
-        <form [formGroup]="lessonForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <form [formGroup]="lessonForm" (ngSubmit)="onSubmit()" class="space-y-4">
 
-        <div class="grid grid-cols-2 gap-md">
-            <div class="form-group">
-                <label for="course" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Class</label>
-                <select id="course" formControlName="course"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <option *ngFor="let course of courses" [value]="course._id">{{ course.title }}</option>
-                </select>
-                <div *ngIf="lessonForm.get('course')?.touched && lessonForm.get('course')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('course')?.errors?.['required']">Select a class</span>
-                </div>
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label for="course" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Class</label>
+          <select id="course" formControlName="course"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            @for (course of courses; track course) {
+              <option [value]="course._id">{{ course.title }}</option>
+            }
+          </select>
+          @if (lessonForm.get('course')?.touched && lessonForm.get('course')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (lessonForm.get('course')?.errors?.['required']) {
+                <span>Select a class</span>
+              }
             </div>
-            
-            <div class="form-group">
-                <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Teacher</label>
-                <select id="teacher" formControlName="teacher"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <option *ngFor="let teacher of filteredTeachers" [value]="teacher._id">{{ teacher.firstname }} {{ teacher.lastname }}</option>
-                </select>
-                <div *ngIf="lessonForm.get('teacher')?.touched && lessonForm.get('teacher')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('teacher')?.errors?.['required']">Select a teacher</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-md">
-            <div class="form-group">
-                <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold">Title</label>
-                <input id="title" type="text" formControlName="title"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                <div *ngIf="lessonForm.get('title')?.touched && lessonForm.get('title')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('title')?.errors?.['required']">Title is required</span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
-                <select id="status" formControlName="status"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <option value="Concept">Concept</option>
-                    <option value="Open">Open</option>
-                    <option value="Suspended">Suspended</option>
-                    <option value="Canceled">Canceled</option>
-                </select>
-                <div *ngIf="lessonForm.get('status')?.touched && lessonForm.get('status')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('status')?.errors?.['required']">Select an option</span>
-                </div>
-            </div>
+          }
         </div>
 
         <div class="form-group">
-            <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
-            <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
-                class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
-            <div *ngIf="lessonForm.get('description')?.touched && lessonForm.get('description')?.invalid"
-                class="text-red-500 text-sm mt-1">
-                <span *ngIf="lessonForm.get('description')?.errors?.['required']">Description is required</span>
+          <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Teacher</label>
+          <select id="teacher" formControlName="teacher"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            @for (teacher of filteredTeachers; track teacher) {
+              <option [value]="teacher._id">{{ teacher.firstname }} {{ teacher.lastname }}</option>
+            }
+          </select>
+          @if (lessonForm.get('teacher')?.touched && lessonForm.get('teacher')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (lessonForm.get('teacher')?.errors?.['required']) {
+                <span>Select a teacher</span>
+              }
             </div>
+          }
         </div>
-          
+      </div>
+
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold">Title</label>
+          <input id="title" type="text" formControlName="title"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            @if (lessonForm.get('title')?.touched && lessonForm.get('title')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (lessonForm.get('title')?.errors?.['required']) {
+                  <span>Title is required</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
+            <select id="status" formControlName="status"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              <option value="Concept">Concept</option>
+              <option value="Open">Open</option>
+              <option value="Suspended">Suspended</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+            @if (lessonForm.get('status')?.touched && lessonForm.get('status')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (lessonForm.get('status')?.errors?.['required']) {
+                  <span>Select an option</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
+          <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
+          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
+          @if (lessonForm.get('description')?.touched && lessonForm.get('description')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (lessonForm.get('description')?.errors?.['required']) {
+                <span>Description is required</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="day" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Date</label>
+          <input id="day" type="date" formControlName="day"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            @if (lessonForm.get('day')?.touched && lessonForm.get('day')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (lessonForm.get('day')?.errors?.['required']) {
+                  <span>Select a date</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="grid grid-cols-2 gap-md">
             <div class="form-group">
-                <label for="day" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Date</label>
-                <input id="day" type="date" formControlName="day"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                <div *ngIf="lessonForm.get('day')?.touched && lessonForm.get('day')?.invalid"
+              <label for="startTime" class="mb-1.5 ml-2.5 block text-sm font-semibold">Start Time</label>
+              <input id="startTime" type="time" formControlName="startTime"
+                class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+                @if (lessonForm.get('startTime')?.touched && lessonForm.get('startTime')?.invalid) {
+                  <div
                     class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('day')?.errors?.['required']">Select a date</span>
-                </div>
-            </div>
+                    @if (lessonForm.get('startTime')?.errors?.['required']) {
+                      <span>Select a start time</span>
+                    }
+                  </div>
+                }
+              </div>
 
-            <div class="grid grid-cols-2 gap-md">
-                <div class="form-group">
-                    <label for="startTime" class="mb-1.5 ml-2.5 block text-sm font-semibold">Start Time</label>
-                    <input id="startTime" type="time" formControlName="startTime"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <div *ngIf="lessonForm.get('startTime')?.touched && lessonForm.get('startTime')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="lessonForm.get('startTime')?.errors?.['required']">Select a start time</span>
+              <div class="form-group">
+                <label for="endTime" class="mb-1.5 ml-2.5 block text-sm font-semibold">End Time</label>
+                <input id="endTime" type="time" formControlName="endTime"
+                  class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+                  @if (lessonForm.get('endTime')?.touched && lessonForm.get('endTime')?.invalid) {
+                    <div
+                      class="text-red-500 text-sm mt-1">
+                      @if (lessonForm.get('endTime')?.errors?.['required']) {
+                        <span>Select an end time</span>
+                      }
                     </div>
+                  }
                 </div>
-        
-                <div class="form-group">
-                    <label for="endTime" class="mb-1.5 ml-2.5 block text-sm font-semibold">End Time</label>
-                    <input id="endTime" type="time" formControlName="endTime"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <div *ngIf="lessonForm.get('endTime')?.touched && lessonForm.get('endTime')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="lessonForm.get('endTime')?.errors?.['required']">Select an end time</span>
-                    </div>
-                </div>
-            </div>
+              </div>
 
-            <div class="form-group">
+              <div class="form-group">
                 <label for="room" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Room</label>
                 <select id="room" formControlName="room"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <option *ngFor="let room of rooms" [value]="room._id">{{ getRoomSlug(room) }}</option>
+                  class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+                  @for (room of rooms; track room) {
+                    <option [value]="room._id">{{ getRoomSlug(room) }}</option>
+                  }
                 </select>
-                <div *ngIf="lessonForm.get('room')?.touched && lessonForm.get('room')?.invalid"
+                @if (lessonForm.get('room')?.touched && lessonForm.get('room')?.invalid) {
+                  <div
                     class="text-red-500 text-sm mt-1">
-                    <span *ngIf="lessonForm.get('room')?.errors?.['required']">Select a room</span>
-                </div>
-            </div>
+                    @if (lessonForm.get('room')?.errors?.['required']) {
+                      <span>Select a room</span>
+                    }
+                  </div>
+                }
+              </div>
 
-            <button type="submit"
+              <button type="submit"
                 [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !lessonForm.invalid, 'bg-gray-300 text-gray-500': lessonForm.invalid }"
                 class="py-sm px-md text-white flex self-end" [disabled]="lessonForm.invalid">
                 {{ isEditMode ? 'Save' : 'Submit'}}
-            </button>
+              </button>
 
-        </form>
-    </div>
-</main>
+            </form>
+          </div>
+        </main>

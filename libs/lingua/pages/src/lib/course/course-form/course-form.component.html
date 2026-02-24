@@ -1,87 +1,109 @@
 <main class="flex justify-center">
-    <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
-        <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-xl mb-3">Course Form</h1>
-            <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
-                <i class="fa-solid fa-xmark fa-lg"></i>
-            </button>
+  <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
+    <div class="flex justify-between items-center">
+      <h1 class="font-semibold text-xl mb-3">Course Form</h1>
+      <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
+        <i class="fa-solid fa-xmark fa-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      @if(isEditMode) {
+        <div class="form-group">
+          <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
+          <select id="status" formControlName="status"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+            <option value="Active">Active</option>
+            <option value="Archived">Archived</option>
+          </select>
+          @if (courseForm.get('status')?.touched && courseForm.get('status')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('status')?.errors?.['required']) {
+                <span>Select an option</span>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold">Title</label>
+        <input id="title" type="text" formControlName="title"
+          class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
+          @if (courseForm.get('title')?.touched && courseForm.get('title')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('title')?.errors?.['required']) {
+                <span>title is required</span>
+              }
+            </div>
+          }
         </div>
 
-        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div class="form-group">
+          <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
+          <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
+          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
+          @if (courseForm.get('description')?.touched && courseForm.get('description')?.invalid) {
+            <div
+              class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('description')?.errors?.['required']) {
+                <span>Description is required</span>
+              }
+            </div>
+          }
+        </div>
+        <div class="grid grid-cols-2 gap-md">
 
-            @if(isEditMode) {
-                <div class="form-group">
-                    <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
-                    <select id="status" formControlName="status"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option value="Active">Active</option>
-                        <option value="Archived">Archived</option>
-                    </select>
-                    <div *ngIf="courseForm.get('status')?.touched && courseForm.get('status')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="courseForm.get('status')?.errors?.['required']">Select an option</span>
-                    </div>
-                </div>
+          <div class="form-group">
+            <label for="language" class="mb-1.5 ml-2.5 block text-sm font-semibold">Language</label>
+            <select id="language" formControlName="language"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              <option value="" disabled selected>Select a language</option>
+              <option value="Dutch">Dutch</option>
+              <option value="English">English</option>
+              <option value="French">French</option>
+              <option value="German">German</option>
+              <option value="Korean">Korean</option>
+            </select>
+            @if (courseForm.get('language')?.touched && courseForm.get('language')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (courseForm.get('language')?.errors?.['required']) {
+                  <span>Please select a language</span>
+                }
+              </div>
             }
+          </div>
 
-            <div class="form-group">
-                <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold">Title</label>
-                <input id="title" type="text" formControlName="title"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-                <div *ngIf="courseForm.get('title')?.touched && courseForm.get('title')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="courseForm.get('title')?.errors?.['required']">title is required</span>
-                </div>
-            </div>
+          <div class="form-group">
+            <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select teacher</label>
+            <select id="teacher" formControlName="teacher"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              @for (teacher of teachers; track teacher) {
+                <option [value]="teacher._id">{{ teacher.firstname }} {{
+                teacher.lastname }}</option>
+              }
+            </select>
+            @if (courseForm.get('teacher')?.touched && courseForm.get('teacher')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (courseForm.get('teacher')?.errors?.['required']) {
+                  <span>Select a teacher</span>
+                }
+              </div>
+            }
+          </div>
 
-            <div class="form-group">
-                <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
-                <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
-                    class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
-                <div *ngIf="courseForm.get('description')?.touched && courseForm.get('description')?.invalid"
-                    class="text-red-500 text-sm mt-1">
-                    <span *ngIf="courseForm.get('description')?.errors?.['required']">Description is required</span>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-md">
+        </div>
+        <button type="submit"
+          [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !courseForm.invalid, 'bg-gray-300 text-gray-500': courseForm.invalid }"
+          class="py-sm px-md text-white flex self-end" [disabled]="courseForm.invalid">
+          {{ isEditMode ? 'Save' : 'Submit'}}
+        </button>
 
-                <div class="form-group">
-                    <label for="language" class="mb-1.5 ml-2.5 block text-sm font-semibold">Language</label>
-                    <select id="language" formControlName="language"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option value="" disabled selected>Select a language</option>
-                        <option value="Dutch">Dutch</option>
-                        <option value="English">English</option>
-                        <option value="French">French</option>
-                        <option value="German">German</option>
-                        <option value="Korean">Korean</option>
-                    </select>
-                    <div *ngIf="courseForm.get('language')?.touched && courseForm.get('language')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="courseForm.get('language')?.errors?.['required']">Please select a language</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select teacher</label>
-                    <select id="teacher" formControlName="teacher"
-                        class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                        <option *ngFor="let teacher of teachers" [value]="teacher._id">{{ teacher.firstname }} {{
-                            teacher.lastname }}</option>
-                    </select>
-                    <div *ngIf="courseForm.get('teacher')?.touched && courseForm.get('teacher')?.invalid"
-                        class="text-red-500 text-sm mt-1">
-                        <span *ngIf="courseForm.get('teacher')?.errors?.['required']">Select a teacher</span>
-                    </div>
-                </div>
-
-            </div>
-            <button type="submit"
-                [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !courseForm.invalid, 'bg-gray-300 text-gray-500': courseForm.invalid }"
-                class="py-sm px-md text-white flex self-end" [disabled]="courseForm.invalid">
-                {{ isEditMode ? 'Save' : 'Submit'}}
-            </button>
-
-        </form>
+      </form>
     </div>
-</main>
+  </main>
