@@ -39,6 +39,8 @@ import { LessonAttendanceController } from './student/lesson-attendance.controll
 import { LessonAttendanceService } from './student/lesson-attendance.service';
 import { ReviewController } from './review/review.controller';
 import { ReviewService } from './review/review.service';
+import { SeederController } from './seeders/seeder.controller';
+import { SeederService } from './seeders/seeder.service';
 
 @Module({
   imports: [
@@ -66,6 +68,7 @@ import { ReviewService } from './review/review.service';
     AuthController,
     CourseRegistrationController,
     LessonAttendanceController,
+    SeederController,
   ],
   providers: [
     LocationService,
@@ -81,6 +84,7 @@ import { ReviewService } from './review/review.service';
     RolesGuard,
     CourseRegistrationService,
     LessonAttendanceService,
+    SeederService
   ],
   exports: [AuthService],
 })
