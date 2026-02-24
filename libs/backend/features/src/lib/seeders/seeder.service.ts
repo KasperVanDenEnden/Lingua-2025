@@ -8,6 +8,8 @@ import {
     USER_SEED_DATA,
     LOCATION_SEED_DATA,
     ROOM_SEED_DATA,
+    COURSE_SEED_DATA,
+    LESSON_SEED_DATA
 } from './seeder.data';
 import { RoomStatus } from '@lingua/api';
 @Injectable()
@@ -79,9 +81,9 @@ export class SeederService {
         for (const location of locations) {
 
             const prefix = location.slug.substring(0,2).toUpperCase();
-
+ 
             for (const room of ROOM_SEED_DATA) {
-                const slug = `${prefix}-room-${room.number}`;
+                const slug = `${prefix}-${room.number}`;
 
                 const exists = await this.roomModel.findOne({
                     slug,
@@ -102,5 +104,69 @@ export class SeederService {
         }
 
         Logger.log('Seeding rooms complete', this.TAG);
+    }
+
+    async seedCourses() {
+        Logger.log('Seeding courses', this.TAG);
+        const teachers = await this.userModel.find({ role: 'teacher' });
+        if (teachers.length !== 3) throw new Error('Expected exactly 3 teachers for deterministic seeding.');
+        if (COURSE_SEED_DATA.length < 6) throw new Error('Not enough course seed data.');
+
+       for (let i = 0; i < teachers.length; i++) {
+            const teacher = teachers[i];
+
+            const assignedCourses = COURSE_SEED_DATA.slice(i * 2, i * 2 + 2);
+
+            for (const course of assignedCourses) {
+
+            const exists = await this.courseModel.findOne({
+                title: course.title,
+                teacher: teacher._id,
+            });
+
+            if (exists) continue;
+
+            await this.courseModel.create({
+                ...course,
+                teacher: teacher._id,
+                assistants: [],
+            });
+            }
+        }
+        
+        Logger.log('Seeding courses complete', this.TAG);
+    }
+
+    async seedLessons() {
+        Logger.log('Seeding lessons', this.TAG);
+        const courses = await this.courseModel.find();
+        if (!courses.length) throw new Error('No courses found. Seed courses first.');
+        
+        const location = await this.locationModel.findOne();
+
+        if (!location)
+        throw new Error('No location found. Seed locations first.');
+
+        const rooms = await this.roomModel.find({ location: location._id });    
+
+        if (!rooms.length)
+            throw new Error('No rooms found for location.');
+
+        let roomIndex = 0;
+
+        for (const course of courses) {
+            for (const lesson of LESSON_SEED_DATA) {
+
+                const room = rooms[roomIndex % rooms.length];
+                roomIndex++;
+
+                await this.lessonModel.create({
+                    course: course._id,
+                    room: room._id,
+                    teacher: course.teacher,
+                    ...lesson,
+                });
+            }
+        }
     }
 }

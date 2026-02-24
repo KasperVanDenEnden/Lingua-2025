@@ -17,8 +17,8 @@ export class SeederController {
         await this.seederService.seedUsers();
         await this.seederService.seedLocations();
         await this.seederService.seedRooms();
-        // await this.seederService.seedCourses();
-        // await this.seederService.seedLessons();
+        await this.seederService.seedCourses();
+        await this.seederService.seedLessons();
         // await this.seederService.seedCourseRegistrations();  
         
         Logger.log('Completed seed process', this.TAG);
