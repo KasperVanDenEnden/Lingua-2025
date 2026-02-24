@@ -15,8 +15,8 @@ export class SeederController {
         await this.seederService.clearCollections();
           
         await this.seederService.seedUsers();
-        // const locations = await this.seederService.seedLocations();
-        // await this.seederService.seedRooms();
+        await this.seederService.seedLocations();
+        await this.seederService.seedRooms();
         // await this.seederService.seedCourses();
         // await this.seederService.seedLessons();
         // await this.seederService.seedCourseRegistrations();  

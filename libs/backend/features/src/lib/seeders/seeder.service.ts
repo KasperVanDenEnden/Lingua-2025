@@ -4,8 +4,12 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { last } from 'rxjs';
-
+import {
+    USER_SEED_DATA,
+    LOCATION_SEED_DATA,
+    ROOM_SEED_DATA,
+} from './seeder.data';
+import { RoomStatus } from '@lingua/api';
 @Injectable()
 export class SeederService {
    
@@ -32,20 +36,9 @@ export class SeederService {
     }
 
     async seedUsers() {
-        const rawUsers = [
-            { firstname: 'Bob', lastname: 'Johnson', email: 'bob@example.com', role: 'admin' },
-            { firstname: 'Alice', lastname: 'Brown', email: 'alice.teacher@lingua.com', role: 'teacher', password: 'password123' },
-            { firstname: 'Robert', lastname: 'Martinez', email: 'robert.teacher@lingua.com', role: 'teacher', password: 'password123' },
-            { firstname: 'Laura', lastname: 'Wilson', email: 'laura.teacher@lingua.com', role: 'teacher', password: 'password123' },
-
-            { firstname: 'Tom', lastname: 'Harris', email: 'tom.student@lingua.com', role: 'student', password: 'password123' },
-            { firstname: 'Emma', lastname: 'Clark', email: 'emma.student@lingua.com', role: 'student', password: 'password123' },
-            { firstname: 'Lucas', lastname: 'Adams', email: 'lucas.student@lingua.com', role: 'student', password: 'password123' },
-            { firstname: 'Mia', lastname: 'Scott', email: 'mia.student@lingua.com', role: 'student', password: 'password123' },
-            { firstname: 'Noah', lastname: 'Turner', email: 'noah.student@lingua.com', role: 'student', password: 'password123' },
-        ];
-
-        for (const user of rawUsers) {
+        Logger.log('Seeding users', this.TAG);
+        
+        for (const user of USER_SEED_DATA) {
             await this.userModel.create({
                 firstname: user.firstname,
                 lastname: user.lastname,
@@ -54,5 +47,60 @@ export class SeederService {
                 password: await bcrypt.hash('password123', 10)
             });
         }
+        Logger.log('Seeding users complete', this.TAG);
+    }
+    
+    async seedLocations() {
+        Logger.log('Seeding locations', this.TAG);
+
+        const admin = await this.userModel.findOne({ role: 'admin' });
+        if (!admin) throw new Error('Admin user not found. Seed users first.');
+  
+        for (const location of LOCATION_SEED_DATA) {
+            const exists = await this.locationModel.findOne({
+                slug: location.slug,
+            });
+
+            if (exists) continue;
+            await this.locationModel.create({
+                ...location,
+                createdBy: admin._id
+            });
+        }
+        Logger.log('Seeding locations complete', this.TAG);
+    }
+
+
+    async seedRooms() {
+        Logger.log('Seeding rooms', this.TAG);
+        const locations = await this.locationModel.find();
+        if (!locations.length) throw new Error('No locations found. Seed locations first.');
+
+        for (const location of locations) {
+
+            const prefix = location.slug.substring(0,2).toUpperCase();
+
+            for (const room of ROOM_SEED_DATA) {
+                const slug = `${prefix}-room-${room.number}`;
+
+                const exists = await this.roomModel.findOne({
+                    slug,
+                    location: location._id
+                });
+
+                if (exists) continue;
+
+                await this.roomModel.create({
+                    slug,
+                    location: location._id,
+                    capacity: room.capacity,
+                    floor: room.floor,
+                    hasMonitor: room.hasMonitor,
+                    status: RoomStatus.Available,
+                });
+            }
+        }
+
+        Logger.log('Seeding rooms complete', this.TAG);
     }
 }
