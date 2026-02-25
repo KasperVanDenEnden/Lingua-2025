@@ -169,4 +169,32 @@ export class SeederService {
             }
         }
     }
+
+    async seedCourseRegistrations() {
+        Logger.log('Seeding course registrations', this.TAG);
+        const students = await this.userModel.find({ role: 'student' });
+        if (!students.length) throw new Error('No students found. Seed users first.');
+
+        const courses = await this.courseModel.find();
+        if (!courses.length) throw new Error('No courses found. Seed courses first.');
+
+        for (const student of students) {
+            for (const course of courses) {
+                const exists = await this.courseRegistrationModel.findOne({
+                    student: student._id,
+                    course: course._id,
+                });
+
+                if (exists) continue;
+
+                await this.courseRegistrationModel.create({
+                    student: student._id,
+                    course: course._id,
+                    registeredAt: new Date(),
+                });
+            }
+        }
+
+        Logger.log('Seeding course registrations complete', this.TAG);
+    }
 }
