@@ -53,11 +53,10 @@ export class LessonListComponent implements OnInit, OnDestroy {
 
   getRoom(lesson: ILesson): string | undefined {
     const room = lesson.room as IRoom;
-    const location = room?.location as ILocation;
   
-    if (!room || !location) return;
+    if (!room) return;
   
-    return `${location.slug}-${room.floor}.${room.slug}`;
+    return `${room.slug}`;
   }
 
   getStatusStyle(status: LessonStatus | undefined): string {

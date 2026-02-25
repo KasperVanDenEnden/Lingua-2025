@@ -60,7 +60,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   }
 
   getRoomSlug(): string {
-    return `${this.location?.slug}-${this.room?.floor}.${this.room?.slug}`
+    return `${this.room?.slug}`
   }
 
   getTeacher(): string {
