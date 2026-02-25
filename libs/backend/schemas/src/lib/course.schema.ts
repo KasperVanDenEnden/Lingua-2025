@@ -31,7 +31,7 @@ export class Course implements ICourse {
   @IsString()
   description!: string;
 
-  @Prop({ type: String, enum: Object.values(CourseStatus) })
+  @Prop({ type: String, enum: Object.values(CourseStatus), default: CourseStatus.Concept })
   @IsNotEmpty()
   @IsEnum(CourseStatus, { message: 'Status must be a valid enum value' })
   status!: CourseStatus;

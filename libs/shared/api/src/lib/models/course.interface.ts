@@ -5,6 +5,7 @@ import { IUser } from './user.interface';
 export enum CourseStatus {
   Active = 'Active',
   Archived = 'Archived',
+  Concept = 'Concept',
 }
 
 export enum Language {
