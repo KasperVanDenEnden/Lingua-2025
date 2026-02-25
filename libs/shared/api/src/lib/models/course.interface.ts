@@ -16,7 +16,6 @@ export enum Language {
 }
 
 export interface ICourse {
-  id?: Id;
   _id: Id;
   
   title: string;
@@ -25,14 +24,14 @@ export interface ICourse {
   createdOn: Date;
   language: Language;
 
-  teacher: Id | IUser; // Id from main teacher
-  assistants: Id[] | IUser[]; // Id from teacher assistants
+  teachers: Id[] | IUser[]; // Array of teacher Ids
+  students: Id[] | IUser[]; // Array of student Ids
   reviews: IUpsertReview[]; // Nested reviews
 }
 
 export type ICreateCourse = Pick<
 ICourse,
-  'status' | 'title' | 'description' | 'language' | 'teacher'
+  'status' | 'title' | 'description' | 'language' | 'teachers'
 >;
 export type IUpdateCourse = Partial<Omit<ICourse, 'id'>>;
 export type IUpsertCourse = ICourse;

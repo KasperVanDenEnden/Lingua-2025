@@ -1,4 +1,4 @@
-import { CourseStatus, ICourse, IsObjectId, IUpsertReview, Language } from '@lingua/api';
+import { CourseStatus, ICourse, IsObjectId, IUpsertReview, IUser, Language } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -15,6 +15,7 @@ export type CourseDocument = Course & Document;
 
 @Schema()
 export class Course implements ICourse {
+  
   @Prop({ default: () => new Types.ObjectId() })
   @IsNotEmpty()
   @IsObjectId()
@@ -48,17 +49,17 @@ export class Course implements ICourse {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
   @IsObjectId()
-  teacher!: Types.ObjectId;
+  teachers!: Types.ObjectId[];
 
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
   @IsObjectId({
     each: true,
-    message: 'Each asstisant must be a valid ObjectId',
+    message: 'Each student must be a valid ObjectId',
   })
   @IsArray()
-  @ArrayMinSize(0, { message: 'Assistants must be an array (can be empty)' })
-  assistants!: Types.ObjectId[];
+  @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
+  students!: Types.ObjectId[];
 
   @Prop({ type: [ReviewSchema] })
   reviews!: IUpsertReview[];

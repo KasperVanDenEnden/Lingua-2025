@@ -1,5 +1,4 @@
-import { ICreateLesson, Id, IsObjectId, LessonStatus } from '@lingua/api';
-import { Lesson } from '@lingua/schemas';
+import { ICreateLesson, Id, IsObjectId, LessonStatus, LessonType } from '@lingua/api';
 import { ArrayMinSize, IsArray, IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateLessonDto implements ICreateLesson {
@@ -29,8 +28,8 @@ export class CreateLessonDto implements ICreateLesson {
   title!: string;
 
   @IsNotEmpty()
-  @IsString()
-  description!: string;
+  @IsEnum(LessonType, { message: 'Type must be a valid enum value'})
+  type!: LessonType;
 
   @IsNotEmpty()
   @IsDate()

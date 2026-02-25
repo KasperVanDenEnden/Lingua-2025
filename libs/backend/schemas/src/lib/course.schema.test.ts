@@ -39,8 +39,8 @@ describe('CourseSchema Tests', () => {
       status: CourseStatus.Active,
       createdOn: new Date(),
       language: Language.Dutch,
-      teacher: new Types.ObjectId(),
-      assistants: [new Types.ObjectId(), new Types.ObjectId()],
+      teachers: [new Types.ObjectId()],
+      students: [new Types.ObjectId(), new Types.ObjectId()],
       reviews: [],
     };
   });

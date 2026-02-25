@@ -7,8 +7,6 @@ import {
   ICreateLesson,
   Id,
   ILesson,
-  ILocation,
-  IRoom,
   IUser,
 } from '@lingua/api';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -16,7 +14,6 @@ import { Types } from 'mongoose';
 import {
   LessonService,
   UserService,
-  RoomService,
   CourseService,
 } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
@@ -33,7 +30,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   existId!: Id;
 
   courses?: ICourse[] | null;
-  rooms?: IRoom[] | null;
   teachers?: IUser[] | null;
   filteredTeachers: IUser[] = [];
 
@@ -54,7 +50,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private lessonService: LessonService,
     private userService: UserService,
-    private roomService: RoomService,
     private courseService: CourseService
   ) {}
 
@@ -62,14 +57,12 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     // Laad de docenten, kamers en klassen tegelijk
     forkJoin({
       teachers: this.userService.getUsers(),
-      rooms: this.roomService.getRooms(),
       courses: this.courseService.getCourses(),
     }).subscribe({
       next: (results) => {
         this.teachers = results.teachers.filter(
           (user) => user.role === 'teacher'
         );
-        this.rooms = results.rooms;
         this.courses = results.courses.filter(
           (course) => course.status !== 'Archived'
         );
@@ -109,10 +102,9 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         this.lessonForm.patchValue({
           teacher: lesson.teacher._id,
           course: lesson.course._id,
-          room: lesson.room._id,
           status: lesson.status,
           title: lesson.title,
-          description: lesson.description,
+          type: lesson.type,
           day: formatDate(lesson.day, 'yyyy-MM-dd', 'en'),
           startTime: formatDate(lesson.startTime, 'HH:mm', 'en'),
           endTime: formatDate(lesson.endTime, 'HH:mm', 'en'),
@@ -142,21 +134,21 @@ export class LessonFormComponent implements OnInit, OnDestroy {
       (courses) => courses._id === selectedCourseId
     );
     if (selectedCourse) {
-      console.log('Filtering gestart');
+      // console.log('Filtering gestart');
 
-      const assignedTeacherIds = [
-        selectedCourse.teacher, // Hoofdleraar ID (direct toegevoegd)
-        ...(Array.isArray(selectedCourse.assistants)
-          ? selectedCourse.assistants
-          : []), // Assistants IDs (al als IDs)
-      ].filter((id) => id);
+      // const assignedTeacherIds = [
+      //   selectedCourse.teacher, // Hoofdleraar ID (direct toegevoegd)
+      //   ...(Array.isArray(selectedCourse.assistants)
+      //     ? selectedCourse.assistants
+      //     : []), // Assistants IDs (al als IDs)
+      // ].filter((id) => id);
 
-      console.log('Toegewezen leraren:', assignedTeacherIds);
+      // console.log('Toegewezen leraren:', assignedTeacherIds);
 
-      // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
-      this.filteredTeachers = this.teachers.filter((teacher) =>
-        assignedTeacherIds.includes(teacher._id)
-      );
+      // // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
+      // this.filteredTeachers = this.teachers.filter((teacher) =>
+      //   assignedTeacherIds.includes(teacher._id)
+      // );
     } else {
       this.filteredTeachers = [];
     }
@@ -174,10 +166,9 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     const data: ICreateLesson = {
       teacher: this.lessonForm.value.teacher,
       course: this.lessonForm.value.course,
-      room: this.lessonForm.value.room,
       status: this.lessonForm.value.status,
       title: this.lessonForm.value.title,
-      description: this.lessonForm.value.description,
+      type: this.lessonForm.value.type,
       day: this.lessonForm.value.day,
       startTime: this.convertTimeStringToDate(this.lessonForm.value.startTime),
       endTime: this.convertTimeStringToDate(this.lessonForm.value.endTime),
@@ -196,11 +187,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         this.router.navigate(['/lessons']);
       });
     }
-  }
-
-  getRoomSlug(room: IRoom): string {
-    const location = room.location as ILocation;
-    return `${location.slug}-${room.floor}.${room.slug}`;
   }
 
   closeForm() {

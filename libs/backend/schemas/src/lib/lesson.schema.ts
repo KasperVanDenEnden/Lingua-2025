@@ -1,4 +1,4 @@
-import { ILesson, IsObjectId, LessonStatus } from '@lingua/api';
+import { ILesson, IsObjectId, LessonStatus, LessonType } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -24,6 +24,7 @@ export class Lesson implements ILesson {
   @IsObjectId()
   course!: Types.ObjectId;
   
+
   @Prop({ type: Types.ObjectId, ref: 'Room' })
   @IsNotEmpty()
   @IsObjectId()
@@ -48,16 +49,16 @@ export class Lesson implements ILesson {
   @IsEnum(LessonStatus, { message: 'Status must be a valid enum value'})
   @IsNotEmpty()
   status!: LessonStatus;
-
-  @Prop()
+  
+  @Prop({ type: String, enum: Object.values(LessonType) })
+  @IsEnum(LessonType, { message: 'Type must be a valid enum value'})
   @IsNotEmpty()
-  @IsString()
-  title!: string;
+  type!: LessonType;
   
   @Prop()
   @IsNotEmpty()
   @IsString()
-  description!: string;
+  title!: string;
   
   @Prop()
   @IsNotEmpty()

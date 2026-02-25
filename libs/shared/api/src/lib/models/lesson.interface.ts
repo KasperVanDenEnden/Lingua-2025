@@ -1,14 +1,22 @@
 import { ICourse } from './course.interface';
 import { Id } from './id';
-import { IRoom } from './room.interface';
 import { IUser } from './user.interface';
 
 export enum LessonStatus {
   Open = 'Open',
   Full = 'Full',
-  Suspended = 'Suspended',
   Canceled = 'Canceled',
   Concept = 'Concept'
+}
+
+export enum LessonType {
+  Other = 'Other',
+  Speaking = 'Speaking',
+  Listening = 'Listening',
+  Grammar = 'Grammar',
+  Vocabulary = 'Vocabulary',
+  Culture = 'Culture',
+  Assessment = 'Assessment',
 }
 
 export interface ILesson {
@@ -17,13 +25,12 @@ export interface ILesson {
 
   course: Id | ICourse;
 
-  room: Id | IRoom; // Room Id
   teacher: Id | IUser; // Teacher Id
   students: Id[] | IUser[]; // Attending students
 
-  status: LessonStatus;
   title: string;
-  description: string;
+  status: LessonStatus;
+  type: LessonType;
 
   day: Date; // Alleen de datum (YYYY-MM-DD)
   startTime: Date; // Inclusief tijd
@@ -32,7 +39,7 @@ export interface ILesson {
 
 export type ICreateLesson = Pick<
   ILesson,
-  'course' | 'room' | 'teacher' | 'status' | 'title' | 'description' | 'day' | 'startTime' | 'endTime'
+  'course' | 'teacher' | 'status' | 'title' | 'type' | 'day' | 'startTime' | 'endTime'
 >;
 export type IUpdateLesson = Partial<Omit<ILesson, 'id'>>;
 export type IUpsertLesson = ILesson;

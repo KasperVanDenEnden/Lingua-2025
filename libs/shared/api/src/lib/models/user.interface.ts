@@ -10,7 +10,7 @@ export interface IUser {
   id?: Id;
   _id: Id;
   
-  role: string;
+  role: Role;
   firstname: string;
   lastname: string;
   email: string;

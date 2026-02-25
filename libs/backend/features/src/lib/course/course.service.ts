@@ -60,4 +60,12 @@ export class CourseService {
 
     return deletedCourse;
   }
+
+  async enroll(id: Id) {
+    Logger.log('enroll', this.TAG);
+  }
+
+  async unenroll(id: Id) {
+    Logger.log('unenroll', this.TAG);
+  }
 }

@@ -21,8 +21,8 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   course$!: Observable<ICourse>;
   courseId?: string | null;
 
-  teacher?: IUser | null;
-  assistants?: IUser[] | null;
+  teachers?: IUser[] | null;
+  students?: IUser[] | null;
   availableTeachers?: IUser[] | null;
   selectedTeacher?: IUser | null;
 
@@ -57,19 +57,18 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
       if (this.courseId) {
         this.course$ = this.courseService.getCourseById(this.courseId);
         this.course$.subscribe((course) => {
-          this.teacher = course.teacher as IUser;
-          this.assistants = course.assistants as IUser[];
+          this.teachers = course.teachers as IUser[];
           this.recordToDelete = course;
 
           this.userService.getUsers().subscribe((users) => {
             const allTeachers = users.filter((user) => user.role === 'teacher');
 
             this.availableTeachers = allTeachers.filter((teacher) => {
-              const isNotCurrentTeacher = teacher._id !== this.teacher?._id;
-              const isNotAssistant = !this.assistants?.some(
-                (assistant) => assistant?._id === teacher?._id
-              );
-              return isNotCurrentTeacher && isNotAssistant;
+              // const isNotCurrentTeacher = teacher._id !== this.teacher?._id;
+              // const isNotAssistant = !this.assistants?.some(
+              //   (assistant) => assistant?._id === teacher?._id
+              // );
+              // return isNotCurrentTeacher && isNotAssistant;
             });
           });
         });

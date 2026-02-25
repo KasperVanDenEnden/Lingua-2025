@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { ICourse, ILesson, ILocation, IRoom, IUser, LessonStatus } from '@lingua/api';
+import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
 import { LessonService, NotificationService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { PagesModule } from '../../pages.module';
@@ -51,14 +51,6 @@ export class LessonListComponent implements OnInit, OnDestroy {
     return `${teacher.firstname || ''} ${teacher.lastname || ''}`.trim();
   }
 
-  getRoom(lesson: ILesson): string | undefined {
-    const room = lesson.room as IRoom;
-  
-    if (!room) return;
-  
-    return `${room.slug}`;
-  }
-
   getStatusStyle(status: LessonStatus | undefined): string {
     switch (status) {
       case 'Concept':
@@ -67,8 +59,6 @@ export class LessonListComponent implements OnInit, OnDestroy {
         return 'text-green-500 border-green-500';
       case 'Full':
         return 'text-amber-600 border-amber-500';
-      case 'Suspended':
-        return 'text-orange-500 border-orange-500';
       case 'Canceled':
         return 'text-primary-dark border-primary-dark';
       default:

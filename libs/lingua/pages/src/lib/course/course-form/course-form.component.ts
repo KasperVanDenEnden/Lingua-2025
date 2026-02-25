@@ -74,7 +74,7 @@ export class CourseFormComponent implements OnInit, OnDestroy{
             title: courseData.title,
             description: courseData.description,
             language: courseData.language,
-            teacher: courseData.teacher._id,
+            teachers: courseData.teachers.map((teacher) => teacher._id),
           });
         },
         error: (err) => {
@@ -86,7 +86,7 @@ export class CourseFormComponent implements OnInit, OnDestroy{
     onSubmit(): void {
       const data: ICreateCourse = {
         status: this.courseForm.value.status,
-        teacher: this.courseForm.value.teacher,
+        teachers: this.courseForm.value.teachers,
         title: this.courseForm.value.title,
         description: this.courseForm.value.description,
         language: this.courseForm.value.language,

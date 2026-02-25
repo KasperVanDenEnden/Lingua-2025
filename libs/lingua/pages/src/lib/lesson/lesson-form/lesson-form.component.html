@@ -140,24 +140,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="room" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Room</label>
-                <select id="room" formControlName="room"
-                  class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                  @for (room of rooms; track room) {
-                    <option [value]="room._id">{{ getRoomSlug(room) }}</option>
-                  }
-                </select>
-                @if (lessonForm.get('room')?.touched && lessonForm.get('room')?.invalid) {
-                  <div
-                    class="text-red-500 text-sm mt-1">
-                    @if (lessonForm.get('room')?.errors?.['required']) {
-                      <span>Select a room</span>
-                    }
-                  </div>
-                }
-              </div>
-
+          
               <button type="submit"
                 [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !lessonForm.invalid, 'bg-gray-300 text-gray-500': lessonForm.invalid }"
                 class="py-sm px-md text-white flex self-end" [disabled]="lessonForm.invalid">

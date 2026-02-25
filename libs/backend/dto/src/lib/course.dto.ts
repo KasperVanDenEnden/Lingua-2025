@@ -26,14 +26,9 @@ export class CreateCourseDto implements ICreateCourse {
   language!: Language;
 
   @IsNotEmpty({ message: 'TeacherId us required' })
-  @IsObjectId()
-  teacher!: Id;
-
-  @IsArray()
-  @ArrayMinSize(0, { message: 'Assistants must be an array (can be empty)' })
   @IsObjectId({
     each: true,
-    message: 'Each asstisant must be a valid ObjectId',
+    message: 'Each teacher must be a valid ObjectId',
   })
-  assistants!: Id[];
+  teachers!: Id[];
 }
