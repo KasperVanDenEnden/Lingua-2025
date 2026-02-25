@@ -18,7 +18,7 @@ export class FormatService {
 
     if (!location) return 'No available slug';
 
-    return `${location.slug}-${room.floor}.${room.slug}`;
+    return `${room.slug}`;
   }
 
   
