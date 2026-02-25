@@ -61,11 +61,33 @@ export class CourseService {
     return deletedCourse;
   }
 
-  async enroll(id: Id) {
+  async enroll(id: Id, userId: Id) {
     Logger.log('enroll', this.TAG);
+    
+    const course = await this.classModel.findById(id);
+
+    if (!course) {
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    }
+    
+    if (!course.students.includes(userId)) {
+      course.students.push(userId);
+      await course.save();
+    }
+
+    return course;
   }
 
-  async unenroll(id: Id) {
+  async unenroll(id: Id, userId: Id) {
     Logger.log('unenroll', this.TAG);
+
+    const course = await this.classModel.findById(id);
+
+    if (!course) {
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    }
+
+    course.students = course.students.filter(studentId => studentId.toString() !== userId.toString());
+    await course.save();
   }
 }
