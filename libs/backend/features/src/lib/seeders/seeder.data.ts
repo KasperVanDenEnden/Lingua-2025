@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 
 export const USER_SEED_DATA = [
     // Admin user
-    { firstname: 'Bob', lastname: 'Johnson', email: 'bob@example.com', role: 'admin' },
+    { firstname: 'Bob', lastname: 'Johnson', email: 'support@lingua.com', role: 'admin' },
     // Teacher users
     { firstname: 'Alice', lastname: 'Brown', email: 'alice.teacher@lingua.com', role: 'teacher', password: 'password123' },
     { firstname: 'Robert', lastname: 'Martinez', email: 'robert.teacher@lingua.com', role: 'teacher', password: 'password123' },

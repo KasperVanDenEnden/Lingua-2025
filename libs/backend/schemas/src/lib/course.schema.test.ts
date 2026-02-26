@@ -6,6 +6,7 @@ import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { CourseStatus, Language } from '@lingua/api';
 import { validate } from 'class-validator';
+
 describe('CourseSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let courseModel: Model<Course>;
@@ -33,7 +34,6 @@ describe('CourseSchema Tests', () => {
   });
   beforeEach(() => {
     baseBody = {
-      _id: new Types.ObjectId(),
       title: 'Title',
       description: 'Description',
       status: CourseStatus.Active,
@@ -168,7 +168,7 @@ describe('CourseSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'teacher must be a valid ObjectId'
     );
   });
@@ -184,7 +184,7 @@ describe('CourseSchema Tests', () => {
     expect(errors[0].constraints?.['isArray']).toBe(
       'assistants must be an array'
     );
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'Each asstisant must be a valid ObjectId'
     );
   });

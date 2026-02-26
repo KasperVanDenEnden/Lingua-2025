@@ -1,4 +1,4 @@
-import { CourseStatus, ICourse, IsObjectId, IUpsertReview, IUser, Language } from '@lingua/api';
+import { CourseStatus, ICourseSchema, IUpsertReview, Language, Level } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -8,19 +8,17 @@ import {
   IsDate,
   ArrayMinSize,
   IsArray,
+  IsMongoId,
+  IsNumber,
+  Max,
+  Min,
 } from 'class-validator';
 import { ReviewSchema } from './review.schema';
 
 export type CourseDocument = Course & Document;
 
 @Schema()
-export class Course implements ICourse {
-  
-  @Prop({ default: () => new Types.ObjectId() })
-  @IsNotEmpty()
-  @IsObjectId()
-  _id!: Types.ObjectId;
-
+export class Course implements ICourseSchema{
   @Prop()
   @IsNotEmpty()
   @IsString()
@@ -30,6 +28,19 @@ export class Course implements ICourse {
   @IsNotEmpty()
   @IsString()
   description!: string;
+
+  @Prop({ default: 0})
+  @IsNotEmpty()
+  @IsNumber()
+  @Max(50, { message: 'price cannot exceed 50,00' }) 
+  @Min(0, { message: 'price cannot be negative' }) 
+  price!: number;
+  
+  @Prop({ default: 0})
+  @IsNotEmpty()
+  @IsNumber()
+  @Max(20, { message: 'maxStudents cannot exceed 20' }) 
+  maxStudents!: number;
 
   @Prop({ type: String, enum: Object.values(CourseStatus), default: CourseStatus.Concept })
   @IsNotEmpty()
@@ -45,15 +56,20 @@ export class Course implements ICourse {
   @IsNotEmpty()
   @IsEnum(Language, { message: 'Language must be a valid enum value' })
   language!: Language;
+  
+  @Prop({ type: String, enum: Object.values(Level) })
+  @IsNotEmpty()
+  @IsEnum(Level, { message: 'Level must be a valid enum value' })
+  level!: Level;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId()
+  @IsMongoId()
   teachers!: Types.ObjectId[];
 
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId({
+  @IsMongoId({
     each: true,
     message: 'Each student must be a valid ObjectId',
   })

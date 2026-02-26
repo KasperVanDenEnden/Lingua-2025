@@ -6,6 +6,7 @@ import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
 import { LessonStatus } from '@lingua/api';
+
 describe('LessonSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let lessonModel: Model<Lesson>;
@@ -33,14 +34,11 @@ describe('LessonSchema Tests', () => {
   });
   beforeEach(() => {
     baseBody = {
-      _id: new Types.ObjectId(),
       course: new Types.ObjectId(),
-      room: new Types.ObjectId(),
       teacher: new Types.ObjectId(),
       students: [],
       status: LessonStatus.Open,
       title: 'Test title',
-      description: 'Test description',
       day: new Date(), // @todo Write tests
       startTime: new Date(),
       endTime: new Date(),
@@ -64,16 +62,6 @@ describe('LessonSchema Tests', () => {
     expect(errors[0].property).toBe('course');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
       'course should not be empty'
-    );
-  });
-  it('should fail validation if room is missing', async () => {
-    const body = { ...baseBody, room: undefined };
-    const plain = plainToInstance(Lesson, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('room');
-    expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'room should not be empty'
     );
   });
   it('should fail validation if teacher is missing', async () => {
@@ -142,18 +130,8 @@ describe('LessonSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'course must be a valid ObjectId'
-    );
-  });
-  it('should fail validation if room is invalid type', async () => {
-    const body = { ...baseBody, room: 'invalid' };
-    const plain = plainToInstance(Lesson, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('room');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
-      'room must be a valid ObjectId'
     );
   });
   it('should fail validation if teacher is invalid type', async () => {
@@ -162,7 +140,7 @@ describe('LessonSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'teacher must be a valid ObjectId'
     );
   });

@@ -1,4 +1,3 @@
-export * from './lib/course-assistant.service';
 export * from './lib/course.service';
 export * from './lib/lesson.service';
 export * from './lib/user.service';

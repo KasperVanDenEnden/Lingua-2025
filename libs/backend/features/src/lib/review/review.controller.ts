@@ -1,20 +1,11 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Logger,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Logger, Param, Post, UseGuards} from '@nestjs/common';
 import { ReviewService } from './review.service';
-import {
-  BodyObjectIdsPipe,
-  IReview,
-  Id,
-  stringObjectIdPipe,
-} from '@lingua/api';
+import { ICourse } from '@lingua/api';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BodyObjectIdsPipe, StringObjectIdPipe } from '@lingua/features';
+import { CreateReviewDto } from '@lingua/dto';
+import { Types } from 'mongoose';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('review')
 @UseGuards(JwtAuthGuard)
@@ -22,39 +13,23 @@ export class ReviewController {
   private TAG = 'ReviewController';
   constructor(private reviewService: ReviewService) {}
 
-  // @Get()
-  // async getAll(): Promise<IReview[]> {
-  //     Logger.log('getAll', this.TAG);
-  //   return await this.reviewService.getAll();
-  // }
-
-  // @Get(':id')
-  // async getOne(@Param('id', stringObjectIdPipe) id: Id): Promise<IReview> {
-  //   Logger.log('getAll', this.TAG);
-  //   return await this.reviewService.getOne(id);
-  // }
-
-  @Post()
-  async create(@Body(BodyObjectIdsPipe) body: IReview): Promise<IReview> {
+  @Post(':courseId')
+  async create(
+    @Body(BodyObjectIdsPipe) body: CreateReviewDto,
+    @Param('courseId', StringObjectIdPipe) id: Types.ObjectId,
+    @CurrentUser() user: any,
+  ): Promise<ICourse> {
     Logger.log('create', this.TAG);
-    return await this.reviewService.create(body);
+    return await this.reviewService.create(body, id, Types.ObjectId.createFromHexString(user.id));
   }
 
-  // @Put(':id')
-  // async update(
-  //   @Param('id', stringObjectIdPipe) id: Id,
-  //   @Body(BodyObjectIdsPipe) body: IUpdateComment
-  // ): Promise<IReview> {
-  //   Logger.log('update', this.TAG);
-  //   return await this.reviewService.update(id, body);
-  // }
-
-  @Delete(':id/:classId')
+  @Delete(':id/:courseId')
   async delete(
-    @Param('id', stringObjectIdPipe) id: Id,
-    @Param('classId', stringObjectIdPipe) classId: Id
+    @Param('id', StringObjectIdPipe) id: Types.ObjectId,
+    @Param('courseId', StringObjectIdPipe) courseId: Types.ObjectId,
+    @CurrentUser() user: any,
   ) {
     Logger.log('delete', this.TAG);
-    return this.reviewService.delete(id, classId);
+    return this.reviewService.delete(id, courseId, Types.ObjectId.createFromHexString(user.id));
   }
 }

@@ -5,7 +5,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PagesModule } from '../../pages.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICreateUser, Id, IUpdateUser, IUser } from '@lingua/api';
-import { Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -38,7 +37,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
       if(id) {
         this.loadUserData(id);
         this.isEditMode = true;
-        this.existId = new Types.ObjectId(id);
+        this.existId = id;
       } else {
         this.initializeNewUser();
         this.isEditMode = false;

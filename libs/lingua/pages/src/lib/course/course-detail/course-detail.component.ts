@@ -5,7 +5,6 @@ import { Subscription, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
 import {
   CourseService,
-  CourseAssistantService,
   UserService,
   NotificationService,
 } from '@lingua/services';
@@ -31,7 +30,6 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
   constructor(
     private courseService: CourseService,
-    private courseAssistantService: CourseAssistantService,
     private route: ActivatedRoute,
     private userService: UserService,
     private notify: NotificationService,
@@ -109,17 +107,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     }
 
     if (this.courseId) {
-      this.courseAssistantService
-        .addAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully assigned.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to assign assistant.');
-          },
-        });
+   
     }
   }
 
@@ -130,17 +118,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     }
 
     if (this.courseId) {
-      this.courseAssistantService
-        .removeAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully removed.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to remove assistant.');
-          },
-        });
+     
     }
   }
 }

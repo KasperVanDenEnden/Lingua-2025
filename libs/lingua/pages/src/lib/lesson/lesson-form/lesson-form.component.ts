@@ -10,7 +10,6 @@ import {
   IUser,
 } from '@lingua/api';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Types } from 'mongoose';
 import {
   LessonService,
   UserService,
@@ -36,10 +35,9 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   lessonForm: FormGroup = new FormGroup({
     teacher: new FormControl(null, Validators.required),
     course: new FormControl(null, Validators.required),
-    room: new FormControl(null, Validators.required),
     status: new FormControl(null, Validators.required),
+    type: new FormControl(null, Validators.required),
     title: new FormControl(null, Validators.required),
-    description: new FormControl(null, Validators.required),
     day: new FormControl(null, Validators.required),
     startTime: new FormControl(null, Validators.required),
     endTime: new FormControl(null, Validators.required),
@@ -72,7 +70,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
           const id = params.get('id');
           if (id) {
             this.isEditMode = true;
-            this.existId = new Types.ObjectId(id);
+            this.existId = id;
             this.loadLessonData(id); // Laad les na het ophalen van docenten
           } else {
             this.lessonForm.reset();
@@ -100,11 +98,11 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         console.log(lesson);
         // Update de form-waarden
         this.lessonForm.patchValue({
-          teacher: lesson.teacher._id,
-          course: lesson.course._id,
+          teacher: (lesson.teacher as IUser)._id,
+          course: (lesson.course as ICourse)._id,
           status: lesson.status,
-          title: lesson.title,
           type: lesson.type,
+          title: lesson.title,
           day: formatDate(lesson.day, 'yyyy-MM-dd', 'en'),
           startTime: formatDate(lesson.startTime, 'HH:mm', 'en'),
           endTime: formatDate(lesson.endTime, 'HH:mm', 'en'),
@@ -114,7 +112,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         this.updateTeacherOptions();
 
         // Selecteer de juiste leraar in de dropdown
-        this.lessonForm.get('teacher')?.setValue(lesson.teacher._id);
+        this.lessonForm.get('teacher')?.setValue((lesson.teacher as IUser)._id);
       },
       error: (err) => {
         console.error('Fout bij ophalen lesgegevens:', err);
@@ -134,21 +132,19 @@ export class LessonFormComponent implements OnInit, OnDestroy {
       (courses) => courses._id === selectedCourseId
     );
     if (selectedCourse) {
-      // console.log('Filtering gestart');
+      console.log('Filtering gestart');
 
-      // const assignedTeacherIds = [
-      //   selectedCourse.teacher, // Hoofdleraar ID (direct toegevoegd)
-      //   ...(Array.isArray(selectedCourse.assistants)
-      //     ? selectedCourse.assistants
-      //     : []), // Assistants IDs (al als IDs)
-      // ].filter((id) => id);
+      const assignedTeacherIds = [
+        selectedCourse.teachers, // Hoofdleraar ID (direct toegevoegd)
+        
+      ].filter((id) => id);
 
-      // console.log('Toegewezen leraren:', assignedTeacherIds);
+      console.log('Toegewezen leraren:', assignedTeacherIds);
 
-      // // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
-      // this.filteredTeachers = this.teachers.filter((teacher) =>
-      //   assignedTeacherIds.includes(teacher._id)
-      // );
+      // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
+      this.filteredTeachers = this.teachers.filter((teacher) =>
+        (selectedCourse.teachers as Id[]).includes(teacher._id)
+      );
     } else {
       this.filteredTeachers = [];
     }

@@ -20,11 +20,10 @@ export enum LessonType {
 }
 
 export interface ILesson {
-  id?: Id;
   _id: Id;
 
   course: Id | ICourse;
-
+  
   teacher: Id | IUser; // Teacher Id
   students: Id[] | IUser[]; // Attending students
 
@@ -41,5 +40,6 @@ export type ICreateLesson = Pick<
   ILesson,
   'course' | 'teacher' | 'status' | 'title' | 'type' | 'day' | 'startTime' | 'endTime'
 >;
-export type IUpdateLesson = Partial<Omit<ILesson, 'id'>>;
+export type IUpdateLesson = Partial<Omit<ILesson, '_id'>>;
 export type IUpsertLesson = ILesson;
+export type ILessonSchema = Omit<ILesson, '_id'>;

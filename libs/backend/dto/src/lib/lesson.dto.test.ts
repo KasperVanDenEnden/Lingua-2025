@@ -98,7 +98,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'course must be a valid ObjectId'
     );
   });
@@ -107,7 +107,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'teacher must be a valid ObjectId'
     );
   });
@@ -116,7 +116,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('room');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'room must be a valid ObjectId'
     );
   });

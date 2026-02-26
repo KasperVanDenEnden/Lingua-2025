@@ -1,4 +1,4 @@
-import { ILesson, IsObjectId, LessonStatus, LessonType } from '@lingua/api';
+import { ILessonSchema, LessonStatus, LessonType } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -8,36 +8,26 @@ import {
   IsArray,
   ArrayMinSize,
   IsEnum,
+  IsMongoId,
 } from 'class-validator';
 
 export type LessonDocument = Lesson & Document;
 
 @Schema()
-export class Lesson implements ILesson {
-  @Prop({ default: () => new Types.ObjectId() })
-  @IsObjectId()
-  @IsNotEmpty()
-  _id!: Types.ObjectId;
-  
+export class Lesson implements ILessonSchema {
   @Prop({ type: Types.ObjectId, ref: 'Course' })
   @IsNotEmpty()
-  @IsObjectId()
+  @IsMongoId()
   course!: Types.ObjectId;
-  
-
-  @Prop({ type: Types.ObjectId, ref: 'Room' })
-  @IsNotEmpty()
-  @IsObjectId()
-  room!: Types.ObjectId;
   
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId()
+  @IsMongoId()
   teacher!: Types.ObjectId;
   
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId({
+  @IsMongoId({
     each: true,
     message: 'Each user must be a valid ObjectId',
   })

@@ -80,20 +80,26 @@
               </div>
             }
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
-          <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
-          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
-          @if (lessonForm.get('description')?.touched && lessonForm.get('description')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
-              @if (lessonForm.get('description')?.errors?.['required']) {
-                <span>Description is required</span>
-              }
-            </div>
-          }
+          
+          <div class="form-group">
+            <label for="type" class="mb-1.5 ml-2.5 block text-sm font-semibold">Type</label>
+            <select id="type" formControlName="type"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              <option value="Grammar">Grammar</option>
+              <option value="Vocabulary">Vocabulary</option>
+              <option value="Listening">Listening</option>
+              <option value="Speaking">Speaking</option>
+            </select>
+            @if (lessonForm.get('type')?.touched && lessonForm.get('type')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (lessonForm.get('type')?.errors?.['required']) {
+                  <span>Select an option</span>
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <div class="form-group">

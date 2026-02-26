@@ -1,7 +1,8 @@
-import { IReview, Id } from '@lingua/api';
+import { ICourse } from '@lingua/api';
 import { Course, CourseDocument } from '@lingua/schemas';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { CreateReviewDto } from 'libs/backend/dto/src/lib/review.dto';
 import { Model, Types } from 'mongoose';
 
 @Injectable()
@@ -11,77 +12,56 @@ export class ReviewService {
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>
   ) {}
 
-  //   async getAll(): Promise<IReview[]> {
-  //     Logger.log('getAll', this.TAG);
-  //     return await this.courseModel.find();
-  //   }
-
-  //   async getOne(id: Id): Promise<IReview> {
-  //     Logger.log('getOne', this.TAG);
-
-  //     const classInstance = await this.classModel.findById(id).exec();
-
-  //     if (!classInstance) throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
-
-  //     return ;
-  //   }
-
-  async create(body: IReview): Promise<IReview> {
+  async create(body: CreateReviewDto, id: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
     Logger.log('create', this.TAG);
 
+    const course = await this.courseModel.findOne({
+      _id: id,
+      students: userId,
+    }).exec();
+
+    if (!course) throw new HttpException('Course not found or user not enrolled', HttpStatus.BAD_REQUEST);
+
+    // 1. Check of user al een review heeft geplaatst
+    if (course.reviews.some(review => review.student.toString() === userId.toString())) {
+      throw new HttpException('User has already reviewed this course', HttpStatus.BAD_REQUEST);
+    }
+
     const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      { _id: new Types.ObjectId(body.course as Id) },
+      { _id: id },
       {
         $push: {
-          comments: body,
+          reviews: { ...body, student: userId, createdAt: new Date() },
         },
       },
-      {
-        new: true,
-        runValidators: true,
-      }
+      { new: true, runValidators: true }
     );
 
-    if (!updatedCourse)
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-
-    return body;
+    return updatedCourse as ICourse;
   }
 
-  //   async update(id: Id, changes: IUpdateComment): Promise<IReview> {
-  //     Logger.log('update', this.TAG);
-
-  //     const updatedComment = await this.courseModel.findByIdAndUpdate(
-  //       id,
-  //       changes,
-  //       { new: true }
-  //     );
-
-  //     if (!updatedComment)
-  //       throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
-
-  //     return updatedComment;
-  //   }
-
-  async delete(id: Id, classId: Id) {
+  async delete(id: Types.ObjectId, courseId: Types.ObjectId, userId: Types.ObjectId) {
     Logger.log('delete', this.TAG);
 
+    const course = await this.courseModel.findOne({
+      _id: courseId,
+      'reviews._id': id,
+    }).exec();
+
+    if (!course) throw new HttpException('Course or review not found', HttpStatus.NOT_FOUND);
+
+    // Check of de review van de ingelogde user is
+    const review = course.reviews.find(r => r._id.toString() === id.toString());
+    if (review?.student.toString() !== userId.toString()) {
+      throw new HttpException('You can only delete your own reviews', HttpStatus.FORBIDDEN);
+    }
+
     const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      classId,
-      {
-        $pull: {
-          comments: { _id: id },
-        },
-      },
-      {
-        new: true, // Return the updated document
-        runValidators: true,
-      }
+      courseId,
+      { $pull: { reviews: { _id: id } } },
+      { new: true, runValidators: true }
     );
 
-    if (!updatedCourse)
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-
-    return;
+    return updatedCourse as ICourse;
   }
 }

@@ -79,7 +79,7 @@
                 <span dropdown-button><i class="fa-solid fa-user"></i></span>
 
                 <div dropdown-items>
-                    <a [routerLink]="['/user', currentUser.id]"
+                    <a [routerLink]="['/user', currentUser._id]"
                         class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">
                         <span aria-hidden="true"><i class="fa-solid fa-user mr-2"></i></span>
                         Profile
@@ -176,7 +176,7 @@
                             class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">About</a>
                         @if(currentUser) {
 
-                        <a [routerLink]="['/user', currentUser.id]"
+                        <a [routerLink]="['/user', currentUser._id]"
                             class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
                             <span aria-hidden="true"><i class="fa-solid fa-user mr-2"></i></span>
                             Profile

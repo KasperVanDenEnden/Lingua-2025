@@ -16,14 +16,28 @@ export enum Language {
   French = 'French',
 }
 
+export enum Level {
+  A1 = 'A1',
+  A2 = 'A2',
+  B1 = 'B1',
+  B2 = 'B2',
+  C1 = 'C1',
+  C2 = 'C2',
+}
+
 export interface ICourse {
   _id: Id;
   
   title: string;
   description: string;
-  status: CourseStatus;
+  price: number;
+  maxStudents:number; 
   createdOn: Date;
+
+  // enums
+  status: CourseStatus;
   language: Language;
+  level: Level;
 
   teachers: Id[] | IUser[]; // Array of teacher Ids
   students: Id[] | IUser[]; // Array of student Ids
@@ -31,13 +45,9 @@ export interface ICourse {
 }
 
 export type ICreateCourse = Pick<
-ICourse,
-  'status' | 'title' | 'description' | 'language' | 'teachers'
+  ICourse,
+  'status' | 'title' | 'description' | 'language' | 'teachers' | 'level' | 'price' | 'maxStudents'
 >;
-export type IUpdateCourse = Partial<Omit<ICourse, 'id'>>;
+export type IUpdateCourse = Partial<Omit<ICourse, '_id'>>;
 export type IUpsertCourse = ICourse;
-
-export type IUpdateCourseAssistant = {
-  course: string,
-  assistant: Id
-}
+export type ICourseSchema = Omit<ICourse, '_id'>;
