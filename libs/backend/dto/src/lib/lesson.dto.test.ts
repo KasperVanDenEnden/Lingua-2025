@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { CreateLessonDto } from './lesson.dto';
 import { validate } from 'class-validator';
-import { LessonStatus } from '@lingua/api';
+import { LessonStatus, LessonType } from '@lingua/api';
 describe('LessonDto Tests', () => {
   let DTO: CreateLessonDto;
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('LessonDto Tests', () => {
     DTO.students = [];
     DTO.status = LessonStatus.Concept;
     DTO.title = 'Test title';
-    DTO.description = 'Test description';
+    DTO.type = LessonType.Other;
     DTO.day = new Date();
     DTO.startTime = new Date();
     DTO.endTime = new Date();
@@ -66,13 +66,13 @@ describe('LessonDto Tests', () => {
       'title should not be empty'
     );
   });
-  it('should fail validation when description is missing', async () => {
-    DTO.description = undefined as any;
+  it('should fail validation when type is missing', async () => {
+    DTO.type = undefined as any;
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('description');
+    expect(errors[0].property).toBe('type');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'description should not be empty'
+      'type should not be empty'
     );
   });
   it('should fail validation when startTime is missing', async () => {
@@ -98,7 +98,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'course must be a valid ObjectId'
     );
   });
@@ -107,7 +107,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'teacher must be a valid ObjectId'
     );
   });
@@ -116,7 +116,7 @@ describe('LessonDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('room');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'room must be a valid ObjectId'
     );
   });
@@ -136,13 +136,13 @@ describe('LessonDto Tests', () => {
     expect(errors[0].property).toBe('title');
     expect(errors[0].constraints?.['isString']).toBe('title must be a string');
   });
-  it('should fail validation when description is not valid type', async () => {
-    DTO.description = 0 as any;
+  it('should fail validation when type is not valid type', async () => {
+    DTO.type = 0 as any;
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('description');
-    expect(errors[0].constraints?.['isString']).toBe(
-      'description must be a string'
+    expect(errors[0].property).toBe('type');
+    expect(errors[0].constraints?.['isEnum']).toBe(
+      'Type must be a valid enum value'
     );
   });
   it('should fail validation when startTime is not valid type', async () => {

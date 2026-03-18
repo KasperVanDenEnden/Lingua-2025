@@ -80,20 +80,26 @@
               </div>
             }
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
-          <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
-          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
-          @if (lessonForm.get('description')?.touched && lessonForm.get('description')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
-              @if (lessonForm.get('description')?.errors?.['required']) {
-                <span>Description is required</span>
-              }
-            </div>
-          }
+          
+          <div class="form-group">
+            <label for="type" class="mb-1.5 ml-2.5 block text-sm font-semibold">Type</label>
+            <select id="type" formControlName="type"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              <option value="Grammar">Grammar</option>
+              <option value="Vocabulary">Vocabulary</option>
+              <option value="Listening">Listening</option>
+              <option value="Speaking">Speaking</option>
+            </select>
+            @if (lessonForm.get('type')?.touched && lessonForm.get('type')?.invalid) {
+              <div
+                class="text-red-500 text-sm mt-1">
+                @if (lessonForm.get('type')?.errors?.['required']) {
+                  <span>Select an option</span>
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <div class="form-group">
@@ -140,24 +146,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="room" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select Room</label>
-                <select id="room" formControlName="room"
-                  class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                  @for (room of rooms; track room) {
-                    <option [value]="room._id">{{ getRoomSlug(room) }}</option>
-                  }
-                </select>
-                @if (lessonForm.get('room')?.touched && lessonForm.get('room')?.invalid) {
-                  <div
-                    class="text-red-500 text-sm mt-1">
-                    @if (lessonForm.get('room')?.errors?.['required']) {
-                      <span>Select a room</span>
-                    }
-                  </div>
-                }
-              </div>
-
+          
               <button type="submit"
                 [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !lessonForm.invalid, 'bg-gray-300 text-gray-500': lessonForm.invalid }"
                 class="py-sm px-md text-white flex self-end" [disabled]="lessonForm.invalid">

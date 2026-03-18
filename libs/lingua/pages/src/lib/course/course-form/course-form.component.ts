@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ICourse, ICreateCourse, Id, IUser } from '@lingua/api';
+import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Types } from 'mongoose';
 import { Subscription } from 'rxjs';
 import { UserService, CourseService } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
@@ -23,6 +22,8 @@ export class CourseFormComponent implements OnInit, OnDestroy{
     courseForm: FormGroup = new FormGroup({
       title: new FormControl(null, Validators.required),
       description: new FormControl(null, Validators.required),
+      price: new FormControl(null, Validators.required),
+      maxStudents: new FormControl(null, Validators.required),
       language: new FormControl(null, Validators.required),
       teacher: new FormControl(null, Validators.required),
       status: new FormControl(null, Validators.required),
@@ -42,7 +43,7 @@ export class CourseFormComponent implements OnInit, OnDestroy{
         if (id) {
           this.loadCourseData(id);
           this.isEditMode = true;
-          this.existId = new Types.ObjectId(id);
+          this.existId = id;
         } else {
           this.initializeNewCourse();
   
@@ -73,8 +74,10 @@ export class CourseFormComponent implements OnInit, OnDestroy{
             status: courseData.status,
             title: courseData.title,
             description: courseData.description,
+            price: courseData.price,
+            maxStudents: courseData.maxStudents,
             language: courseData.language,
-            teacher: courseData.teacher._id,
+            teachers: courseData.teachers.map((teacher) => (teacher as IUser)._id),
           });
         },
         error: (err) => {
@@ -86,10 +89,13 @@ export class CourseFormComponent implements OnInit, OnDestroy{
     onSubmit(): void {
       const data: ICreateCourse = {
         status: this.courseForm.value.status,
-        teacher: this.courseForm.value.teacher,
+        teachers: [this.courseForm.value.teacher],
         title: this.courseForm.value.title,
         description: this.courseForm.value.description,
         language: this.courseForm.value.language,
+        level: Level.A1,
+        price: this.courseForm.value.price,
+        maxStudents: this.courseForm.value.maxStudents
       };
   
       if (this.isEditMode) {

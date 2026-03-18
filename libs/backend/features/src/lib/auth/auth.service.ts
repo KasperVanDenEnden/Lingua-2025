@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { ICreateUser } from '@lingua/api';
+import { ICreateUser, Id } from '@lingua/api';
 
 @Injectable()
 export class AuthService {
@@ -68,7 +68,7 @@ export class AuthService {
     return { access_token: this.jwtService.sign(payload) };
   }
 
-  async changePassword(changePasswordDto: ChangePasswordDto, id: Types.ObjectId) {
+  async changePassword(changePasswordDto: ChangePasswordDto, id: Id) {
     Logger.log('changePassowrd', this.TAG);
 
     const existingUser = await this.userModel.findById(id);

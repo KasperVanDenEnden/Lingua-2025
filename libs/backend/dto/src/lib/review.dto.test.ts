@@ -55,7 +55,7 @@ describe('ReviewDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'student must be a valid ObjectId'
     );
   });
@@ -64,7 +64,7 @@ describe('ReviewDto Tests', () => {
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'course must be a valid ObjectId'
     );
   });

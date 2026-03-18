@@ -3,7 +3,6 @@ import { Id } from './id';
 import { IUser } from './user.interface';
 
 export interface IReview {
-  id?: Id;
   _id: Id;
 
   student: Id | IUser; 
@@ -16,7 +15,8 @@ export interface IReview {
 
 export type ICreateReview = Pick<
 IReview,
-  'student' | 'course' | 'comment' | 'rating'
+  'comment' | 'rating'
 >;
-export type IUpdateReview = Partial<Omit<IReview, 'id'>>;
+export type IUpdateReview = Partial<Omit<IReview, '_id'>>;
 export type IUpsertReview = IReview;
+export type IReviewSchema = Omit<IReview, '_id'>;

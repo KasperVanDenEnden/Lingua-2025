@@ -7,10 +7,9 @@ export enum Role {
 }
 
 export interface IUser {
-  id?: Id;
   _id: Id;
   
-  role: string;
+  role: Role;
   firstname: string;
   lastname: string;
   email: string;
@@ -22,5 +21,6 @@ export type ICreateUser = Pick<
   IUser,
   'role' | 'firstname' | 'lastname' | 'email' | 'password'
 >;
-export type IUpdateUser = Partial<Omit<IUser, 'id'>>;
+export type IUpdateUser = Partial<Omit<IUser, '_id'>>;
 export type IUpsertUser = IUser;
+export type IUserSchema = Omit<IUser, '_id'>;

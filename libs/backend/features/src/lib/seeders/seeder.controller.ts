@@ -6,8 +6,8 @@ import { SeederService } from './seeder.service';
 @Controller('seeder')
 export class SeederController {
     private TAG = 'SeederController';
-      constructor(private seederService: SeederService) {}
-
+    
+    constructor(private seederService: SeederService) {}
 
     @Get('run')
       async runSeed(): Promise<void> {
@@ -15,11 +15,10 @@ export class SeederController {
         await this.seederService.clearCollections();
           
         await this.seederService.seedUsers();
-        await this.seederService.seedLocations();
-        await this.seederService.seedRooms();
         await this.seederService.seedCourses();
         await this.seederService.seedLessons();
-        // await this.seederService.seedCourseRegistrations();  
+        await this.seederService.seedEnrollments();
+        await this.seederService.seedReviews();
         
         Logger.log('Completed seed process', this.TAG);
     }

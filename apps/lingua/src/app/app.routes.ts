@@ -7,16 +7,10 @@ import {
   LessonDetailComponent,
   LessonFormComponent,
   LessonListComponent,
-  LocationDetailComponent,
-  LocationFormComponent,
-  LocationListComponent,
   LoginComponent,
   PagesComponent,
   PasswordChangeComponent,
   RegisterComponent,
-  RoomDetailComponent,
-  RoomFormComponent,
-  RoomListComponent,
   UserDetailComponent,
   UserFormComponent,
   UserListComponent,
@@ -30,38 +24,6 @@ export const appRoutes: Route[] = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard, RolesGuard] },
-  {
-    path: 'locations',
-    component: LocationListComponent,
-    canActivate: [AuthGuard, RolesGuard],
-    children: [
-      { path: 'new', pathMatch: 'full', component: LocationFormComponent, canActivate: [RolesGuard], data: { role: 'teacher' } }
-    ]
-  },
-  {
-    path: 'locations/:id',
-    canActivate: [AuthGuard],
-    component: LocationDetailComponent,
-    children: [
-      { path: 'edit', pathMatch: 'full', component: LocationFormComponent, canActivate: [RolesGuard], data: { role: 'teacher' } }
-    ]
-  },
-  {
-    path: 'rooms',
-    component: RoomListComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'new', pathMatch: 'full', component: RoomFormComponent, canActivate: [RolesGuard], data: { role: 'teacher' } }
-    ]
-  },
-  {
-    path: 'rooms/:id',
-    canActivate: [AuthGuard],
-    component: RoomDetailComponent,
-    children: [
-      { path: 'edit', pathMatch: 'full', component: RoomFormComponent, canActivate: [RolesGuard], data: { role: 'teacher' } }
-    ]
-  },
   {
     path: 'courses',
     component: CourseListComponent,

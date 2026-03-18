@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
 import { Review, ReviewSchema } from './review.schema';
+
 describe('ReviewSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let reviewModel: Model<Review>;
@@ -32,7 +33,6 @@ describe('ReviewSchema Tests', () => {
   });
   beforeEach(() => {
     baseBody = {
-      _id: new Types.ObjectId(),
       student: new Types.ObjectId(),
       course: new Types.ObjectId(),
       comment: 'Test comment',
@@ -106,7 +106,7 @@ describe('ReviewSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'student must be a valid ObjectId'
     );
   });
@@ -116,7 +116,7 @@ describe('ReviewSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isObjectId']).toBe(
+    expect(errors[0].constraints?.['isMongoId']).toBe(
       'course must be a valid ObjectId'
     );
   });

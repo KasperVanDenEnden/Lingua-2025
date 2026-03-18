@@ -5,7 +5,6 @@ import { Subscription, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
 import {
   CourseService,
-  CourseAssistantService,
   UserService,
   NotificationService,
 } from '@lingua/services';
@@ -21,8 +20,8 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   course$!: Observable<ICourse>;
   courseId?: string | null;
 
-  teacher?: IUser | null;
-  assistants?: IUser[] | null;
+  teachers?: IUser[] | null;
+  students?: IUser[] | null;
   availableTeachers?: IUser[] | null;
   selectedTeacher?: IUser | null;
 
@@ -31,7 +30,6 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
   constructor(
     private courseService: CourseService,
-    private courseAssistantService: CourseAssistantService,
     private route: ActivatedRoute,
     private userService: UserService,
     private notify: NotificationService,
@@ -57,19 +55,18 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
       if (this.courseId) {
         this.course$ = this.courseService.getCourseById(this.courseId);
         this.course$.subscribe((course) => {
-          this.teacher = course.teacher as IUser;
-          this.assistants = course.assistants as IUser[];
+          this.teachers = course.teachers as IUser[];
           this.recordToDelete = course;
 
           this.userService.getUsers().subscribe((users) => {
             const allTeachers = users.filter((user) => user.role === 'teacher');
 
             this.availableTeachers = allTeachers.filter((teacher) => {
-              const isNotCurrentTeacher = teacher._id !== this.teacher?._id;
-              const isNotAssistant = !this.assistants?.some(
-                (assistant) => assistant?._id === teacher?._id
-              );
-              return isNotCurrentTeacher && isNotAssistant;
+              // const isNotCurrentTeacher = teacher._id !== this.teacher?._id;
+              // const isNotAssistant = !this.assistants?.some(
+              //   (assistant) => assistant?._id === teacher?._id
+              // );
+              // return isNotCurrentTeacher && isNotAssistant;
             });
           });
         });
@@ -110,17 +107,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     }
 
     if (this.courseId) {
-      this.courseAssistantService
-        .addAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully assigned.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to assign assistant.');
-          },
-        });
+   
     }
   }
 
@@ -131,17 +118,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     }
 
     if (this.courseId) {
-      this.courseAssistantService
-        .removeAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully removed.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to remove assistant.');
-          },
-        });
+     
     }
   }
 }

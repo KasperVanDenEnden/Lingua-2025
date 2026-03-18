@@ -6,6 +6,7 @@ import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
 import { Role } from '@lingua/api';
+
 describe('UserSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let userModel: Model<User>;
@@ -33,7 +34,6 @@ describe('UserSchema Tests', () => {
   });
   beforeEach(() => {
     baseBody = {
-      _id: new Types.ObjectId(),
       role: Role.Student,
       firstname: 'John',
       lastname: 'Doe',
