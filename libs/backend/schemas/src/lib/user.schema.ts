@@ -5,7 +5,7 @@ import { IsString, IsEnum, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({timestamps: true})
 export class User implements IUserSchema {
   @Prop({ type: String, enum: Object.values(Role) })
   @IsNotEmpty()

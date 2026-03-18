@@ -1,5 +1,5 @@
 import { ICreateLesson, Id, LessonStatus, LessonType } from '@lingua/api';
-import { ArrayMinSize, IsArray, IsDate, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsBoolean, IsDate, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateLessonDto implements ICreateLesson {
@@ -23,6 +23,10 @@ export class CreateLessonDto implements ICreateLesson {
   @IsEnum(LessonType, { message: 'Type must be a valid enum value'})
   type!: LessonType;
   
+  @IsNotEmpty()
+  @IsBoolean()
+  isWorkshop!: boolean;
+
   @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
   @IsDate()

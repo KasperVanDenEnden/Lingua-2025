@@ -12,13 +12,15 @@ import {
   IsNumber,
   Max,
   Min,
+  IsOptional,
 } from 'class-validator';
 import { ReviewSchema } from './review.schema';
 
 export type CourseDocument = Course & Document;
 
-@Schema()
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Course implements ICourseSchema{
+  
   @Prop()
   @IsNotEmpty()
   @IsString()
@@ -47,10 +49,15 @@ export class Course implements ICourseSchema{
   @IsEnum(CourseStatus, { message: 'Status must be a valid enum value' })
   status!: CourseStatus;
 
-  @Prop({ default: Date.now() })
+  @Prop()
   @IsNotEmpty()
   @IsDate()
-  createdOn!: Date;
+  starts!: Date;
+
+  @Prop()
+  @IsOptional()
+  @IsDate()
+  ends!: Date | null;
 
   @Prop({ type: String, enum: Object.values(Language) })
   @IsNotEmpty()
@@ -82,3 +89,15 @@ export class Course implements ICourseSchema{
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
+
+CourseSchema.virtual('averageRating').get(function (this: CourseDocument) {
+  if (!this.reviews || this.reviews.length === 0) {
+    return 0;
+  }
+    const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+    return total / this.reviews.length;
+});
+
+CourseSchema.pre('deleteOne', { document: true, query: false }, async function () {
+    await this.model('Lesson').deleteMany({ course: this._id });
+});

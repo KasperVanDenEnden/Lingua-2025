@@ -22,7 +22,7 @@ export class CourseService {
 
     const instance = await this.courseModel
       .findById(id)
-      .populate('teachers')
+      .populate('teachers', '-password')
       .exec();
 
     if (!instance)
@@ -38,7 +38,7 @@ export class CourseService {
 
   async update(id: Id, body: IUpdateCourse): Promise<ICourse> {
     Logger.log('update', this.TAG);
-
+    
     const updatedCourse = await this.courseModel.findByIdAndUpdate(
       id,
       body,
@@ -54,12 +54,10 @@ export class CourseService {
   async delete(id: Id) {
     Logger.log('delete', this.TAG);
 
-    const deletedCourse = await this.courseModel.findByIdAndDelete(id);
-
-    if (!deletedCourse)
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-
-    return deletedCourse;
+    const course = await this.courseModel.findById(id);
+    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    await course.deleteOne();
+    return new HttpException('Course deleted successfully', HttpStatus.OK);
   }
 
   async enroll(id: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {

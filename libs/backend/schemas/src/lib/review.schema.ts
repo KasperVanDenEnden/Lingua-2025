@@ -5,7 +5,7 @@ import { IsString, IsNotEmpty, IsDate, IsInt, IsMongoId } from 'class-validator'
 
 export type ReviewDocument = Review & Document;
 
-@Schema()
+@Schema({timestamps: true})
 export class Review implements IReviewSchema {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()

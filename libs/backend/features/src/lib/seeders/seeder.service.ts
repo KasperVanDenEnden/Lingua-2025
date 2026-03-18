@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Course, CourseDocument, Lesson, LessonDocument, User, UserDocument } from '@lingua/schemas';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
     USER_SEED_DATA,
     COURSE_SEED_DATA,
-    LESSON_SEED_DATA
+    LESSON_SEED_DATA,
+    REVIEW_COMMENTS
 } from './seeder.data';
 
 @Injectable()
 export class SeederService {
-   
+    
     private TAG = 'SeederService';
 
     constructor(
@@ -62,6 +63,38 @@ export class SeederService {
         }
 
         Logger.log('Seeding courses complete', this.TAG);
+    }
+
+    async seedEnrollments() {
+        Logger.log('Seeding enrollments', this.TAG);
+
+        const students = await this.userModel.find({ role: 'student' });
+        const courses = await this.courseModel.find();
+
+        for (const course of courses) {
+            course.students = students.map(student => student._id);
+            await course.save();
+        }
+        Logger.log('Seeding enrollments completed', this.TAG);
+    }
+
+    async seedReviews() {
+        const courses = await this.courseModel.find();
+
+       for (const course of courses) {
+        for (const studentId of course.students) {
+            course.reviews.push({
+                _id: new Types.ObjectId(),
+                rating: Math.floor(Math.random() * 5) + 1,
+                comment: REVIEW_COMMENTS[Math.floor(Math.random() * REVIEW_COMMENTS.length)],
+                student: studentId,
+                course: course._id,
+                createdAt: new Date(),
+            });
+        }
+        await course.save();
+    }
+        Logger.log('Seeding reviews completed', this.TAG);
     }
 
     async seedLessons() {

@@ -7,13 +7,13 @@ import { CreateReviewDto } from '@lingua/dto';
 import { Types } from 'mongoose';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-@Controller('review')
+@Controller('course/:courseId/review')
 @UseGuards(JwtAuthGuard)
 export class ReviewController {
   private TAG = 'ReviewController';
   constructor(private reviewService: ReviewService) {}
 
-  @Post(':courseId')
+  @Post()
   async create(
     @Body(BodyObjectIdsPipe) body: CreateReviewDto,
     @Param('courseId', StringObjectIdPipe) id: Types.ObjectId,
@@ -23,7 +23,7 @@ export class ReviewController {
     return await this.reviewService.create(body, id, Types.ObjectId.createFromHexString(user.id));
   }
 
-  @Delete(':id/:courseId')
+  @Delete(':id')
   async delete(
     @Param('id', StringObjectIdPipe) id: Types.ObjectId,
     @Param('courseId', StringObjectIdPipe) courseId: Types.ObjectId,

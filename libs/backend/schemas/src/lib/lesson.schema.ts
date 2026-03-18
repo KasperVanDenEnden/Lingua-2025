@@ -9,11 +9,12 @@ import {
   ArrayMinSize,
   IsEnum,
   IsMongoId,
+  IsBoolean,
 } from 'class-validator';
 
 export type LessonDocument = Lesson & Document;
 
-@Schema()
+@Schema({timestamps: true})
 export class Lesson implements ILessonSchema {
   @Prop({ type: Types.ObjectId, ref: 'Course' })
   @IsNotEmpty()
@@ -44,6 +45,11 @@ export class Lesson implements ILessonSchema {
   @IsEnum(LessonType, { message: 'Type must be a valid enum value'})
   @IsNotEmpty()
   type!: LessonType;
+
+  @Prop({default: false})
+  @IsNotEmpty()
+  @IsBoolean()
+  isWorkshop!: boolean;
   
   @Prop()
   @IsNotEmpty()

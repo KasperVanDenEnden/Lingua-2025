@@ -2,16 +2,19 @@ import { CourseStatus, ICreateCourse, Language, Level } from '@lingua/api';
 import {
   ArrayMinSize,
   IsArray,
+  IsDate,
   IsEnum,
   IsMongoId,
   isMongoId,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
 } from 'class-validator';
 import { Id } from '@lingua/api';
+import { Transform } from 'class-transformer';
 
 export class CreateCourseDto implements ICreateCourse {
   @IsNotEmpty()
@@ -36,6 +39,16 @@ export class CreateCourseDto implements ICreateCourse {
   @IsNumber()
   @Max(20, { message: 'maxStudents cannot exceed 20' }) 
   maxStudents!: number;
+
+  @IsNotEmpty()
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  starts!: Date;
+
+  @IsOptional()
+  @Transform(({ value }) => value ? new Date(value) : null)
+  @IsDate()
+  ends!: Date | null;;
   
   @IsEnum(Language, { message: 'Language must be a valid enum value' })
   @IsNotEmpty()

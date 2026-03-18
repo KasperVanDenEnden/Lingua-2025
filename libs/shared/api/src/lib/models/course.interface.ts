@@ -32,7 +32,8 @@ export interface ICourse {
   description: string;
   price: number;
   maxStudents:number; 
-  createdOn: Date;
+  starts: Date;
+  ends: Date | null;
 
   // enums
   status: CourseStatus;
@@ -46,7 +47,7 @@ export interface ICourse {
 
 export type ICreateCourse = Pick<
   ICourse,
-  'status' | 'title' | 'description' | 'language' | 'teachers' | 'level' | 'price' | 'maxStudents'
+  'status' | 'title' | 'description' | 'language' | 'teachers' | 'level' | 'price' | 'maxStudents' | 'starts' | 'ends'
 >;
 export type IUpdateCourse = Partial<Omit<ICourse, '_id'>>;
 export type IUpsertCourse = ICourse;

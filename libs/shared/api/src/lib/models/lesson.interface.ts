@@ -30,6 +30,7 @@ export interface ILesson {
   title: string;
   status: LessonStatus;
   type: LessonType;
+  isWorkshop: boolean;
 
   day: Date; // Alleen de datum (YYYY-MM-DD)
   startTime: Date; // Inclusief tijd
@@ -38,7 +39,7 @@ export interface ILesson {
 
 export type ICreateLesson = Pick<
   ILesson,
-  'course' | 'teacher' | 'status' | 'title' | 'type' | 'day' | 'startTime' | 'endTime'
+  'course' | 'teacher' | 'status' | 'title' | 'type' | 'isWorkshop' | 'day' | 'startTime' | 'endTime'
 >;
 export type IUpdateLesson = Partial<Omit<ILesson, '_id'>>;
 export type IUpsertLesson = ILesson;
