@@ -1,14 +1,15 @@
 import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import neo4j, { Driver, Session } from 'neo4j-driver';
 import { environment } from '@lingua/util-env';
+import { Id } from '@lingua/api';
+import { RCMND_CYPHER } from '@lingua/api';
 
 @Injectable()
 export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
+  
     private driver!: Driver;
 
     async onModuleInit() {
-            console.log('NEO4J URL:', environment.neo4jUrl);  // add this
-
         this.driver = neo4j.driver(
             environment.neo4jUrl,
             neo4j.auth.basic(
@@ -17,7 +18,7 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
             ),
         );
         await this.driver.verifyConnectivity();
-        await this.createConstraints();
+        // await this.createConstraints();
     }
     
     async onApplicationShutdown() {
@@ -51,5 +52,29 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
         } finally {
             await session.close();
         }
+    }
+
+    async run(cypher: string, params: Record<string, any> = {}) {
+        const session = this.getSession();
+        try {
+            return await session.run(cypher, params);
+        } finally {
+            await session.close();
+        }
+    }
+
+    async getRecomendations(id: Id) {
+         const results = await this.run(RCMND_CYPHER, { userId: id });
+        console.log('results:' , results)
+
+
+
+     const mappedResults =  results.records.map(record => ({
+            course:          record.get('c').properties,
+            rating:          record.get('rating'),
+            recommendedBy:   record.get('friend').properties,
+        }));
+
+        return mappedResults;
     }
 }
