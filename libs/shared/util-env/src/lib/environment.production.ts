@@ -4,5 +4,8 @@ export const environment:IEnvironment = {
     production: true,
     dataApiUrl: '',
     mongoDbUrl: ``,
-    SECRET_KEY: 'Blastoise'
+    SECRET_KEY: 'Blastoise',
+    neo4jUrl: "",
+    neo4jUser: "",
+    neo4jPassword: ""
 }
