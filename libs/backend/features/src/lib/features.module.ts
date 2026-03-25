@@ -24,7 +24,9 @@ import { RolesGuard } from './auth/guards/role-auth.guard';
 import { ReviewController } from './review/review.controller';
 import { ReviewService } from './review/review.service';
 import { SeederController } from './seeders/seeder.controller';
-import { SeederService } from './seeders/seeder.service';
+import { MongoSeederService } from './seeders/mongo-seeder.service';
+import { NeoSeederService } from './seeders/neo-seeder.service';
+import { NeoOperationsService } from './neo4j/neo-operations.service';
 
 @Module({
   imports: [
@@ -55,7 +57,9 @@ import { SeederService } from './seeders/seeder.service';
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
-    SeederService
+    MongoSeederService,
+    NeoSeederService,
+    NeoOperationsService,
   ],
   exports: [AuthService],
 })

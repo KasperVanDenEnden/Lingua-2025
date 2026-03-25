@@ -15,6 +15,7 @@ export interface IUser {
   email: string;
   password: string;
   token:string;
+  friends: Id[] | IUser[]
 }
 
 export type ICreateUser = Pick<

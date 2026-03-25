@@ -22,6 +22,7 @@ import { Roles } from '../auth/decorators/role.decorator';
 import { RolesGuard } from '../auth/guards/role-auth.guard';
 import { BodyObjectIdsPipe, StringObjectIdPipe } from '@lingua/features';
 import { Types } from 'mongoose';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -66,5 +67,26 @@ export class UserController {
   async delete(@Param('id', StringObjectIdPipe) id: Types.ObjectId) {
     Logger.log('delete', this.TAG);
     return this.userService.delete(id);
+  }
+
+  // === Friends === //
+  @UseGuards(RolesGuard)
+  @Roles(Role.Student)
+  @Post(':id/follow')
+  async follow(
+        @Param('id', StringObjectIdPipe) id: Id,
+        @CurrentUser() user:any
+  ) {
+    return await this.userService.follow(user.id, id)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.Student)
+  @Post(':id/unfollow')
+  async unfollow(
+        @Param('id', StringObjectIdPipe) id: Id,
+        @CurrentUser() user:any
+  ) {
+    return await this.userService.unfollow(user.id, id)
   }
 }

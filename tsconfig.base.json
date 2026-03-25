@@ -23,7 +23,8 @@
       "@lingua/schemas": ["libs/backend/schemas/src/index.ts"],
       "@lingua/services": ["libs/lingua/services/src/index.ts"],
       "@lingua/ui": ["libs/lingua/ui/src/index.ts"],
-      "@lingua/util-env": ["libs/shared/util-env/src/index.ts"]
+      "@lingua/util-env": ["libs/shared/util-env/src/index.ts"],
+      "@lingua/neo4j": ["libs/backend/neo4j/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

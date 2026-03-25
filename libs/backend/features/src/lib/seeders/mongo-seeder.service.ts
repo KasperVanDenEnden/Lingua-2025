@@ -10,10 +10,11 @@ import {
     LESSON_SEED_DATA,
     REVIEW_COMMENTS
 } from './seeder.data';
+import { Role } from '@lingua/api';
 
 @Injectable()
-export class SeederService {
-    
+export class MongoSeederService {
+   
     private TAG = 'SeederService';
 
     constructor(
@@ -28,6 +29,16 @@ export class SeederService {
         await this.userModel.deleteMany({});
         await this.lessonModel.deleteMany({});
         Logger.log('Cleared collections', this.TAG);
+    }
+
+    async seedAll() {
+        await this.seedUsers();
+        await this.seedCourses();
+        await this.seedLessons();
+        await this.seedEnrollments();
+        await this.seedReviews();
+        await this.seedFriends();
+        await this.seedAttendance();
     }
 
     async seedUsers() {
@@ -71,9 +82,15 @@ export class SeederService {
         const students = await this.userModel.find({ role: 'student' });
         const courses = await this.courseModel.find();
 
-        for (const course of courses) {
-            course.students = students.map(student => student._id);
-            await course.save();
+        for (const student of students) {
+            const randomCourses = courses
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 2);
+
+            for (const course of randomCourses) {
+                course.students.push(student._id);
+                await course.save();
+            }
         }
         Logger.log('Seeding enrollments completed', this.TAG);
     }
@@ -121,5 +138,48 @@ export class SeederService {
         }
         
         Logger.log('Seeding lessons complete', this.TAG);
+    }
+
+    async seedFriends() {
+        Logger.log('Seeding friends', this.TAG);
+
+        const users = await this.userModel.find({role: Role.Student}).exec()
+
+        for (const user of users) {
+            const others = users.filter(u => !u._id.equals(user._id));
+            
+            const friends = others
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 2)
+                .map(f => f._id);
+
+            await this.userModel.findByIdAndUpdate(user._id, {
+                friends: friends,
+            });
+        }
+        
+        Logger.log('Seeding friends completed', this.TAG);
+    }
+    
+    async seedAttendance() {
+        Logger.log('Seeding attendance', this.TAG);
+
+        const lessons = await this.lessonModel.find();
+
+        for (const lesson of lessons) {
+            // Haal studenten op die enrolled zijn in de course van deze les
+            const course = await this.courseModel.findById(lesson.course);
+            if (!course || !course.students.length) continue;
+
+            // Wijs willekeurig een paar studenten toe aan de les
+            const attendingStudents = course.students
+                .sort(() => Math.random() - 0.5)
+                .slice(0, Math.ceil(course.students.length / 2)); // 50% van de studenten
+
+            lesson.students.push(...attendingStudents);
+            await lesson.save();
+        }
+
+        Logger.log('Seeding attendance complete', this.TAG);
     }
 }

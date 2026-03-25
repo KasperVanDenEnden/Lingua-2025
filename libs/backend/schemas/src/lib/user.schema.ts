@@ -1,7 +1,7 @@
 import { IUserSchema, Role } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { IsString, IsEnum, IsNotEmpty, IsMongoId } from 'class-validator';
+import { IsString, IsEnum, IsNotEmpty, IsMongoId, IsArray, ArrayMinSize } from 'class-validator';
 
 export type UserDocument = User & Document;
 
@@ -33,6 +33,16 @@ export class User implements IUserSchema {
   password!: string;
 
   token!:string;
+
+  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
+  @IsNotEmpty()
+  @IsMongoId({
+    each: true,
+    message: 'Each student must be a valid ObjectId',
+  })
+  @IsArray()
+  @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
+  friends!: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

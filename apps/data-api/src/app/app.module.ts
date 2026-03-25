@@ -5,10 +5,10 @@ import { SchemasModule} from '@lingua/schemas'
 import { MongooseModule } from '@nestjs/mongoose';
 import { environment } from '@lingua/util-env';
 import { FeaturesModule } from '@lingua/features';
-
+import { Neo4jModule } from '@lingua/neo4j';
 
 @Module({
-  imports: [FeaturesModule, SchemasModule, MongooseModule.forRoot(environment.mongoDbUrl)],
+  imports: [FeaturesModule, SchemasModule, MongooseModule.forRoot(environment.mongoDbUrl), Neo4jModule],
   controllers: [AppController],
   providers: [AppService],
 })
