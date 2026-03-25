@@ -26,6 +26,7 @@ import { ReviewService } from './review/review.service';
 import { SeederController } from './seeders/seeder.controller';
 import { MongoSeederService } from './seeders/mongo-seeder.service';
 import { NeoSeederService } from './seeders/neo-seeder.service';
+import { NeoOperationsService } from './neo4j/neo-operations.service';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { NeoSeederService } from './seeders/neo-seeder.service';
     RolesGuard,
     MongoSeederService,
     NeoSeederService,
+    NeoOperationsService,
   ],
   exports: [AuthService],
 })

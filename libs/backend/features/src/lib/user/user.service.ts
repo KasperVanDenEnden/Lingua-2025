@@ -4,14 +4,17 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { NeoOperationsService } from '../neo4j/neo-operations.service';
 
 @Injectable()
 export class UserService {
   private TAG = 'UserService';
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Lesson.name) private lessonModel: Model<LessonDocument>,
-    @InjectModel(Course.name) private courseModel: Model<CourseDocument>
+    @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
+    private neoService: NeoOperationsService
   ) {}
 
   async getAll(): Promise<IUser[]> {
@@ -35,9 +38,13 @@ export class UserService {
     const user = await this.userModel.findOne({ email: body.email });
     if (user) throw new HttpException('Email is not unique', HttpStatus.FOUND);
 
-    body.password = await bcrypt.hashSync(body.password, 10);
+    body.password = bcrypt.hashSync(body.password, 10);
+    
+    const mongoUser = await this.userModel.create(body);
 
-    return await this.userModel.create(body);
+    await this.neoService.mergeUser(mongoUser);
+
+    return mongoUser;
   }
 
   async update(id: Id, changes: IUpdateUser): Promise<IUser> {
@@ -77,6 +84,8 @@ export class UserService {
         { session }
       );
 
+      await this.neoService.detachUser(id);
+
       await session.commitTransaction();
       return new HttpException('User deleted successfully', HttpStatus.OK);
 
@@ -86,5 +95,42 @@ export class UserService {
     }  finally {
       await session.endSession();
     }
+  }
+
+  // === Friends === // 
+  async follow(userId: Id, friendId: Id) {
+    Logger.log('follow', this.TAG);
+
+    const user = await this.userModel.findById(userId).exec();
+    const friend = await this.userModel.findById(friendId).exec();
+
+    if (!user || !friend) 
+      throw new HttpException('User or friend has not been found', HttpStatus.NOT_FOUND);
+
+    if (user.friends.some(id => id.toString() === friendId.toString()))
+      throw new HttpException('Already following this user', HttpStatus.BAD_REQUEST);
+
+    await this.userModel.findByIdAndUpdate(userId, { $addToSet: { friends: friendId } });
+    await this.neoService.followUser(userId.toString(), friendId.toString());
+    
+    return new HttpException('Followed user', HttpStatus.OK)
+  }
+
+  async unfollow(userId: any, friendId: Id) {
+    Logger.log('unfollwo', this.TAG);
+
+    const user = await this.userModel.findById(userId).exec();
+    const friend = await this.userModel.findById(friendId).exec();
+
+    if (!user || !friend) 
+      throw new HttpException('User or friend has not been found', HttpStatus.NOT_FOUND);
+
+    if (!user.friends.some(id => id.toString() === friendId.toString()))
+      throw new HttpException('Not following this user', HttpStatus.BAD_REQUEST);
+
+    await this.userModel.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
+    await this.neoService.unfollowUser(userId.toString(), friendId.toString());
+
+    return new HttpException('Unfollowed user', HttpStatus.OK)
   }
 }

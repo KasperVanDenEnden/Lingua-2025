@@ -31,6 +31,16 @@ import { of } from 'rxjs';
 export class CourseController {
   private TAG = 'CourseController';
   constructor(private courseService: CourseService) {}
+  
+  // -- Aggregate --- //
+  @UseGuards(RolesGuard)
+  @Roles(Role.Student)
+  @Get('/dashboard')
+  async getStudentDashboard(
+    @CurrentUser() user: any,
+  ) {
+    return await this.courseService.getStudentDashboard(user.id);
+  }
 
   // ----- CRUD Operations ----- //
   @Get()
@@ -38,6 +48,7 @@ export class CourseController {
     Logger.log('getAll', this.TAG);
     return await this.courseService.getAll();
   }
+
 
   @Get(':id')
   async getOne(@Param('id', StringObjectIdPipe) id: Id): Promise<ICourse> {

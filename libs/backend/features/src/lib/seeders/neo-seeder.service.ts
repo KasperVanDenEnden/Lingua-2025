@@ -12,8 +12,9 @@ import {
     REL_ENROLLED_IN_CYPHER,
     REL_HAS_LESSON_CYPHER,
     REL_ATTENDS_CYPHER,
-    REL_FOLLOWS_CYPHER,
-    REL_REVIEWED_CYPHER
+    REL_FOLLOW_CYPHER,
+    REL_REVIEWED_CYPHER,
+    REL_TEACHING_CYPHER
 } from '@lingua/api'
 
 @Injectable()
@@ -58,7 +59,7 @@ export class NeoSeederService {
             // User -[:FOLLOWS]-> User    
             if (user.role === Role.Student)    
                 for (const friendId of user.friends) {
-                    await this.neo4jService.run(REL_FOLLOWS_CYPHER, {
+                    await this.neo4jService.run(REL_FOLLOW_CYPHER, {
                         userId: user._id.toString(),
                         friendId: friendId.toString()
                     })
@@ -120,6 +121,11 @@ export class NeoSeederService {
                 courseId: lesson.course.toString(),
                 lessonId: lesson._id.toString(),
             })
+
+            await this.neo4jService.run(REL_TEACHING_CYPHER, {
+                userId: lesson.teacher.toString(),
+                lessonId: lesson._id.toString()
+            });
             
             for (const studentId of lesson.students) {
                 await this.neo4jService.run(REL_ATTENDS_CYPHER, {

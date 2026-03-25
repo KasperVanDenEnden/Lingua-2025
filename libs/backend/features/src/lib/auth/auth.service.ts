@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ICreateUser, Id } from '@lingua/api';
+import { NeoOperationsService } from '../neo4j/neo-operations.service';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,8 @@ export class AuthService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private neoService: NeoOperationsService
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -62,6 +64,8 @@ export class AuthService {
       role: registerDto.role,
       password: hashedPassword,
     });
+
+    await this.neoService.mergeUser(user)
 
     const payload = { sub: user._id, email: user.email, role: user.role };
     

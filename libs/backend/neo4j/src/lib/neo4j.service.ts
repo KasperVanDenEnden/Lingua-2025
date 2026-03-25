@@ -42,10 +42,8 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
         const session = this.getSession();
         try {
             await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (u:User) REQUIRE u.id IS UNIQUE`);
-            await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (c:Class) REQUIRE c.id IS UNIQUE`);
+            await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (c:Course) REQUIRE c.id IS UNIQUE`);
             await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (l:Lesson) REQUIRE l.id IS UNIQUE`);
-            await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (r:Room) REQUIRE r.id IS UNIQUE`);
-            await session.run(`CREATE CONSTRAINT IF NOT EXISTS FOR (loc:Location) REQUIRE loc.id IS UNIQUE`);
             console.log('✅ Neo4j constraints created');
         } catch (err: any) {
             console.error('❌ Failed to create constraints:', err.message);
@@ -67,9 +65,7 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
          const results = await this.run(RCMND_CYPHER, { userId: id });
         console.log('results:' , results)
 
-
-
-     const mappedResults =  results.records.map(record => ({
+        const mappedResults =  results.records.map(record => ({
             course:          record.get('c').properties,
             rating:          record.get('rating'),
             recommendedBy:   record.get('friend').properties,
