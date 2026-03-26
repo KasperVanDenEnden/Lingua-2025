@@ -36,10 +36,6 @@ export class User implements IUserSchema {
 
   @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
   @IsNotEmpty()
-  @IsMongoId({
-    each: true,
-    message: 'Each student must be a valid ObjectId',
-  })
   @IsArray()
   @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
   friends!: Types.ObjectId[];

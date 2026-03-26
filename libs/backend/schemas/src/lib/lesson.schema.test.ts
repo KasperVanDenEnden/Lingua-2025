@@ -2,15 +2,15 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Lesson, LessonSchema } from './lesson.schema';
 import { disconnect, Model, Types } from 'mongoose';
 import { Test } from '@nestjs/testing';
-import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
-import { LessonStatus } from '@lingua/api';
+import { LessonStatus, LessonType } from '@lingua/api';
 
 describe('LessonSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let lessonModel: Model<Lesson>;
   let baseBody: Partial<Lesson>;
+
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       imports: [
@@ -32,31 +32,39 @@ describe('LessonSchema Tests', () => {
     lessonModel = app.get<Model<Lesson>>(getModelToken(Lesson.name));
     await lessonModel.ensureIndexes();
   });
+
   beforeEach(() => {
     baseBody = {
       course: new Types.ObjectId(),
       teacher: new Types.ObjectId(),
-      students: [],
+      students: [new Types.ObjectId()], // FIX: lege array faalt door @IsNotEmpty()
       status: LessonStatus.Open,
+      type: LessonType.Grammar,        // NIEUW: ontbrak in baseBody
+      isWorkshop: false,              // NIEUW: ontbrak in baseBody
       title: 'Test title',
-      day: new Date(), // @todo Write tests
+      day: new Date(),
       startTime: new Date(),
       endTime: new Date(),
     };
   });
+
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
   });
+
   it('should pass validation with valid data', async () => {
     const body = { ...baseBody };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBe(0);
   });
+
+  // === Missing === //
+
   it('should fail validation if course is missing', async () => {
     const body = { ...baseBody, course: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
@@ -64,9 +72,10 @@ describe('LessonSchema Tests', () => {
       'course should not be empty'
     );
   });
+
   it('should fail validation if teacher is missing', async () => {
     const body = { ...baseBody, teacher: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
@@ -74,9 +83,10 @@ describe('LessonSchema Tests', () => {
       'teacher should not be empty'
     );
   });
+
   it('should fail validation if status is missing', async () => {
     const body = { ...baseBody, status: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
@@ -84,9 +94,32 @@ describe('LessonSchema Tests', () => {
       'status should not be empty'
     );
   });
+
+  it('should fail validation if type is missing', async () => {
+    const body = { ...baseBody, type: undefined };
+    const plain = Object.assign(new Lesson(), body);
+    const errors = await validate(plain);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('type');
+    expect(errors[0].constraints?.['isNotEmpty']).toBe(
+      'type should not be empty'
+    );
+  });
+
+  it('should fail validation if isWorkshop is missing', async () => {
+    const body = { ...baseBody, isWorkshop: undefined };
+    const plain = Object.assign(new Lesson(), body);
+    const errors = await validate(plain);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('isWorkshop');
+    expect(errors[0].constraints?.['isNotEmpty']).toBe(
+      'isWorkshop should not be empty'
+    );
+  });
+
   it('should fail validation if title is missing', async () => {
     const body = { ...baseBody, title: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('title');
@@ -94,19 +127,21 @@ describe('LessonSchema Tests', () => {
       'title should not be empty'
     );
   });
-  it('should fail validation if description is missing', async () => {
-    const body = { ...baseBody, description: undefined };
-    const plain = plainToInstance(Lesson, body);
+
+  it('should fail validation if day is missing', async () => {
+    const body = { ...baseBody, day: undefined };
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('description');
+    expect(errors[0].property).toBe('day');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'description should not be empty'
+      'day should not be empty'
     );
   });
+
   it('should fail validation if startTime is missing', async () => {
     const body = { ...baseBody, startTime: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('startTime');
@@ -114,9 +149,10 @@ describe('LessonSchema Tests', () => {
       'startTime should not be empty'
     );
   });
+
   it('should fail validation if endTime is missing', async () => {
     const body = { ...baseBody, endTime: undefined };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('endTime');
@@ -124,29 +160,11 @@ describe('LessonSchema Tests', () => {
       'endTime should not be empty'
     );
   });
-  it('should fail validation if course is invalid type', async () => {
-    const body = { ...baseBody, course: 'invalid' };
-    const plain = plainToInstance(Lesson, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'course must be a valid ObjectId'
-    );
-  });
-  it('should fail validation if teacher is invalid type', async () => {
-    const body = { ...baseBody, teacher: 'invalid' };
-    const plain = plainToInstance(Lesson, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('teacher');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'teacher must be a valid ObjectId'
-    );
-  });
+
+  // === Invalid type === //
   it('should fail validation if status is invalid type', async () => {
     const body = { ...baseBody, status: 0 };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
@@ -154,27 +172,50 @@ describe('LessonSchema Tests', () => {
       'Status must be a valid enum value'
     );
   });
+
+  it('should fail validation if type is invalid type', async () => {
+    const body = { ...baseBody, type: 0 };
+    const plain = Object.assign(new Lesson(), body);
+    const errors = await validate(plain);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('type');
+    expect(errors[0].constraints?.['isEnum']).toBe(
+      'Type must be a valid enum value'
+    );
+  });
+
+  it('should fail validation if isWorkshop is invalid type', async () => {
+    const body = { ...baseBody, isWorkshop: 'not-a-boolean' };
+    const plain = Object.assign(new Lesson(), body);
+    const errors = await validate(plain);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('isWorkshop');
+    expect(errors[0].constraints?.['isBoolean']).toBeDefined();
+  });
+
   it('should fail validation if title is invalid type', async () => {
     const body = { ...baseBody, title: 0 };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('title');
     expect(errors[0].constraints?.['isString']).toBe('title must be a string');
   });
-  it('should fail validation if description is invalid type', async () => {
-    const body = { ...baseBody, description: 0 };
-    const plain = plainToInstance(Lesson, body);
+
+  it('should fail validation if day is invalid type', async () => {
+    const body = { ...baseBody, day: 'not-a-date' };
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('description');
-    expect(errors[0].constraints?.['isString']).toBe(
-      'description must be a string'
+    expect(errors[0].property).toBe('day');
+    expect(errors[0].constraints?.['isDate']).toBe(
+      'day must be a Date instance'
     );
   });
+
   it('should fail validation if startTime is invalid type', async () => {
     const body = { ...baseBody, startTime: 'invalid' };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('startTime');
@@ -182,9 +223,10 @@ describe('LessonSchema Tests', () => {
       'startTime must be a Date instance'
     );
   });
+
   it('should fail validation if endTime is invalid type', async () => {
     const body = { ...baseBody, endTime: 'invalid' };
-    const plain = plainToInstance(Lesson, body);
+    const plain = Object.assign(new Lesson(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('endTime');

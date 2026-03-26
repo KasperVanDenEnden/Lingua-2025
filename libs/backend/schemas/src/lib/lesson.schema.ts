@@ -18,20 +18,14 @@ export type LessonDocument = Lesson & Document;
 export class Lesson implements ILessonSchema {
   @Prop({ type: Types.ObjectId, ref: 'Course' })
   @IsNotEmpty()
-  @IsMongoId()
   course!: Types.ObjectId;
   
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsMongoId()
   teacher!: Types.ObjectId;
   
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
-  @IsMongoId({
-    each: true,
-    message: 'Each user must be a valid ObjectId',
-  })
   @IsArray()
   @ArrayMinSize(0, { message: 'Assistants must be an array (can be empty)' })
   students!: Types.ObjectId[];

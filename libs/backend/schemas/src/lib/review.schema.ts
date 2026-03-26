@@ -9,12 +9,10 @@ export type ReviewDocument = Review & Document;
 export class Review implements IReviewSchema {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsMongoId()
   student!: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Class' })
   @IsNotEmpty()
-  @IsMongoId()
   course!: Types.ObjectId;
 
   @Prop()

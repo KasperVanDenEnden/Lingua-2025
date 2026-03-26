@@ -18,7 +18,7 @@ import { Transform } from 'class-transformer';
 
 export class CreateCourseDto implements ICreateCourse {
   @IsNotEmpty()
-  @IsString()
+  @IsEnum(CourseStatus, { message: 'Status must be a valid enum value' })
   status!: CourseStatus;
   
   @IsNotEmpty()
