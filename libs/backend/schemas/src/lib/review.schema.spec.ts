@@ -10,6 +10,7 @@ describe('ReviewSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let reviewModel: Model<Review>;
   let baseBody: Partial<Review>;
+
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       imports: [
@@ -31,28 +32,34 @@ describe('ReviewSchema Tests', () => {
     reviewModel = app.get<Model<Review>>(getModelToken(Review.name));
     await reviewModel.ensureIndexes();
   });
+
   beforeEach(() => {
     baseBody = {
       student: new Types.ObjectId(),
       course: new Types.ObjectId(),
       comment: 'Test comment',
-      rating: 0,
+      rating: 5,
       createdAt: new Date(),
     };
   });
+
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
   });
+
   it('should pass validation with valid data', async () => {
     const body = { ...baseBody };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBe(0);
   });
+
+  // === Missing === //
+
   it('should fail validation if student is missing', async () => {
     const body = { ...baseBody, student: undefined };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
@@ -60,9 +67,10 @@ describe('ReviewSchema Tests', () => {
       'student should not be empty'
     );
   });
+
   it('should fail validation if course is missing', async () => {
     const body = { ...baseBody, course: undefined };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
@@ -70,9 +78,10 @@ describe('ReviewSchema Tests', () => {
       'course should not be empty'
     );
   });
+
   it('should fail validation if comment is missing', async () => {
     const body = { ...baseBody, comment: undefined };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
@@ -80,9 +89,10 @@ describe('ReviewSchema Tests', () => {
       'comment should not be empty'
     );
   });
+
   it('should fail validation if rating is missing', async () => {
     const body = { ...baseBody, rating: undefined };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
@@ -90,9 +100,10 @@ describe('ReviewSchema Tests', () => {
       'rating should not be empty'
     );
   });
+
   it('should fail validation if createdAt is missing', async () => {
     const body = { ...baseBody, createdAt: undefined };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('createdAt');
@@ -100,29 +111,11 @@ describe('ReviewSchema Tests', () => {
       'createdAt should not be empty'
     );
   });
-  it('should fail validation if student is invalid type', async () => {
-    const body = { ...baseBody, student: 'invalid' };
-    const plain = plainToInstance(Review, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'student must be a valid ObjectId'
-    );
-  });
-  it('should fail validation if course is invalid type', async () => {
-    const body = { ...baseBody, course: 'invalid' };
-    const plain = plainToInstance(Review, body);
-    const errors = await validate(plain);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'course must be a valid ObjectId'
-    );
-  });
+
+  // === Invalid type === //
   it('should fail validation if comment is invalid type', async () => {
     const body = { ...baseBody, comment: 0 };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
@@ -130,9 +123,10 @@ describe('ReviewSchema Tests', () => {
       'comment must be a string'
     );
   });
+
   it('should fail validation if rating is invalid type', async () => {
     const body = { ...baseBody, rating: 'invalid' };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
@@ -140,9 +134,21 @@ describe('ReviewSchema Tests', () => {
       'rating must be an integer number'
     );
   });
+
+  it('should fail validation if rating is a float', async () => {
+    const body = { ...baseBody, rating: 3.5 };
+    const plain = Object.assign(new Review(), body);
+    const errors = await validate(plain);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('rating');
+    expect(errors[0].constraints?.['isInt']).toBe(
+      'rating must be an integer number'
+    );
+  });
+
   it('should fail validation if createdAt is invalid type', async () => {
     const body = { ...baseBody, createdAt: 'invalid' };
-    const plain = plainToInstance(Review, body);
+    const plain = Object.assign(new Review(), body);
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('createdAt');

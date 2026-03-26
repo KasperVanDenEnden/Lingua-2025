@@ -10,8 +10,6 @@ import {
 
 @Injectable()
 export class NeoOperationsService {
-   
-  
     constructor( private readonly neo4j: Neo4jService) {}
 
     // === USER ===

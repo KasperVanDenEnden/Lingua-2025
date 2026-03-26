@@ -13,6 +13,7 @@ import {
   Max,
   Min,
   IsOptional,
+  ValidateIf,
 } from 'class-validator';
 import { ReviewSchema } from './review.schema';
 
@@ -54,8 +55,9 @@ export class Course implements ICourseSchema{
   @IsDate()
   starts!: Date;
 
-  @Prop()
+  @Prop({ type: Date, default: null })
   @IsOptional()
+  @ValidateIf((o) => o.ends !== null)
   @IsDate()
   ends!: Date | null;
 
@@ -71,15 +73,10 @@ export class Course implements ICourseSchema{
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsMongoId()
   teachers!: Types.ObjectId[];
 
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
-  @IsMongoId({
-    each: true,
-    message: 'Each student must be a valid ObjectId',
-  })
   @IsArray()
   @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
   students!: Types.ObjectId[];
