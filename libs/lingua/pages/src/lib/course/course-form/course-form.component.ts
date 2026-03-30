@@ -27,6 +27,8 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       language: new FormControl(null, Validators.required),
       teacher: new FormControl(null, Validators.required),
       status: new FormControl(null, Validators.required),
+      starts: new FormControl(null, Validators.required),
+      ends: new FormControl(null, Validators.required),
     });
   
     constructor(
@@ -78,6 +80,8 @@ export class CourseFormComponent implements OnInit, OnDestroy{
             maxStudents: courseData.maxStudents,
             language: courseData.language,
             teachers: courseData.teachers.map((teacher) => (teacher as IUser)._id),
+            starts: courseData.starts,
+            ends: courseData.ends,
           });
         },
         error: (err) => {
@@ -95,7 +99,9 @@ export class CourseFormComponent implements OnInit, OnDestroy{
         language: this.courseForm.value.language,
         level: Level.A1,
         price: this.courseForm.value.price,
-        maxStudents: this.courseForm.value.maxStudents
+        maxStudents: this.courseForm.value.maxStudents,
+        starts: this.courseForm.value.starts,
+        ends: this.courseForm.value.ends || null,
       };
   
       if (this.isEditMode) {

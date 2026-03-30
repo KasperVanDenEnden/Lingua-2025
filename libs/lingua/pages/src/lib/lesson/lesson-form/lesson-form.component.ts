@@ -38,6 +38,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     status: new FormControl(null, Validators.required),
     type: new FormControl(null, Validators.required),
     title: new FormControl(null, Validators.required),
+    isWorkshop: new FormControl(false, Validators.required),
     day: new FormControl(null, Validators.required),
     startTime: new FormControl(null, Validators.required),
     endTime: new FormControl(null, Validators.required),
@@ -103,6 +104,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
           status: lesson.status,
           type: lesson.type,
           title: lesson.title,
+          isWorkshop: lesson.isWorkshop,
           day: formatDate(lesson.day, 'yyyy-MM-dd', 'en'),
           startTime: formatDate(lesson.startTime, 'HH:mm', 'en'),
           endTime: formatDate(lesson.endTime, 'HH:mm', 'en'),
@@ -168,6 +170,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
       day: this.lessonForm.value.day,
       startTime: this.convertTimeStringToDate(this.lessonForm.value.startTime),
       endTime: this.convertTimeStringToDate(this.lessonForm.value.endTime),
+      isWorkshop: this.lessonForm.value.isWorkshop || false,
     };
 
     if (this.isEditMode) {

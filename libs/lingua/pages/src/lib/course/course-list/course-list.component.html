@@ -31,7 +31,7 @@
                   <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-center border rounded-lg" [ngClass]="course?.status === 'Active' ? 'border-green-500 text-green-500' : 'border-primary-base text-primary-base'">{{ course?.status }}</div></td>
                   <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ course?.title }}</div></td>
                   <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ course?.language }}</div></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ course?.createdAt | date: 'longDate' }}</div></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500"></div></td>
                   <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <a [routerLink]="['/courses', course._id]" class="text-primary-dark hover:text-primary-light mr-4" title="Show"><i class="fa-solid fa-eye fa-lg"></i></a>
                     <a [routerLink]="['/courses', course._id, 'edit']" class="text-primary-dark hover:text-primary-light mr-4" title="Edit"><i class="fa-solid fa-pencil fa-lg"></i></a>
