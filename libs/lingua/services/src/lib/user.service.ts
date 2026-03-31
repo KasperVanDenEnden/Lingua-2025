@@ -9,6 +9,7 @@ import { AuthService } from "./auth/auth.service";
     providedIn: 'root'
 })
 export class UserService {
+   
     private refreshSubject = new BehaviorSubject<boolean>(false);
     refresh$ = this.refreshSubject.asObservable();
 
@@ -41,5 +42,10 @@ export class UserService {
     delete(id: Id) {
         return this.http
             .delete<IUser>(`${environment.dataApiUrl}/user/${id}`, this.auth.getHttpOptions());
+    }
+
+    removeFriend(friendId: string) {
+      return this.http
+            .post<IUser>(`${environment.dataApiUrl}/user/${friendId}/unfollow`, {}, this.auth.getHttpOptions());
     }
 }

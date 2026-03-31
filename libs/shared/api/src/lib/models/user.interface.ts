@@ -25,3 +25,9 @@ export type ICreateUser = Pick<
 export type IUpdateUser = Partial<Omit<IUser, '_id'>>;
 export type IUpsertUser = IUser;
 export type IUserSchema = Omit<IUser, '_id'>;
+
+export interface ICurrentUser {
+  id: string;
+  email: string;
+  role: Role;
+}

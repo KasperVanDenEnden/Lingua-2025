@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PagesModule } from '../../pages.module';
 import { IUser } from '@lingua/api';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'lingua-user-detail',
@@ -13,20 +14,23 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class UserDetailComponent implements OnInit, OnDestroy {
   sub!: Subscription;
-  user$!: Observable<IUser>;
+  user$ = new BehaviorSubject<IUser | null>(null);
   userId?: string | null;
 
-   isModalOpen = false;
+  isModalOpen = false;
   recordToDelete?: IUser | null;
+  isFriendsOpen = false;
   
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
     private notify: NotificationService,
-    private router: Router
+    private router: Router,
   ) {}
   
   ngOnInit(): void {
+      console.log('UserDetailComponent geladen');
+
     this.loadUser();
 
     this.userService.refresh$.subscribe(() => {
@@ -38,14 +42,18 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
   
-  loadUser() {
+ loadUser() {
     this.sub = this.route.paramMap.subscribe((params) => {
       this.userId = params.get('id');
 
-      if(this.userId) {
-        this.user$ = this.userService.getUserById(this.userId);
+      if (this.userId) {
+        this.userService.getUserById(this.userId).subscribe(user => {
+          this.user$.next(user);
+          console.log('user van backend:', user);
+          console.log('friends:', user.friends);
+        });
       }
-    })
+    });
   }
   
   handleDelete(): void {
@@ -74,5 +82,19 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
+  }
+
+  removeFriend(friendId: string): void {
+    this.userService.removeFriend(friendId).subscribe({
+      next: () => {
+        this.userService.getUserById(this.userId!).subscribe(user => {
+          this.user$.next(user); // update bestaande subject
+        });
+        this.notify.success('Vriend succesvol verwijderd');
+      },
+      error: (err: any) => {
+        this.notify.error(err.message || 'Er is een fout opgetreden bij het verwijderen van de vriend.');
+      }
+    });
   }
 }

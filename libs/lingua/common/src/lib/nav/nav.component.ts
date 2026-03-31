@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { Subscription } from 'rxjs';
-import { IUser } from '@lingua/api';
+import { ICurrentUser, IUser } from '@lingua/api';
 import { AuthService } from '@lingua/services';
 import { Router, RouterLink } from '@angular/router';
 import { UiModule } from '@lingua/ui';
@@ -20,7 +20,7 @@ export class NavComponent implements OnInit, OnDestroy  {
   isLessonMenuOpen = false; 
 
   userSub!: Subscription;
-  currentUser: IUser | undefined;
+  currentUser: ICurrentUser | undefined;
   email: string | undefined;
   role: string | undefined;
 
@@ -48,7 +48,13 @@ export class NavComponent implements OnInit, OnDestroy  {
 
     this.userSub = this.auth.currentUser$.subscribe({
       next: (user) => {
-        this.currentUser = user;
+        if (user) {
+            this.currentUser = {
+              id: (user as any).id.toString(),
+              email: user.email,
+              role: user.role,
+            };
+          }
       },
     });
   }

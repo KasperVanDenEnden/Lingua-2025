@@ -5,6 +5,7 @@ import { environment } from "@lingua/util-env";
 import { ICreateUser, IUser } from "@lingua/api";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ChangePasswordDto } from "@lingua/dto";
+import { throwError } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -60,12 +61,12 @@ import { ChangePasswordDto } from "@lingua/dto";
           map(() => true),
           catchError((err: any) => {
             console.error('Login error:', err);
-            return of(false);
+            return throwError(() => err);
           })
         );
     }
   
-    register(userData: ICreateUser): Observable<IUser | undefined> {
+    register(userData: ICreateUser): Observable<IUser> {
       return this.http
         .post<IUser>(`${environment.dataApiUrl}/auth/register`, userData, {
           headers: this.headers,
@@ -75,7 +76,7 @@ import { ChangePasswordDto } from "@lingua/dto";
             return user;
           }),
           catchError((err: any) => {
-            return of(undefined);
+            return throwError(() => err);
           })
         );
     }
@@ -100,7 +101,7 @@ import { ChangePasswordDto } from "@lingua/dto";
     }
   
     // Validate JWT token
-    validateToken(): Observable<IUser | undefined> {
+    validateToken(): Observable<IUser> {
       const url = `${environment.dataApiUrl}/auth/profile`;
       
       return this.http.get<any>(url, this.getHttpOptions()).pipe(
@@ -110,7 +111,7 @@ import { ChangePasswordDto } from "@lingua/dto";
         catchError(() => {
           this.logout();
           this.currentUser$.next(undefined);
-          return of(undefined);
+          return throwError(() => new Error('Token validation failed'));
         })
       );
     }

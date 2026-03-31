@@ -28,7 +28,7 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       teacher: new FormControl(null, Validators.required),
       status: new FormControl(null, Validators.required),
       starts: new FormControl(null, Validators.required),
-      ends: new FormControl(null, Validators.required),
+      ends: new FormControl(null, Validators.required), 
     });
   
     constructor(

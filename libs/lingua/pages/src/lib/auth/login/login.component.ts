@@ -4,6 +4,7 @@ import { AuthService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PagesModule } from '../../pages.module';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'lingua-login',
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -37,16 +39,22 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.subs = this.authService
         .login(this.loginForm.value.email, this.loginForm.value.password)
         .subscribe({
-          next: (user) => {
-            if (user) {
+          next: (success) => {
+            if (success) {
               const returnUrl =
                 this.route.snapshot.queryParamMap.get('returnUrl') || '/';
               this.router.navigate([returnUrl]);
             }
           },
+          error: (err) => {
+            console.log('ERROR:', err);
+            const message = err?.error?.message || 'Inloggen mislukt. Probeer het opnieuw.';
+            this.toastr.error(message, 'Fout');
+          }
         });
     } else {
       this.loginForm.markAllAsTouched();
     }
+
   }
 }

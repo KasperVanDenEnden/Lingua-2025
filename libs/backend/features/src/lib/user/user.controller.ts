@@ -70,8 +70,6 @@ export class UserController {
   }
 
   // === Friends === //
-  @UseGuards(RolesGuard)
-  @Roles(Role.Student)
   @Post(':id/follow')
   async follow(
         @Param('id', StringObjectIdPipe) id: Id,
@@ -80,8 +78,6 @@ export class UserController {
     return await this.userService.follow(user.id, id)
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(Role.Student)
   @Post(':id/unfollow')
   async unfollow(
         @Param('id', StringObjectIdPipe) id: Id,

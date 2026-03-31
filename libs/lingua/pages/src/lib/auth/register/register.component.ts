@@ -5,6 +5,7 @@ import { AuthService } from '@lingua/services';
 import { Router } from '@angular/router';
 import { ICreateUser } from '@lingua/api';
 import { PagesModule } from '../../pages.module';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'lingua-register',
@@ -19,6 +20,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router:Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +61,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
           console.log('Succesvol geregistreerd en ingelogd!');
           this.router.navigate(['/dashboard']);
         },
-        error: (err) => console.error('Fout bij registratie/inloggen:', err)
+         error: (err) => {
+            console.log('ERROR:', err);
+            const message = err?.error?.message || 'Registreren mislukt. Probeer het opnieuw.';
+            this.toastr.error(message, 'Fout');
+          }
       });
       
     } else {

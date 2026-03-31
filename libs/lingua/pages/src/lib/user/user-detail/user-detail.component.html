@@ -1,4 +1,4 @@
-<lingua-header [pageTitle]="'Lessons'"></lingua-header>
+<lingua-header [pageTitle]="'User'"></lingua-header>
 
 <main class="mx-auto p-4 mx-4">
   <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
@@ -51,6 +51,55 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+  
+  <!-- Friends accordion -->
+  @if (user$ | async; as user) {
+    <div class="border-2 border-black rounded-lg overflow-hidden mt-3">
+      
+      <!-- Header / toggle knop -->
+      <button (click)="isFriendsOpen = !isFriendsOpen"
+        class="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-500">Friends</span>
+          <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+            {{ user.friends.length }}
+          </span>
+        </div>
+        <svg [class.rotate-180]="isFriendsOpen" class="w-4 h-4 text-gray-400 transition-transform"
+          viewBox="0 0 16 16" fill="none">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- Vrienden lijst -->
+      @if (isFriendsOpen) {
+        <div class="border-t divide-y">
+          @if (user.friends.length === 0) {
+            <div class="px-4 py-6 text-center bg-white">
+              <p class="text-sm text-gray-400">Geen vrienden gevonden, voeg ze toe!</p>
+            </div>
+          } @else {
+            @for (friend of user.friends; track $index) {
+              <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium flex-shrink-0">
+                  {{ $any(friend).firstname?.[0] }}{{ $any(friend).lastname?.[0] }}
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium">{{ $any(friend).firstname }} {{ $any(friend).lastname }}</p>
+                  <p class="text-xs text-gray-400">{{ $any(friend).email }}</p>
+                </div>
+                <button (click)="removeFriend($any(friend)._id.toString())"
+                  class="text-gray-300 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-50">
+                  <i class="fa-solid fa-user-minus text-sm"></i>
+                </button>
+              </div>
+            }
+          }
+        </div>
+      }
+
+    </div>
+  }
 </main>
 
 <lingua-modal-delete

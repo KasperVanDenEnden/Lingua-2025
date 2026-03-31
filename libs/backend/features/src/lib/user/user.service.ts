@@ -25,7 +25,7 @@ export class UserService {
   async getOne(id: Id): Promise<IUser> {
     Logger.log('getOne', this.TAG);
 
-    const user = await this.userModel.findById(id).exec();
+    const user = await this.userModel.findById(id).populate('friends').exec();
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
