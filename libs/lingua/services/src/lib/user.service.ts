@@ -9,6 +9,7 @@ import { AuthService } from "./auth/auth.service";
     providedIn: 'root'
 })
 export class UserService {
+    
    
     private refreshSubject = new BehaviorSubject<boolean>(false);
     refresh$ = this.refreshSubject.asObservable();
@@ -47,5 +48,10 @@ export class UserService {
     removeFriend(friendId: string) {
       return this.http
             .post<IUser>(`${environment.dataApiUrl}/user/${friendId}/unfollow`, {}, this.auth.getHttpOptions());
+    }
+
+    addFriend(friendId: string) {
+      return this.http
+            .post<IUser>(`${environment.dataApiUrl}/user/${friendId}/follow`, {}, this.auth.getHttpOptions());
     }
 }

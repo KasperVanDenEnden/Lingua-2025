@@ -14,6 +14,11 @@ import { Observable, Subscription } from 'rxjs';
 export class UserListComponent implements OnInit, OnDestroy {
   users?: IUser[];
   sub!: Subscription;
+  currentUserId?: string;
+  friendIds: string[] = [];
+
+  searchQuery = '';
+  selectedRole: string = '';
 
   userList$?: Observable<IUser[]>;
 
@@ -29,6 +34,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadCurrentUser();
 
     this.userService.refresh$.subscribe(() => {
       this.loadUsers();
@@ -44,6 +50,34 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.sub = this.userService.getUsers().subscribe((results) => {
       this.users = results;
     });
+  }
+
+  loadCurrentUser() {
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUserId = (user as any).id;
+        this.userService.getUserById(this.currentUserId!).subscribe(fullUser => {
+        this.friendIds = (fullUser.friends as any[]).map(f => f._id?.toString() || f.toString());
+        });
+      }
+    });
+  }
+
+  get filteredUsers(): IUser[] {
+    if (!this.users) return [];
+
+    return this.users.filter(user => {
+      const fullname = user.firstname + ' ' + user.lastname;
+      
+      const matchesSearch = this.searchQuery
+        ? fullname.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+          || user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+        : true;
+      
+      const matchesRole =  this.selectedRole ? user.role === this.selectedRole : true;
+      
+      return matchesSearch && matchesRole;
+    })
   }
 
   handleDelete(record: IUser): void {
@@ -68,8 +102,13 @@ export class UserListComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   isAdmin(): boolean {
     return 'admin' === this.authService.getUserRole();
+  }
+
+  isFriend(userId: string): boolean {
+    return this.friendIds.includes(userId);
   }
 
   closeModal(): void {
@@ -79,4 +118,16 @@ export class UserListComponent implements OnInit, OnDestroy {
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
   }
+
+  addFriend(userId: string): void {
+  this.userService.addFriend(userId).subscribe({
+    next: () => {
+      this.friendIds.push(userId.toString());
+      this.notify.success('Vriend toegevoegd!');
+    },
+    error: () => {
+      this.notify.error('Toevoegen mislukt.');
+    }
+  });
+}
 }

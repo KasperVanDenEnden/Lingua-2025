@@ -89,6 +89,11 @@ import { throwError } from "rxjs";
       const currentUser = this.currentUser$.getValue();
       return currentUser?.role;
     }
+
+    getUserId(): string | undefined {
+      const currentUser = this.currentUser$.getValue();
+      return currentUser?._id.toString();
+    } 
   
     getToken(): string {
       return localStorage.getItem(this.TOKEN_KEY) || '';

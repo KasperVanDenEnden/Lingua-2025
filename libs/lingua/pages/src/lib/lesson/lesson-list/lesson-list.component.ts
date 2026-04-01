@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
-import { LessonService, NotificationService } from '@lingua/services';
+import { AuthService, LessonService, NotificationService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { PagesModule } from '../../pages.module';
 
@@ -14,13 +14,17 @@ import { PagesModule } from '../../pages.module';
 export class LessonListComponent implements OnInit, OnDestroy {
   lessons!: ILesson[] | null;
   sub!: Subscription;
+  statuses = Object.values(LessonStatus);
 
   lessonList$?: Observable<ILesson[]>;
+
+  searchQuery = '';
+  selectedStatus: string = '';
 
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
-  constructor(private lessonService: LessonService, private route: ActivatedRoute, private notify: NotificationService) {}
+  constructor(private lessonService: LessonService, private route: ActivatedRoute, private notify: NotificationService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadLessons();
@@ -39,6 +43,17 @@ export class LessonListComponent implements OnInit, OnDestroy {
     this.sub = this.lessonService.getLessons().subscribe((results) => {
       this.lessons = results;
     });
+  }
+
+  get filteredLessons(): ILesson[] {
+    if (!this.lessons) return [];
+    return this.lessons.filter(lesson => {
+      const matchesQuery = lesson.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      
+      const matchesStatus =  this.selectedStatus ? lesson.status === this.selectedStatus : true;
+
+      return matchesQuery && matchesStatus;
+    });  
   }
 
   getClass(lesson:ILesson) {
@@ -103,5 +118,10 @@ export class LessonListComponent implements OnInit, OnDestroy {
 
   isChildRouteActive(): boolean {
     return this.route.children.length > 0; 
+  }
+
+  canCreate(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'admin' || role === 'teacher';
   }
 }
