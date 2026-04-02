@@ -58,6 +58,9 @@
                 @if (lessonForm.get('title')?.errors?.['required']) {
                   <span>Title is required</span>
                 }
+                @if( lessonForm.get('title')?.errors?.['minlength']) {
+                  <span>Title must be at least 3 characters</span>
+                }
               </div>
             }
           </div>
@@ -127,6 +130,9 @@
                     @if (lessonForm.get('startTime')?.errors?.['required']) {
                       <span>Select a start time</span>
                     }
+                    @if (lessonForm.get('startTime')?.errors?.['pattern']) {
+                      <span>Start time must be in the format HH:mm</span>
+                    }
                   </div>
                 }
               </div>
@@ -140,6 +146,9 @@
                       class="text-red-500 text-sm mt-1">
                       @if (lessonForm.get('endTime')?.errors?.['required']) {
                         <span>Select an end time</span>
+                      }
+                      @if (lessonForm.get('endTime')?.errors?.['pattern']) {
+                        <span>End time must be in the format HH:mm</span>
                       }
                     </div>
                   }

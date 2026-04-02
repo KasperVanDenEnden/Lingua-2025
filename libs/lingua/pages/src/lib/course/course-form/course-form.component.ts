@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserService, CourseService } from '@lingua/services';
@@ -22,13 +22,13 @@ export class CourseFormComponent implements OnInit, OnDestroy{
     courseForm: FormGroup = new FormGroup({
       title: new FormControl(null, Validators.required),
       description: new FormControl(null, Validators.required),
-      price: new FormControl(null, Validators.required),
-      maxStudents: new FormControl(null, Validators.required),
+      price: new FormControl(null, [Validators.required, Validators.min(0)]),
+      maxStudents: new FormControl(null, [Validators.required, Validators.min(1), Validators.pattern('^[0-9]+$')]),
       language: new FormControl(null, Validators.required),
       teacher: new FormControl(null, Validators.required),
       status: new FormControl(null, Validators.required),
-      starts: new FormControl(null, Validators.required),
-      ends: new FormControl(null, Validators.required), 
+      starts: new FormControl(null, [Validators.required, this.notInPastValidator()]),
+      ends: new FormControl(null, this.dateRangeValidator()), 
     });
   
     constructor(
@@ -121,5 +121,40 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       const currentUrl = this.router.url.split('/');
       currentUrl.pop();
       this.router.navigate([currentUrl.join('/')]);
+    }
+
+    notInPastValidator(): ValidatorFn {
+      return (control: AbstractControl) => {
+        if (!control.value) return null;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const selected = new Date(control.value);
+
+        if (selected < today) {
+          return { pastDate: true };
+        }
+
+        return null;
+      };
+    }
+
+    dateRangeValidator(): ValidatorFn {
+      return (group: AbstractControl) => {
+        const start = group.get('starts')?.value;
+        const end = group.get('ends')?.value;
+
+        if (!start || !end) return null;
+
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        if (endDate < startDate) {
+          return { endBeforeStart: true };
+        }
+
+        return null;
+      };
     }
 }

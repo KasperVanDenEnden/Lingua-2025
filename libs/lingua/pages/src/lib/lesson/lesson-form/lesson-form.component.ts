@@ -37,11 +37,11 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     course: new FormControl(null, Validators.required),
     status: new FormControl(null, Validators.required),
     type: new FormControl(null, Validators.required),
-    title: new FormControl(null, Validators.required),
-    isWorkshop: new FormControl(false, Validators.required),
+    title: new FormControl(null, [Validators.required, Validators.minLength(3)]),
+    isWorkshop: new FormControl(false),
     day: new FormControl(null, Validators.required),
-    startTime: new FormControl(null, Validators.required),
-    endTime: new FormControl(null, Validators.required),
+    startTime: new FormControl(null, [Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')]),
+    endTime: new FormControl(null, [Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')]),
   });
 
   constructor(

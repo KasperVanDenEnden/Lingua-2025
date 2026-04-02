@@ -55,8 +55,32 @@
             </div>
           }
         </div>
-        
+
         <div class="grid grid-cols-2 gap-md">
+         <div class="form-group">
+            <label for="starts" class="mb-1.5 ml-2.5 block text-sm font-semibold">Starts</label>
+            <input id="starts" type="date" formControlName="starts"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
+              @if (courseForm.get('starts')?.touched && courseForm.get('starts')?.invalid) {
+                <div
+                  class="text-red-500 text-sm mt-1">
+                  @if (courseForm.get('starts')?.errors?.['required']) {
+                    <span>Starts is required</span>
+                  }
+                </div>
+              }
+          </div>
+
+          
+         <div class="form-group">
+            <label for="ends" class="mb-1.5 ml-2.5 block text-sm font-semibold">Ends</label>
+            <input id="ends" type="date" formControlName="ends"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+              @if (courseForm.get('ends')?.touched && courseForm.get('ends')?.invalid) {
+                <div class="text-red-500 text-sm mt-1"></div>
+              }
+          </div>
+        
           <div class="form-group">
             <label for="price" class="mb-1.5 ml-2.5 block text-sm font-semibold">Price</label>
             <input id="price" type="number" formControlName="price"
@@ -126,6 +150,8 @@
               </div>
             }
           </div>
+
+          
 
         </div>
         <button type="submit"
