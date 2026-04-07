@@ -27,32 +27,12 @@
             @if (currentUser) {
             <a routerLink="/dashboard"
                 class="flex items-center gap-x-1 text-sm font-semibold text-gray-900">Dashboard</a>
-
-            <lingua-dropdown>
-                <span dropdown-button>Courses</span>
-
-                <div dropdown-items>
-                    <a routerLink="/courses"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">All
-                        courses</a>
-                    <a routerLink="#"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">My
-                        courses</a>
-                </div>
-            </lingua-dropdown>
-
-            <lingua-dropdown>
-                <span dropdown-button>Lessons</span>
-
-                <div dropdown-items>
-                    <a routerLink="/lessons"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">All
-                        lessons</a>
-                    <a routerLink="#"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">My
-                        lessons</a>
-                </div>
-            </lingua-dropdown>
+            
+            <a routerLink="/courses"
+                class="flex items-center gap-x-1 text-sm font-semibold text-gray-900">Courses</a>
+            
+            <a routerLink="/lessons"
+                class="flex items-center gap-x-1 text-sm font-semibold text-gray-900">Lessons</a>
 
             <a routerLink="/pages"
                 class="flex items-center gap-x-1 text-sm font-semibold text-gray-900 whitespace-nowrap">About</a>

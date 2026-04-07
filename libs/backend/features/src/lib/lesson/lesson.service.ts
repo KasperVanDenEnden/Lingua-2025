@@ -27,9 +27,9 @@ export class LessonService {
     Logger.log('getOne', this.TAG);
 
     const lesson = await this.lessonModel.findById(id)
-      .populate('teacher')
+      .populate('teacher', '-password')
       .populate('course')
-      .populate('students')
+      .populate('students', '-password')
       .exec();
 
     if (!lesson)

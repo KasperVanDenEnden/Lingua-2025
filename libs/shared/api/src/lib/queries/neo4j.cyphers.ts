@@ -12,6 +12,7 @@ export const REL_UNENROLL_IN_CYPHER = `MATCH (u:User {id: $userId })-[r:ENROLLED
 export const REL_REVIEWED_CYPHER = `MATCH (u:User { id: $userId }) MATCH (c:Course { id: $courseId }) MERGE(u)-[r:REVIEWED]->(c) SET r.id = $id, r.rating = $rating`;
 export const DETACH_REVIEW_CYPHER = `MATCH (u:User { id: $userId })-[r:REVIEWED]->(c:Course { id: $courseId }) DELETE r`
 export const DETACH_COURSE_CYPHER = `MATCH (c:Course { id: $id }) DETACH DELETE c`
+export const REL_UNTEACHES_CYPHER = `MATCH (u:User {id: $userId })-[r:TEACHES]->(c:Course {id: $courseId}) DELETE r`
 
 // Lesson
 export const MERGE_LESSON_CYPHER = `MERGE (l:Lesson {id: $id }) SET l.title = $title`;

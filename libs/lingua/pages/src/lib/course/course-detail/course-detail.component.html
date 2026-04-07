@@ -1,91 +1,274 @@
 <lingua-header [pageTitle]="'Courses'"></lingua-header>
 
-<main class="mx-auto p-4 mx-4">
-  <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
-    <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Details</h2>
-        <div>
-          <a [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
-            class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition">
-            <i class="fa-solid fa-pencil"></i>
-            Edit
-          </a>
-          <button (click)="handleDelete()"
-            class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-            <i class="fa-solid fa-trash"></i>
-            Delete
-          </button>
-          <a [routerLink]="['/courses']"
-            class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-            <i class="fa-solid fa-xmark"></i>
-            Previous
-          </a>
-        </div>
-      </div>
-      <div class="space-y-4">
-        <span class="text-sm font-medium text-center border rounded-lg p-1"
-          [ngClass]="(course$ | async)?.status === 'Active' ? 'text-green-500 border-green-500' : 'text-red-500 border-red-500'">{{
-        (course$ | async)?.status || 'No street available' }} </span>
-        <div class="flex gap-md">
-          <span class="text-sm font-medium text-gray-600">Title: </span>
-          <span class="text-sm text-gray-800">{{ (course$ | async)?.title || 'No slug available' }} </span>
-        </div>
-        <div class="flex gap-md">
-          <span class="text-sm font-medium text-gray-600">Description: </span>
-          <span class="text-sm text-gray-800">{{ (course$ | async)?.description || 'No street available' }}
-          </span>
-        </div>
-        <div class="flex gap-md">
-          <span class="text-sm font-medium text-gray-600">Language: </span>
-          <span class="text-sm text-gray-800">{{ (course$ | async)?.language || 'No language available' }}
-          </span>
-        </div>
-        <!-- <div class="flex gap-md">
-          <span class="text-sm font-medium text-gray-600">Teacher: </span>
-          <span class="text-sm text-gray-800">{{ teacher?.firstname || 'No street available' }} {{
-          teacher?.lastname || 'No street available' }} </span>
-        </div> -->
-      </div>
+<main class="max-w-screen-xl mx-auto p-6">
+
+  <!-- Top bar -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    
+    <div class="flex items-center gap-3 flex-wrap">
+      <h1 class="text-2xl font-semibold text-gray-800">
+        {{ (course$ | async)?.title || '—' }}
+      </h1>
+
+      <span class="px-3 py-0.5 rounded-full text-xs font-semibold"
+        [ngClass]="(course$ | async)?.status === 'Active'
+          ? 'bg-green-100 text-green-700'
+          : 'bg-red-100 text-red-700'">
+        {{ (course$ | async)?.status || 'Unknown' }}
+      </span>
     </div>
 
-    <!-- Child component (formulier verschijnt hier als hij actief is) -->
+    <div class="flex gap-2 flex-wrap">
+      
+   <!-- Edit / Delete buttons alleen voor teacher/admin -->
+    <a *ngIf="canEdit()" [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
+      class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
+      <i class="fa-solid fa-pencil text-xs"></i> Edit
+    </a>
+
+    <button *ngIf="canEdit()" (click)="handleDelete()"
+            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 transition">
+      <i class="fa-solid fa-trash text-xs"></i> Delete
+    </button>
+
+    <ng-container *ngIf="currentUser">
+      <button *ngIf="isStudentEnrolled(); else enrollButton"
+              (click)="unenroll()"
+              class="px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 transition">
+        Unenroll
+      </button>
+
+      <ng-template #enrollButton>
+        <button (click)="enroll()"
+                class="px-4 py-2 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 transition">
+          Enroll
+        </button>
+      </ng-template>
+    </ng-container>
+
+      <a [routerLink]="['/courses']"
+        class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
+        <i class="fa-solid fa-chevron-left text-xs"></i> Back
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid gap-4 mb-4"
+       [ngClass]="isChildRouteActive() ? 'lg:grid-cols-2 grid-cols-1' : 'grid-cols-1'">
+
+    <!-- Left column -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Course info -->
+      <div class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Course info</p>
+
+        <div class="mb-3">
+          <span class="text-xs font-medium text-gray-500">Description</span>
+          <p class="text-sm text-gray-800 leading-relaxed mt-0.5">
+            {{ (course$ | async)?.description || '—' }}
+          </p>
+        </div>
+
+        <hr class="border-gray-200 my-4">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <span class="text-xs font-medium text-gray-500">Language</span>
+            <div class="mt-1">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                {{ (course$ | async)?.language || '—' }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Level</span>
+            <div class="mt-1">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                {{ (course$ | async)?.level || '—' }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Starts</span>
+            <p class="text-sm font-medium text-gray-800 mt-0.5">
+              {{ (course$ | async)?.starts | date:'d MMM yyyy' }}
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Ends</span>
+            <p class="text-sm text-gray-400 mt-0.5">
+              {{ (course$ | async)?.ends ? ((course$ | async)?.ends | date:'d MMM yyyy') : 'No end date' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Stats</p>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-md p-3">
+            <p class="text-xs text-gray-500 mb-1">Price</p>
+            <p class="text-xl font-semibold text-gray-800">€{{ (course$ | async)?.price }}</p>
+          </div>
+
+          <div class="bg-gray-50 rounded-md p-3">
+            <p class="text-xs text-gray-500 mb-1">Students enrolled</p>
+            <p class="text-xl font-semibold text-gray-800">
+              {{ (students$ | async)?.length || 0 }}
+            </p>
+          </div>
+
+          <div class="bg-gray-50 rounded-md p-3">
+            <p class="text-xs text-gray-500 mb-1">Teachers</p>
+            <p class="text-xl font-semibold text-gray-800">
+              {{ teachers.length || 0 }}
+            </p>
+          </div>
+
+          <div class="bg-gray-50 rounded-md p-3">
+            <p class="text-xs text-gray-500 mb-1">Reviews</p>
+            <p class="text-xl font-semibold text-gray-800">
+              ★ {{ (course$ | async)?.averageRating | number:'1.1-1' }}
+            </p>
+            <p class="text-xs text-gray-400 mt-0.5">
+              {{ (course$ | async)?.reviews?.length || 0 }} reviews
+            </p>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+
+    <!-- Router outlet -->
     <div>
       <router-outlet></router-outlet>
     </div>
+
   </div>
 
-  <div class="grid mt-4">
+      <!-- Bottom grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6 max-w-md">
-      <h2 class="text-xl font-medium">Assign Assistant</h2>
-      @if(availableTeachers && availableTeachers.length > 0) {
-        <div>
-          <!-- Dropdown voor beschikbare docenten -->
-          <select [(ngModel)]="selectedTeacher"
-            class="w-full p-2 mt-2 border border-gray-300 rounded-md max-w-xs">
-            @for (assistant of availableTeachers; track assistant) {
-              <option [ngValue]="assistant">
-                {{ assistant?.firstname || 'No name available' }} {{ assistant?.lastname || 'No lastname
-                available'
-                }}
-              </option>
-            }
-          </select>
+    <!-- Teachers -->
+    <div class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5">
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Teachers</p>
+
+      <div *ngIf="teachers.length; else noTeachers" class="flex flex-col gap-3 mb-4">
+        <div *ngFor="let teacher of teachers; let i = index" class="flex items-center gap-3">
+          <div>
+            <p class="text-sm font-medium text-gray-800">
+              {{ teacher.firstname }} {{ teacher.lastname }}
+            </p>
+          </div>
+          <button (click)="removeTeacher(teacher)"
+                  class="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-0.5 rounded-md">
+            ×
+          </button>
         </div>
+      </div>
 
-        <!-- Button om de geselecteerde docent toe te wijzen -->
-        <button (click)="selectedTeacher && assignAssistant(selectedTeacher)" [disabled]="!selectedTeacher"
-          class="mt-4 bg-primary-dark text-white px-4 py-2 rounded-md">
+      <ng-template #noTeachers>
+        <p class="text-sm text-gray-400 mb-4">No teachers assigned yet.</p>
+      </ng-template>
+
+      <hr class="border-gray-200 my-4">
+
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+        Assign teacher
+      </p>
+
+      <div *ngIf="availableTeachers.length; else noAvailable" class="flex gap-2 items-center">
+        <select [(ngModel)]="selectedTeacher"
+                class="flex-1 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800">
+          <option *ngFor="let t of availableTeachers" [ngValue]="t">
+            {{ t.firstname || 'No name' }} {{ t.lastname || '' }}
+          </option>
+        </select>
+
+        <button (click)="assignTeacher(selectedTeacher!)"
+                [disabled]="!selectedTeacher"
+                class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
           Assign
         </button>
-      } @else {
-        <span>No more teachers to assign!</span>
-      }
+      </div>
+
+      <ng-template #noAvailable>
+        <p class="text-sm text-gray-400">No more teachers to assign!</p>
+      </ng-template>
     </div>
+
+    <!-- Reviews -->
+    <div class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5">
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
+        Latest reviews
+      </p>
+
+      <div *ngIf="(course$ | async)?.reviews?.length; else noReviews" class="flex flex-col gap-3">
+        <div *ngFor="let review of (course$ | async)?.reviews | slice:0:3" class="bg-gray-50 rounded-md px-3 py-2.5">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-semibold text-gray-800">
+              <ng-container *ngIf="isUser(review.student); else anonymous">
+                {{ review.student.firstname }}
+              </ng-container>
+              <ng-template #anonymous>Anonymous</ng-template>
+            </span>
+            <span class="text-amber-500 text-xs">{{ getStars(review.rating) }}</span>
+          </div>
+          <p class="text-xs text-gray-500 leading-relaxed">
+            {{ review.comment || '—' }}
+          </p>
+        </div>
+      </div>
+
+      <ng-template #noReviews>
+        <p class="text-sm text-gray-400">No reviews yet.</p>
+      </ng-template>
+    </div>
+
   </div>
+
+
+  <!-- Post a review -->
+  <div class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5 mt-4">
+    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
+      Post a review
+    </p>
+
+    <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+      <div class="mb-3">
+        <label class="text-xs font-medium text-gray-500 mb-1 block">Rating</label>
+        <select formControlName="rating" class="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm">
+          <option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="text-xs font-medium text-gray-500 mb-1 block">Comment</label>
+        <textarea formControlName="comment" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"></textarea>
+      </div>
+
+      <button type="submit"
+              [disabled]="reviewForm.invalid"
+              class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
+        Submit Review
+      </button>
+    </form>
+  </div>
+
 </main>
 
-<lingua-modal-delete [isOpen]="isModalOpen"
+<lingua-modal-delete 
+  [isOpen]="isModalOpen"
   [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.title + '?' : ''"
-title="Delete Record" (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
+  title="Delete Record" 
+  (close)="closeModal()" 
+  (confirm)="confirmDelete()">
+</lingua-modal-delete>

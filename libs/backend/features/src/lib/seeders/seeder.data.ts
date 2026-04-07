@@ -1,4 +1,4 @@
-import { CourseStatus, Language, LessonStatus } from "@lingua/api";
+import { CourseStatus, Language, LessonStatus, Level } from "@lingua/api";
 import { Types } from "mongoose";
 
 export const USER_SEED_DATA = [
@@ -17,12 +17,12 @@ export const USER_SEED_DATA = [
 ];
 
 export const COURSE_SEED_DATA = [
-    { title: 'English 101', description: 'Basic English course', language: Language.English, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 30)) },
-    { title: 'Korean for Beginners', description: 'Learn basic Korean', language: Language.Korean, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 14)) },
-    { title: 'Basic Dutch', description: 'Basic Dutch course', language: Language.Dutch, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 7)) },
-    { title: 'Advanced Dutch', description: 'Master Dutch language', language: Language.Dutch, status: CourseStatus.Active, starts: new Date() },
-    { title: 'German Conversation', description: 'Practice German speaking skills', language: Language.German, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() + 1)) },
-    { title: 'French Grammar', description: 'In-depth French grammar course', language: Language.French, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() + 7)) },
+    { title: 'English 101', description: 'Basic English course', language: Language.English, level: Level.A1, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 30)) },
+    { title: 'Korean for Beginners', description: 'Learn basic Korean', language: Language.Korean, level: Level.B1, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 14)) },
+    { title: 'Basic Dutch', description: 'Basic Dutch course', language: Language.Dutch, level: Level.C2, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() - 7)) },
+    { title: 'Advanced Dutch', description: 'Master Dutch language', language: Language.Dutch, level: Level.B2, status: CourseStatus.Active, starts: new Date() },
+    { title: 'German Conversation', description: 'Practice German speaking skills', level: Level.A2, language: Language.German, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() + 1)) },
+    { title: 'French Grammar', description: 'In-depth French grammar course', level: Level.C1, language: Language.French, status: CourseStatus.Active, starts: new Date(new Date().setDate(new Date().getDate() + 7)) },
 ];
 
 export const LESSON_SEED_DATA = [

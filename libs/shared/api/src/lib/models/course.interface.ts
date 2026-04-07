@@ -40,6 +40,8 @@ export interface ICourse {
   language: Language;
   level: Level;
 
+  averageRating?: number; // virtual field
+
   teachers: Id[] | IUser[]; // Array of teacher Ids
   students: Id[] | IUser[]; // Array of student Ids
   reviews: IUpsertReview[]; // Nested reviews
@@ -47,7 +49,7 @@ export interface ICourse {
 
 export type ICreateCourse = Pick<
   ICourse,
-  'status' | 'title' | 'description' | 'language' | 'teachers' | 'level' | 'price' | 'maxStudents' | 'starts' | 'ends'
+  'status' | 'title' | 'description' | 'language' | 'level' | 'price' | 'maxStudents' | 'starts' | 'ends'
 >;
 export type IUpdateCourse = Partial<Omit<ICourse, '_id'>>;
 export type IUpsertCourse = ICourse;

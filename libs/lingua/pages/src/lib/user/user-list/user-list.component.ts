@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PagesModule } from '../../pages.module';
 import { AuthService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
-import { IUser, Role } from '@lingua/api';
+import { IUser } from '@lingua/api';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -15,6 +15,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   users?: IUser[];
   sub!: Subscription;
   currentUserId?: string;
+  currentUser?: IUser | null = null;
   friendIds: string[] = [];
 
   searchQuery = '';
@@ -33,6 +34,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+
     this.loadUsers();
     this.loadCurrentUser();
 
@@ -130,4 +135,12 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
   });
 }
+
+  canEdit(): boolean {
+    return this.currentUser?._id === this.currentUserId;
+  }
+
+  canDelete(): boolean {
+    return this.currentUser?._id === this.currentUserId || this.isAdmin();
+  }
 }

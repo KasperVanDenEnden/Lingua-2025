@@ -9,8 +9,6 @@ import { AuthService } from "./auth/auth.service";
     providedIn: 'root'
 })
 export class UserService {
-    
-   
     private refreshSubject = new BehaviorSubject<boolean>(false);
     refresh$ = this.refreshSubject.asObservable();
 

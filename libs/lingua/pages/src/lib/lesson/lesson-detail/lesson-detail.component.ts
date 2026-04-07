@@ -12,56 +12,89 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './lesson-detail.component.css',
 })
 export class LessonDetailComponent implements OnInit, OnDestroy {
-  sub!: Subscription;
+
   lesson$!: Observable<ILesson>;
   lessonId?: string | null;
+
   course?: ICourse | null;
-  // teacher: IUser[] | null;
+  teacher?: IUser | null;
+  students: IUser[] = [];
 
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
+  private routeSub!: Subscription;
+  private lessonSub!: Subscription;
+  private refreshSub!: Subscription;
+
   constructor(
     private lessonService: LessonService,
-    private route:ActivatedRoute,
-    private router:Router,
-    private notify:NotificationService
+    private route: ActivatedRoute,
+    private router: Router,
+    private notify: NotificationService,
   ) {}
 
   ngOnInit(): void {
     this.loadLesson();
-    
-    this.lessonService.refresh$.subscribe(() => {
+
+    this.refreshSub = this.lessonService.refresh$.subscribe(() => {
       this.loadLesson();
-    })
+    });
   }
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+    this.routeSub?.unsubscribe();
+    this.lessonSub?.unsubscribe();
+    this.refreshSub?.unsubscribe();
   }
 
-  loadLesson() {
-    this.sub = this.route.paramMap.subscribe((params) => {
-      this.lessonId = params.get('id');
+  loadLesson(): void {
+    // cleanup oude subscriptions
+    this.routeSub?.unsubscribe();
+    this.lessonSub?.unsubscribe();
 
-      if (this.lessonId) {
-        this.lesson$ = this.lessonService.getLessonById(this.lessonId);
-        this.lesson$.subscribe(lesson => {
-          this.course = lesson.course as ICourse;
-          // this.teacher = lesson.teacher as IUser;
-          this.recordToDelete = lesson;
-        })
-      }
+    this.routeSub = this.route.paramMap.subscribe(params => {
+      this.lessonId = params.get('id');
+      if (!this.lessonId) return;
+
+      this.lesson$ = this.lessonService.getLessonById(this.lessonId);
+
+      this.lessonSub = this.lesson$.subscribe(lesson => {
+        this.course = lesson.course as ICourse;
+        this.teacher = lesson.teacher as IUser;
+        this.recordToDelete = lesson;
+
+        // veilige cast
+        this.students = Array.isArray(lesson.students)
+          ? lesson.students as IUser[]
+          : [];
+      });
     });
   }
 
   getTeacher(): string {
-    return `dummy teacher`
-    // return `${this.teachers?.[0]?.firstname} ${this.teachers?.[0]?.lastname} ( ${this.teachers?.[0]?.email} )`
+    if (!this.teacher) return '—';
+    return `${this.teacher.firstname} ${this.teacher.lastname} (${this.teacher.email})`;
   }
 
   getClass(): string {
-    return `${this.course?.title}: ${this.course?.description}`
+    if (!this.course) return '—';
+    return `${this.course.title}: ${this.course.description}`;
+  }
+
+  removeStudent(studentId: string): void {
+    if (!this.lessonId) return;
+
+    // this.lessonService.removeStudentFromLesson(this.lessonId, studentId)
+    //   .subscribe({
+    //     next: () => {
+    //       this.notify.success('Student verwijderd');
+    //       this.loadLesson(); // refresh
+    //     },
+    //     error: (err: any) => {
+    //       this.notify.error(err.message || 'Fout bij verwijderen van student');
+    //     }
+    //   });
   }
 
   handleDelete(): void {
@@ -69,22 +102,20 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete(): void {
-    if (this.recordToDelete) {
-      this.lessonService.delete(this.recordToDelete._id).subscribe({
-        next: () => {
-          this.notify.success('Gelukt!')
-          this.router.navigate(['/lessons']);
-        },
-        error: (error) => {
-          console.error('Error deleting lesson:', error);
-          // Show error message (optional)
-        },
-      });
-    }
+    if (!this.recordToDelete) return;
+
+    this.lessonService.delete(this.recordToDelete._id).subscribe({
+      next: () => {
+        this.notify.success('Les succesvol verwijderd');
+        this.router.navigate(['/lessons']);
+      },
+      error: (error) => {
+        console.error('Error deleting lesson:', error);
+      },
+    });
   }
-  
+
   closeModal(): void {
-    console.log('close modal');
     this.isModalOpen = false;
   }
 

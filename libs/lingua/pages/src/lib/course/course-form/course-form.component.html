@@ -1,5 +1,5 @@
 <main class="flex justify-center">
-  <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
+  <div class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg">
     <div class="flex justify-between items-center">
       <h1 class="font-semibold text-xl mb-3">Course Form</h1>
       <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
@@ -131,27 +131,6 @@
               </div>
             }
           </div>
-
-          <div class="form-group">
-            <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select teacher</label>
-            <select id="teacher" formControlName="teacher"
-              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-              @for (teacher of teachers; track teacher) {
-                <option [value]="teacher._id">{{ teacher.firstname }} {{
-                teacher.lastname }}</option>
-              }
-            </select>
-            @if (courseForm.get('teacher')?.touched && courseForm.get('teacher')?.invalid) {
-              <div
-                class="text-red-500 text-sm mt-1">
-                @if (courseForm.get('teacher')?.errors?.['required']) {
-                  <span>Select a teacher</span>
-                }
-              </div>
-            }
-          </div>
-
-          
 
         </div>
         <button type="submit"

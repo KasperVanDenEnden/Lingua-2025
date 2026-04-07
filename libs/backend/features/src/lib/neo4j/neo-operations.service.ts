@@ -1,6 +1,6 @@
 import { Neo4jService } from '@lingua/neo4j';
 import { Injectable } from '@nestjs/common';
-import { Id, IUser, ICourse, ILesson } from '@lingua/api';
+import { Id, IUser, ICourse, ILesson, REL_UNTEACHES_CYPHER } from '@lingua/api';
 import {
   MERGE_USER_CYPHER, REL_FOLLOW_CYPHER,
   MERGE_COURSE_CYPHER, REL_TEACHES_CYPHER, REL_ENROLLED_IN_CYPHER, REL_REVIEWED_CYPHER,
@@ -54,12 +54,16 @@ export class NeoOperationsService {
         await this.neo4j.run(REL_TEACHES_CYPHER, { userId, courseId });
     }
 
+    async unteachCourse(userId: Id, courseId: Id): Promise<void> {
+        await this.neo4j.run(REL_UNTEACHES_CYPHER, { userId, courseId });
+    }
+
     async enrollInCourse(userId: Id, courseId: Id): Promise<void> {
         await this.neo4j.run(REL_ENROLLED_IN_CYPHER, { userId, courseId });
     }
 
-    async unenrollInCourse(id: Id, userId: Id): Promise<void> {
-        await this.neo4j.run(REL_UNENROLL_IN_CYPHER, { userId, id})
+    async unenrollInCourse(userId: Id, courseId: Id): Promise<void> {
+        await this.neo4j.run(REL_UNENROLL_IN_CYPHER, { userId, courseId })
     }
 
     async reviewCourse(userId: Id, courseId: Id, reviewId: Id, rating: number): Promise<void> {

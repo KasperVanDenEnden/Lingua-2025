@@ -34,7 +34,6 @@ export class NavComponent implements OnInit, OnDestroy  {
   ngOnInit(): void {
     this.auth.getUserFromLocalStorage().subscribe(
       (user:  IUser | null) => {
-        console.log(user, 'localUser in component');
         if (user) {
           const { role, email } = user;
           this.role = role;

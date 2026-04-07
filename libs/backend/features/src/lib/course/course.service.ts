@@ -8,7 +8,7 @@ import { NeoOperationsService } from '../neo4j/neo-operations.service';
 
 @Injectable()
 export class CourseService {
- 
+  
   private TAG = 'CourseService';
   constructor(
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
@@ -26,6 +26,8 @@ export class CourseService {
     const instance = await this.courseModel
       .findById(id)
       .populate('teachers', '-password')
+      .populate('students', '-password')
+      .populate({ path: 'reviews', populate: { path: 'student', select: 'firstname lastname' } })
       .exec();
 
     if (!instance) 
@@ -72,54 +74,80 @@ export class CourseService {
     return new HttpException('Course deleted successfully', HttpStatus.OK);
   }
 
-  async enroll(id: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
-    Logger.log('enroll', this.TAG);
-    
-    const course = await this.courseModel.findOne({
-      _id: id,
-    }).exec();    
-
+  async enroll(courseId: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
+    const course = await this.courseModel.findById(courseId).exec();    
     if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
-    if (course.students.some(studentId => studentId.toString() === userId.toString())) {
+    if (course.students.some(studentId => studentId.toString() === userId.toString())) 
       throw new HttpException('User is already enrolled in this course', HttpStatus.BAD_REQUEST);
-    }
 
     const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      id,
+      courseId, 
       { $addToSet: { students: userId } },
       { new: true }
     ).exec();
     
-    await this.neoService.enrollInCourse(userId.toString(), id.toString());
+    await this.neoService.enrollInCourse(userId.toString(), courseId.toString());
 
     return updatedCourse as ICourse;
   }
 
-  async unenroll(id: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
-    Logger.log('unenroll', this.TAG);
-
-    const course = await this.courseModel.findOne({
-      _id: id,
-    }).exec();
-
+  async unenroll(courseId: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
+    const course = await this.courseModel.findById(courseId).exec();
     if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
     
     if (!course.students.some(studentId => studentId.toString() === userId.toString())) 
       throw new HttpException('User is not enrolled in this course', HttpStatus.BAD_REQUEST);
 
     const updatedCourse  =  await this.courseModel.findByIdAndUpdate(
-      { _id: id },
+      courseId,
       { $pull: { students: userId } },
       { new: true }
     ).exec();
 
-    this.neoService.unenrollInCourse(id.toString(), userId.toString())
-     
+    await this.neoService.unenrollInCourse(userId.toString(), courseId.toString());
+    
     return updatedCourse as ICourse;
   }
 
-  async getStudentDashboard(userId: string) {
+  async assignTeacher(id: Types.ObjectId, teacherId: Types.ObjectId): Promise<ICourse> {
+    const course = await this.courseModel.findById(id).exec();
+    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+
+    if (course.teachers.some(t => t.toString() === teacherId.toString()))
+      throw new HttpException('This teacher is already assigned to the course', HttpStatus.BAD_REQUEST);
+
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(
+      id,
+      { $addToSet: { teachers: teacherId } },
+      { new: true }
+    ).exec();
+
+    this.neoService.teachCourse(teacherId.toString(), id.toString());
+
+    return updatedCourse as ICourse;
+  }
+
+  async removeTeacher(id: Types.ObjectId, teacherId: Types.ObjectId): Promise<ICourse> {
+    const course = await this.courseModel.findById(id).exec();
+    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+
+    if (!course.teachers.some(t => t.toString() === teacherId.toString()))
+      throw new HttpException('This teacher is not assigned to the course', HttpStatus.BAD_REQUEST);
+
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(
+      id,
+      { $pull: { teachers: teacherId } },
+      { new: true }
+    ).exec();
+
+    this.neoService.unteachCourse(teacherId.toString(), id.toString());
+
+    return updatedCourse as ICourse;
+  }
+ 
+
+  async getStudentDashboard(userId: string): Promise<ICourse[]> {
     Logger.log('Get course suggestions for student dashboard', this.TAG);
     const objectId = new Types.ObjectId(userId);
 

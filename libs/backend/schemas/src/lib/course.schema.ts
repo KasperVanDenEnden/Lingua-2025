@@ -66,16 +66,16 @@ export class Course implements ICourseSchema{
   @IsEnum(Language, { message: 'Language must be a valid enum value' })
   language!: Language;
   
-  @Prop({ type: String, enum: Object.values(Level) })
+  @Prop({ type: String, enum: Object.values(Level), default: Level.A1 })
   @IsNotEmpty()
   @IsEnum(Level, { message: 'Level must be a valid enum value' })
   level!: Level;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
   @IsNotEmpty()
   teachers!: Types.ObjectId[];
 
-  @Prop({ type: [Types.ObjectId], ref: 'User' })
+  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
   @IsNotEmpty()
   @IsArray()
   @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })

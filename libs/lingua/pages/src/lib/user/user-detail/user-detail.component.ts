@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PagesModule } from '../../pages.module';
 import { IUser } from '@lingua/api';
-import { Subscription, Observable, BehaviorSubject } from 'rxjs';
-import { NotificationService, UserService } from '@lingua/services';
+import { Subscription, Observable, BehaviorSubject, map } from 'rxjs';
+import { AuthService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -16,6 +16,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   sub!: Subscription;
   user$ = new BehaviorSubject<IUser | null>(null);
   userId?: string | null;
+  currentUser?: IUser | null = null;
 
   isModalOpen = false;
   recordToDelete?: IUser | null;
@@ -26,10 +27,13 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private notify: NotificationService,
     private router: Router,
+    private authService: AuthService 
   ) {}
   
   ngOnInit(): void {
-      console.log('UserDetailComponent geladen');
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
 
     this.loadUser();
 
@@ -84,6 +88,18 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     return this.route.children.length > 0;
   }
 
+  get friends$(): Observable<IUser[]> {
+    return this.user$.pipe(
+      map(user => {
+        if (!user?.friends) return [];
+        if ((user.friends as IUser[])[0]?.firstname !== undefined) {
+          return user.friends as IUser[];
+        }
+        return []; 
+      })
+    );
+  }
+
   removeFriend(friendId: string): void {
     this.userService.removeFriend(friendId).subscribe({
       next: () => {
@@ -96,5 +112,13 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         this.notify.error(err.message || 'Er is een fout opgetreden bij het verwijderen van de vriend.');
       }
     });
+  }
+
+  canEdit(): boolean {
+    return this.currentUser?._id === this.userId;
+  }
+
+  canDelete(): boolean {
+    return this.currentUser?._id === this.userId || this.currentUser?.role === 'admin';
   }
 }

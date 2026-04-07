@@ -85,8 +85,6 @@ export class CourseController {
   
 
   // ----- Business Operations ----- //
-  @UseGuards(RolesGuard)
-  @Roles(Role.Student)
   @Post(':id/enroll')
   async enroll(
     @Param('id', StringObjectIdPipe) id: Types.ObjectId,
@@ -96,8 +94,6 @@ export class CourseController {
     return this.courseService.enroll(id, Types.ObjectId.createFromHexString(user.id));
   }
   
-  @UseGuards(RolesGuard)
-  @Roles(Role.Student)
   @Post(':id/unenroll')
   async unenroll(
     @Param('id', StringObjectIdPipe) id: Types.ObjectId,
@@ -105,5 +101,27 @@ export class CourseController {
   ) {
     Logger.log('unenroll', this.TAG);
     return this.courseService.unenroll(id, Types.ObjectId.createFromHexString(user.id));
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.Teacher, Role.Admin)
+  @Put(':id/assign')
+  async assignTeacher(
+    @Param('id', StringObjectIdPipe) id: Types.ObjectId,
+    @Body('teacherId', StringObjectIdPipe) teacherId: Types.ObjectId,
+  ) {
+    Logger.log('assignTeacher', this.TAG);
+    return this.courseService.assignTeacher(id, teacherId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.Teacher, Role.Admin)
+  @Put(':id/remove')
+  async removeTeacher(
+    @Param('id', StringObjectIdPipe) id: Types.ObjectId,
+    @Body('teacherId', StringObjectIdPipe) teacherId: Types.ObjectId,
+  ) {
+    Logger.log('removeTeacher', this.TAG);
+    return this.courseService.removeTeacher(id, teacherId);
   }
 }

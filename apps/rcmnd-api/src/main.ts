@@ -7,10 +7,14 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
+
+  const corsOptions: CorsOptions = { };
+  app.enableCors(corsOptions);
 
   const config = new DocumentBuilder()
     .setTitle('Lingua Data API')

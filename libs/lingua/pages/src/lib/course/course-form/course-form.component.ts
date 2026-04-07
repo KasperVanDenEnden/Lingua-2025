@@ -3,7 +3,7 @@ import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
 import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UserService, CourseService } from '@lingua/services';
+import { UserService, CourseService, NotificationService } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
 
 @Component({
@@ -17,15 +17,12 @@ export class CourseFormComponent implements OnInit, OnDestroy{
     isEditMode?: boolean;
     existId!: Id;
   
-    teachers: IUser[] = [];
-  
     courseForm: FormGroup = new FormGroup({
       title: new FormControl(null, Validators.required),
       description: new FormControl(null, Validators.required),
       price: new FormControl(null, [Validators.required, Validators.min(0)]),
       maxStudents: new FormControl(null, [Validators.required, Validators.min(1), Validators.pattern('^[0-9]+$')]),
       language: new FormControl(null, Validators.required),
-      teacher: new FormControl(null, Validators.required),
       status: new FormControl(null, Validators.required),
       starts: new FormControl(null, [Validators.required, this.notInPastValidator()]),
       ends: new FormControl(null, this.dateRangeValidator()), 
@@ -35,11 +32,10 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       private router: Router,
       private route: ActivatedRoute,
       private courseService: CourseService,
-      private userService: UserService
+      private notify: NotificationService
     ) {}
   
     ngOnInit(): void {
-      this.loadTeachers();
       this.route.parent?.paramMap.subscribe((params) => {
         const id = params.get('id');
         if (id) {
@@ -58,12 +54,6 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       this.formSub?.unsubscribe();
     }
   
-    loadTeachers() {
-      this.userService.getUsers().subscribe((results) => {
-        this.teachers = results.filter((user) => user.role === 'teacher');
-      });
-    }
-  
     initializeNewCourse() {
       this.courseForm.reset();
       this.courseForm.patchValue({ status: 'Active' });
@@ -79,9 +69,8 @@ export class CourseFormComponent implements OnInit, OnDestroy{
             price: courseData.price,
             maxStudents: courseData.maxStudents,
             language: courseData.language,
-            teachers: courseData.teachers.map((teacher) => (teacher as IUser)._id),
-            starts: courseData.starts,
-            ends: courseData.ends,
+            starts: this.formatDate(courseData.starts),
+            ends: this.formatDate(courseData.ends?.toString()),
           });
         },
         error: (err) => {
@@ -89,11 +78,12 @@ export class CourseFormComponent implements OnInit, OnDestroy{
         },
       });
     }
+
+   
   
     onSubmit(): void {
       const data: ICreateCourse = {
         status: this.courseForm.value.status,
-        teachers: [this.courseForm.value.teacher],
         title: this.courseForm.value.title,
         description: this.courseForm.value.description,
         language: this.courseForm.value.language,
@@ -107,12 +97,12 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       if (this.isEditMode) {
         this.courseService.update(data, this.existId).subscribe((updatedCourse) => {
           this.courseService.triggerRefresh();
-          this.router.navigate(['courses', updatedCourse._id]);
+          this.notify.success('Course updated successfully');
         });
       } else {
         this.courseService.create(data).subscribe((result) => {
           this.courseService.triggerRefresh();
-          this.router.navigate(['/courses']);
+          this.notify.success('Course created successfully');
         });
       }
     }
@@ -156,5 +146,14 @@ export class CourseFormComponent implements OnInit, OnDestroy{
 
         return null;
       };
+    }
+
+    formatDate(date: string | Date | undefined): string | null {
+      if (!date) return null;
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = ('0' + (d.getMonth() + 1)).slice(-2); // maand is 0-indexed
+      const day = ('0' + d.getDate()).slice(-2);
+      return `${year}-${month}-${day}`;
     }
 }

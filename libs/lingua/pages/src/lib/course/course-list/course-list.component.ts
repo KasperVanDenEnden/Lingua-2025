@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CourseStatus, ICourse, Language } from '@lingua/api';
+import { CourseStatus, ICourse, IUser, Language } from '@lingua/api';
 import { AuthService, CourseService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
@@ -16,6 +16,8 @@ export class CourseListComponent implements OnInit, OnDestroy {
   courses?: ICourse[] | null;
   sub!: Subscription;
   currentUserId?: string;
+  currentUser?: IUser | null = null;
+  
   statuses = Object.values(CourseStatus); 
   languages = Object.values(Language); 
 
@@ -37,6 +39,8 @@ export class CourseListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => this.currentUser = user);  
+
     this.loadCourses();
 
     this.courseService.refresh$.subscribe(() => {
@@ -103,14 +107,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
     return role === 'admin' || role === 'teacher';
   }
 
- canEdit(course: ICourse): boolean {
-    const role = this.authService.getUserRole();
-    if (role === 'admin') return true;
-    if (role === 'teacher') {
-      const userId = this.authService.getUserId();
-      if (!userId) return false;
-      return course.teachers.some(t => t.toString() === userId);
-    }
-    return false;
+  canEdit():boolean {
+    return this.currentUser?.role !== 'student';
   }
 }
