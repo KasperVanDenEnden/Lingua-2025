@@ -59,14 +59,18 @@ describe('Authentication', () => {
   it('shows validation error when email is empty', () => {
     cy.visit('/login');
 
-    cy.get('input[type="email"]').click().blur();
+    cy.get('input[type="email"]').click();
+    cy.get('input[type="email"]').blur();
+
     cy.contains('Email is required').should('be.visible');
   });
 
   it('shows validation error when email has invalid format', () => {
     cy.visit('/login');
 
-    cy.get('input[type="email"]').type('geengeldigemail').blur();
+    cy.get('input[type="email"]').type('geengeldigemail');
+    cy.get('input[type="email"]').blur();
+
     cy.contains('Invalid email format').should('be.visible');
   });
 });

@@ -1,5 +1,5 @@
-// 🔹 support/commands.ts
-export {}; // Zorgt dat het een module is
+/* eslint-disable @typescript-eslint/no-namespace */
+export {}; 
 
 declare global {
   namespace Cypress {

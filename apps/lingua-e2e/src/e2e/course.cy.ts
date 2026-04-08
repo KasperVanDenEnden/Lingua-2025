@@ -113,22 +113,28 @@ describe('Course Form', () => {
     });
 
     it('should validate required fields', () => {
-      cy.get('#title').focus().blur();
+      cy.get('#title').focus();
+      cy.get('#title').blur();
       cy.contains('title is required').should('be.visible');
 
-      cy.get('#description').focus().blur();
+      cy.get('#description').focus();
+      cy.get('#description').blur();
       cy.contains('Description is required').should('be.visible');
 
-      cy.get('#price').focus().blur();
+      cy.get('#price').focus();
+      cy.get('#price').blur();
       cy.contains('Price is required').should('be.visible');
 
-      cy.get('#maxStudents').focus().blur();
+      cy.get('#maxStudents').focus();
+      cy.get('#maxStudents').blur();
       cy.contains('Max Students is required').should('be.visible');
 
-      cy.get('#language').focus().blur();
+      cy.get('#language').focus();
+      cy.get('#language').blur();
       cy.contains('Please select a language').should('be.visible');
 
-      cy.get('#teacher').focus().blur();
+      cy.get('#teacher').focus();
+      cy.get('#teacher').blur();
       cy.contains('Select a teacher').should('be.visible');
     });
 
@@ -148,7 +154,8 @@ describe('Course Form', () => {
       cy.get('#language').select('English');
       cy.get('#teacher').select('Teacher User');
 
-      cy.get('#starts').invoke('val', '2026-01-01').trigger('change');
+      cy.get('#starts').invoke('val', '2026-01-01');
+      cy.get('#starts').trigger('change');
 
       cy.get('button[type="submit"]').should('not.be.disabled');
     });
@@ -162,8 +169,10 @@ describe('Course Form', () => {
       cy.get('#language').select('English');
       cy.get('#teacher').select('Teacher User');
 
-      cy.get('#starts').invoke('val', '2026-05-01').trigger('change');
-      cy.get('#ends').invoke('val', '2026-01-01').trigger('change');
+      cy.get('#starts').invoke('val', '2026-05-01');
+      cy.get('#starts').trigger('change');
+      cy.get('#ends').invoke('val', '2026-01-01');
+      cy.get('#ends').trigger('change');
 
       cy.contains('End date must be after start date').should('be.visible');
       cy.get('button[type="submit"]').should('be.disabled');
@@ -234,7 +243,7 @@ describe('Course Form', () => {
     });
 
     it('should close the form', () => {
-      cy.get('button').find('.fa-xmark').click();
+      cy.get('.fa-xmark').click();
       cy.get('form').should('not.exist');
     });
   });
