@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { PagesModule } from '../../pages.module';
 import { AuthService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +13,11 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './user-list.component.css',
 })
 export class UserListComponent implements OnInit, OnDestroy {
+  private userService = inject(UserService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
   users?: IUser[];
   sub!: Subscription;
   currentUserId?: string;
@@ -27,12 +32,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: IUser;
 
-  constructor(
-    private userService: UserService,
-    private route: ActivatedRoute,
-    private notify: NotificationService,
-    private authService: AuthService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {

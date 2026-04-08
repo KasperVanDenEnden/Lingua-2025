@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CourseStatus, ICourse, IUser, Language } from '@lingua/api';
 import { AuthService, CourseService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
@@ -14,6 +14,12 @@ import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-ch
   styleUrl: './course-list.component.css',
 })
 export class CourseListComponent implements OnInit, OnDestroy {
+  private courseService = inject(CourseService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+
   courses?: ICourse[] | null;
   sub!: Subscription;
   currentUserId?: string;
@@ -31,13 +37,10 @@ export class CourseListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: ICourse | null;
 
-  constructor(
-    private courseService: CourseService,
-    private route: ActivatedRoute,
-    private notify: NotificationService,
-    private authService: AuthService,
-    private userService: UserService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => this.currentUser = user);  

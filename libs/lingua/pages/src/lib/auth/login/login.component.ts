@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService, NotificationService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,15 +13,18 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+
   loginForm!: FormGroup;
   subs: Subscription = new Subscription();
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private notify: NotificationService,
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({

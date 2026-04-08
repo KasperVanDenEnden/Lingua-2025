@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from "@angular/core";
+import { Injectable, OnDestroy, inject } from "@angular/core";
 import { BehaviorSubject, catchError, map, Observable, of, Subscription, switchMap, tap } from "rxjs";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from "@lingua/util-env";
@@ -11,6 +11,10 @@ import { throwError } from "rxjs";
     providedIn: 'root'
   })
   export class AuthService implements OnDestroy {
+    private http = inject(HttpClient);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+
     public currentUser$ = new BehaviorSubject<IUser | undefined>(undefined);
     private readonly CURRENT_USER = 'currentuser';
     private readonly TOKEN_KEY = 'JWT';
@@ -20,8 +24,11 @@ import { throwError } from "rxjs";
     private readonly headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
+
+    /** Inserted by Angular inject() migration for backwards compatibility */
+    constructor(...args: unknown[]);
   
-    constructor(private http:HttpClient, private router:Router, private route:ActivatedRoute) {
+    constructor() {
       // Get current user out of the local storage
       this.localStorageSubscription = this.getUserFromLocalStorage()
         .pipe(

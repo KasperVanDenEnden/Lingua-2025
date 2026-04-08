@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
 import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,6 +14,11 @@ import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-ch
   styleUrl: './course-form.component.css',
 })
 export class CourseFormComponent implements OnInit, OnDestroy{
+   private router = inject(Router);
+   private route = inject(ActivatedRoute);
+   private courseService = inject(CourseService);
+   private notify = inject(NotificationService);
+
    formSub?: Subscription;
     isEditMode?: boolean;
     existId!: Id;
@@ -28,13 +33,11 @@ export class CourseFormComponent implements OnInit, OnDestroy{
       starts: new FormControl(null, [Validators.required, this.notInPastValidator()]),
       ends: new FormControl(null, this.dateRangeValidator()), 
     });
+
+   /** Inserted by Angular inject() migration for backwards compatibility */
+   constructor(...args: unknown[]);
   
-    constructor(
-      private router: Router,
-      private route: ActivatedRoute,
-      private courseService: CourseService,
-      private notify: NotificationService
-    ) {}
+    constructor() {}
   
     ngOnInit(): void {
       this.route.parent?.paramMap.subscribe((params) => {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICourse, Id, IUser } from '@lingua/api';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
@@ -20,6 +20,13 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './course-detail.component.css',
 })
 export class CourseDetailComponent implements OnInit, OnDestroy {
+  private courseService = inject(CourseService);
+  private route = inject(ActivatedRoute);
+  private userService = inject(UserService);
+  private notify = inject(NotificationService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   course$!: Observable<ICourse | null>;
   students$ = new BehaviorSubject<IUser[]>([]);
   
@@ -41,14 +48,10 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
   currentUser?: any | null = null;
 
-  constructor(
-    private courseService: CourseService,
-    private route: ActivatedRoute,
-    private userService: UserService,
-    private notify: NotificationService,
-    private router: Router,
-    private authService: AuthService,
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => this.currentUser = user);  

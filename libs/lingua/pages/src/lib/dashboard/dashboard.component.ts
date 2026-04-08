@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PagesModule } from '../pages.module';
 import { AuthService, CourseService } from '@lingua/services';
 import { ICourse } from 'libs/shared/api/src/lib/models/course.interface';
@@ -13,16 +13,19 @@ import { Subscription } from 'rxjs';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
+  private courseService = inject(CourseService);
+  private authService = inject(AuthService);
+
   userId?: Id | undefined;
   rcmndCourses: any[] = [];
 
   userSub!: Subscription;
   currentUser: ICurrentUser | undefined;
 
-  constructor(
-    private courseService: CourseService,
-    private authService: AuthService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.userSub = this.authService.currentUser$.subscribe({

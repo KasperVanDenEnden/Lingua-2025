@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { Subscription } from 'rxjs';
 import { ICurrentUser, IUser } from '@lingua/api';
@@ -13,6 +13,8 @@ import { UiModule } from '@lingua/ui';
   styleUrl: './nav.component.css',
 })
 export class NavComponent implements OnInit, OnDestroy  {
+  auth = inject<AuthService>(AuthService);
+
   isMobileMenuOpen = false;
   isLocationMenuOpen = false;
 
@@ -26,9 +28,10 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   isLogoutModalOpen = false;
 
-  constructor(
-    @Inject(AuthService) public auth: AuthService,
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.auth.getUserFromLocalStorage().subscribe(

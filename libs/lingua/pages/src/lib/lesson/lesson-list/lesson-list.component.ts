@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
 import { AuthService, LessonService, NotificationService } from '@lingua/services';
@@ -13,6 +13,11 @@ import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-ch
   styleUrl: './lesson-list.component.css',
 })
 export class LessonListComponent implements OnInit, OnDestroy {
+  private lessonService = inject(LessonService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
   lessons!: ILesson[] | null;
   sub!: Subscription;
   statuses = Object.values(LessonStatus);
@@ -25,7 +30,10 @@ export class LessonListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
-  constructor(private lessonService: LessonService, private route: ActivatedRoute, private notify: NotificationService, private authService: AuthService) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadLessons();

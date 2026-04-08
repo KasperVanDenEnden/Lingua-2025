@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {} from '@angular/common';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+
 import {
   FormGroup,
   FormControl,
@@ -22,6 +22,11 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './password-change.component.css',
 })
 export class PasswordChangeComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private notify = inject(NotificationService);
+
   formSub?: Subscription;
   userId?: string;
 
@@ -34,12 +39,10 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
     { validators: passwordMatchValidator() }
   );
 
-  constructor(
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private notify: NotificationService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
@@ -26,6 +26,13 @@ import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-ch
   styleUrl: './lesson-form.component.css',
 })
 export class LessonFormComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private lessonService = inject(LessonService);
+  private userService = inject(UserService);
+  private courseService = inject(CourseService);
+  private notify = inject(NotificationService);
+
   formSub?: Subscription;
   isEditMode?: boolean;
   existId!: Id;
@@ -46,14 +53,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     endTime: new FormControl(null, [Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')]),
   });
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private lessonService: LessonService,
-    private userService: UserService,
-    private courseService: CourseService,
-    private notify: NotificationService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     // Laad de docenten, kamers en klassen tegelijk

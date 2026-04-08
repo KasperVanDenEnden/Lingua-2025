@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription, switchMap } from 'rxjs';
 import { AuthService, NotificationService } from '@lingua/services';
@@ -14,14 +14,17 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './register.component.css',
 })
 export class RegisterComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private notify = inject(NotificationService);
+
   registerForm!: FormGroup;
   subs: Subscription = new Subscription();
 
-  constructor(
-    private authService: AuthService,
-    private router:Router,
-    private notify: NotificationService,
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({

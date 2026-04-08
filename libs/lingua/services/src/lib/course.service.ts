@@ -3,17 +3,23 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { environment } from "@lingua/util-env";
 import { AuthService } from "./auth/auth.service";
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { CreateReviewDto } from "@lingua/dto";
 
 @Injectable({
     providedIn: 'root'
 })
 export class CourseService {
+    private http = inject(HttpClient);
+    private auth = inject(AuthService);
+
     private refreshSubject = new BehaviorSubject<boolean>(false);
     refresh$ = this.refreshSubject.asObservable();
 
-    constructor(private http: HttpClient, private auth:AuthService) {}
+    /** Inserted by Angular inject() migration for backwards compatibility */
+    constructor(...args: unknown[]);
+
+    constructor() {}
 
     triggerRefresh() {
         this.refreshSubject.next(true)

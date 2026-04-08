@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { NotificationService, UserService } from '@lingua/services';
 import { Subscription } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -15,6 +15,11 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './user-form.component.css',
 })
 export class UserFormComponent implements OnInit, OnDestroy {
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+
   formSub?: Subscription;
   isEditMode?:boolean;
   existId!: Id;
@@ -24,12 +29,10 @@ export class UserFormComponent implements OnInit, OnDestroy {
     lastname: new FormControl(null, Validators.required)
   })
 
-  constructor(
-    private userService: UserService,
-    private router:Router,
-    private route: ActivatedRoute,
-    private notify: NotificationService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
   
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
