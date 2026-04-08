@@ -25,7 +25,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   recordToDelete?: ILesson | null;
 
   userSubscription!: Subscription;
-  currentUser: IUser | undefined = undefined;
+  currentUser: any | undefined = undefined;
 
   private routeSub!: Subscription;
   private lessonSub!: Subscription;
@@ -58,7 +58,6 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   }
 
   loadLesson(): void {
-    // cleanup oude subscriptions
     this.routeSub?.unsubscribe();
     this.lessonSub?.unsubscribe();
 
@@ -73,7 +72,6 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
         this.teacher = lesson.teacher as IUser;
         this.recordToDelete = lesson;
 
-        // veilige cast
         this.students = Array.isArray(lesson.students)
           ? lesson.students as IUser[]
           : [];
@@ -120,7 +118,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   attend(): void {
     this.lessonService.attend(this.lessonId!).subscribe({
       next: () => {
-        this.notify.success('Je bent succesvol ingeschreven voor deze les!');
+        this.notify.success('Succesfully attended the lesson!');
         this.loadLesson();
       },
      error: (error: HttpErrorResponse) => {
@@ -134,7 +132,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   unattend(): void {
       this.lessonService.unattend(this.lessonId!).subscribe({
         next: () => {
-          this.notify.success('Je bent succesvol uitgeschreven voor deze les!');
+          this.notify.success('Succesfully unattended the lesson!');
           this.loadLesson();
         },
         error: (error: HttpErrorResponse) => {
@@ -147,6 +145,13 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
 
   isAttending(): boolean {  
     if (!this.currentUser) return false;
-    return this.students.some(student => student._id === this.currentUser?._id);
+    return this.students.some(student => student._id === this.currentUser?.id);
+  }
+
+  canEdit(): boolean {
+    if (!this.currentUser) return false;
+    const isTeacher = this.teacher?._id === this.currentUser._id;
+    const isAdmin = this.authService.getUserRole() === 'admin';
+    return isTeacher || isAdmin;
   }
 }

@@ -12,7 +12,7 @@
         />
 
         <select [(ngModel)]="selectedStatus" class="role-select">
-          <option value="">Alle statussen</option>
+          <option value="">All statuses</option>
           @for (status of statuses; track status) {
               <option [value]="status">{{ status }}</option>
             }

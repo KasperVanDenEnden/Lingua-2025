@@ -12,14 +12,14 @@
         />
 
         <select [(ngModel)]="selectedStatus" class="role-select">
-          <option value="">Alle statussen</option>
+          <option value="">All Statuses</option>
           @for (status of statuses; track status) {
               <option [value]="status">{{ status }}</option>
             }
         </select>
 
         <select [(ngModel)]="selectedLanguage" class="role-select">
-          <option value="">Alle talen</option>
+          <option value="">All Languages</option>
           @for (lang of languages; track lang) {
             <option [value]="lang">{{ lang }}</option>
           }

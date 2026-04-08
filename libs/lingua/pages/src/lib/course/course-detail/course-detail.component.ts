@@ -221,10 +221,10 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     return typeof obj !== 'string';
   }
   
- isStudentEnrolled(): boolean {
-  const students = this.students$.value;
-  return !!this.currentUser && students.some(s => s._id.toString() === this.currentUser.id.toString());
-}
+  isStudentEnrolled(): boolean {
+    const students = this.students$.value;
+    return !!this.currentUser && students.some(s => s._id.toString() === this.currentUser.id.toString());
+  }
 
   canEdit():boolean {
     return this.currentUser?.role !== 'student';
