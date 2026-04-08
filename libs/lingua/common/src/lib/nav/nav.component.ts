@@ -88,6 +88,5 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   logout() {
     this.auth.logout();
-    
   }
 }

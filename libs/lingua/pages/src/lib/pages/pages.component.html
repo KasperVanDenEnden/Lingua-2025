@@ -1,50 +1,194 @@
 <div class="font-mono">
   <lingua-header [pageTitle]="'About'"></lingua-header>
 
-  <main class="max-w-xl md:max-w-2xl lg:max-w-6xl mx-auto py-xl px-md md:px-xl grid grid-cols-1 gap-md md:grid-cols-2 lg:grid-cols-3">
-    <div class="flex flex-col p-lg bg-secondary-light shadow-md hover:shadow-lg">
-      <div class="pb-md text-lg font-bold">Angular</div>
-      <p class="mb-xl flex-1">
-        Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.
-      </p>
-      <a
-        class="py-sm px-md bg-primary-dark hover:bg-primary text-white flex self-end"
-        href="https://angular.io/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Show me!
-      </a>
-    </div>
+<main class="max-w-xl md:max-w-2xl lg:max-w-6xl mx-auto py-xl px-md md:px-xl grid grid-cols-1 ">
 
-    <div class="flex flex-col p-lg bg-secondary-light shadow-md hover:shadow-lg">
-      <div class="pb-md text-lg font-bold">Tailwind CSS</div>
-      <p class="mb-xl flex-1">
-        Tailwind CSS is a utility-first CSS framework packed with classes like flex, pt-4, text-center and rotate-90 that can be composed to build any design, directly in your markup.
-      </p>
-      <a
-        class="py-sm px-md bg-primary-dark hover:bg-primary text-white flex self-end"
-        href="https://tailwindcss.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Show me!
-      </a>
-    </div>
+  <!-- Casus -->
+ <section>
+    <h2 class="text-xl font-semibold mb-sm">Casusbeschrijving</h2>
+    <p class="text-sm leading-relaxed">
+      Lingua is een platform gericht op het faciliteren van taalonderwijs, waarbij verschillende typen gebruikers met elkaar interacteren. 
+      Het systeem onderscheidt drie rollen: Admin, Teacher en Student.
 
-    <div class="flex flex-col p-lg bg-secondary-light shadow-md hover:shadow-lg">
-      <div class="pb-md text-lg font-bold">Nx</div>
-      <p class="mb-xl flex-1">
-        Nx is a smart, fast and extensible build system with first class monorepo support and powerful integrations.
-      </p>
-      <a
-        class="py-sm px-md bg-primary-dark hover:bg-primary text-white flex self-end"
-        href="https://nx.dev/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Show me!
-      </a>
-    </div>
-  </main>
+      Admins zijn verantwoordelijk voor het beheer van het platform en kunnen cursussen en lessen aanmaken, aanpassen en verwijderen. 
+      Teachers kunnen eigen cursussen en lessen beheren en aanbieden aan studenten. Studenten kunnen zich inschrijven voor cursussen en zich vervolgens aanmelden voor bijbehorende lessen.
+
+      Daarnaast biedt het systeem sociale functionaliteiten: gebruikers kunnen reviews achterlaten op cursussen, andere gebruikers volgen en gepersonaliseerde aanbevelingen ontvangen op basis van hun interesses en eerdere interacties.
+    </p>
+  </section>
+
+  <!-- ERD + GRAPH -->
+  <section>
+    <h2 class="text-lg font-semibold mb-sm">Datamodel (ERD)</h2>
+    <p class="text-sm mb-sm">
+      Onderstaand ERD beschrijft de belangrijkste entiteiten binnen het systeem en hun onderlinge relaties. 
+      Belangrijke entiteiten zijn onder andere User, Course, Lesson en Review. 
+      Relaties zoals inschrijvingen, reviews en volg-relaties zijn expliciet gemodelleerd.
+    </p>
+
+    <img src="assets/shared/images/ERD.png" class="rounded-xl shadow-md w-full mb-md" />
+
+    <h3 class="text-md font-semibold mb-sm">Graph model</h3>
+    <p class="text-sm mb-sm">
+      Onderstaand graphmodel beschrijft de gemodelleerde nodes binnen het systeem en hun onderlinge relaties. 
+      Belangrijke nodes zijn onder andere User, Course en Lesson. 
+      Daarnaast zijn relaties zoals ENROLLED_IN, REVIEWED en FOLLOWS gemodelleerd om interacties tussen gebruikers en cursussen vast te leggen. 
+      Dit graphmodel maakt het mogelijk om aanbevelingen te genereren voor cursussen op basis van gebruikersgedrag en interesses.
+    </p>
+
+    <img src="assets/shared/images/GRAPH.png" class="rounded-xl shadow-md w-full" />
+  </section>
+
+  
+
+  <!-- Functional Requirements -->
+  <div class="overflow-x-auto">
+        <h2 class="text-lg font-semibold mb-sm">Functionele Requirements</h2>
+
+    <p class="text-sm mb-sm">
+      Onderstaande tabel beschrijft de functionele requirements van het systeem volgens het MoSCoW-principe. 
+      Elke requirement is uitgewerkt met bijbehorende acceptatiecriteria om testbaarheid te waarborgen.
+      Requirements zijn samengevat en/of gecombineerd, zodat geen onnodige herhalingen optreden en de lijst concreet blijft.
+    </p>
+    <table class="w-full text-sm border border-gray-200">
+      <thead class="bg-gray-100 text-left">
+        <tr>
+          <th class="p-sm">ID</th>
+          <th class="p-sm">User Story</th>
+          <th class="p-sm">Acceptatiecriteria</th>
+          <th class="p-sm">MoSCoW</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="border-t">
+          <td class="p-sm">FR1</td>
+          <td class="p-sm">Als student wil ik mij kunnen registreren, zodat ik toegang krijg tot het platform.</td>
+          <td class="p-sm">- Account aanmaken<br>- Unieke e-mail vereist<br>- Wachtwoord validatie</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR2</td>
+          <td class="p-sm">Als gebruiker wil ik mij kunnen aanmelden, zodat ik toegang krijg tot mijn account.</td>
+          <td class="p-sm">- Inloggen met e-mail/wachtwoord<br>- Foutmelding bij onjuiste gegevens<br>- Redirect na login</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR3</td>
+          <td class="p-sm">Als gebruiker wil ik mij kunnen uitloggen, zodat mijn sessie veilig wordt beëindigd.</td>
+          <td class="p-sm">- Logout knop<br>- Sessie beëindigd<br>- Redirect naar login</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR4</td>
+          <td class="p-sm">Als student wil ik mij kunnen inschrijven voor een cursus, zodat ik toegang krijg tot lessen.</td>
+          <td class="p-sm">- Overzicht cursussen<br>- Inschrijven mogelijk<br>- Status zichtbaar</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR5</td>
+          <td class="p-sm">Als student wil ik mij kunnen aanmelden voor een les, zodat ik kan deelnemen.</td>
+          <td class="p-sm">- Alleen ingeschreven studenten<br>- Les koppeling opgeslagen<br>- Bevestiging zichtbaar</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR6</td>
+          <td class="p-sm">Als student wil ik mij kunnen afmelden voor een les, zodat ik mijn planning kan aanpassen.</td>
+          <td class="p-sm">- Afmelden mogelijk<br>- Les verwijderd<br>- UI update</td>
+          <td class="p-sm">Should</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR7</td>
+          <td class="p-sm">Als student wil ik mij kunnen uitschrijven voor een cursus, zodat ik niet langer deelneem.</td>
+          <td class="p-sm">- Uitschrijven mogelijk<br>- Relaties verwijderd<br>- Status update</td>
+          <td class="p-sm">Should</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR8</td>
+          <td class="p-sm">Als student wil ik andere gebruikers kunnen volgen, zodat ik aanbevelingen kan krijgen.</td>
+          <td class="p-sm">- Volgen mogelijk<br>- Relatie opgeslagen<br>- Ontvolgen mogelijk</td>
+          <td class="p-sm">Could</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR9</td>
+          <td class="p-sm">Als student wil ik aanbevelingen krijgen, zodat ik interessante cursussen kan ontdekken.</td>
+          <td class="p-sm">- Aanbevelingen zichtbaar<br>- Gebaseerd op gedrag/interesses</td>
+          <td class="p-sm">Could</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR10</td>
+          <td class="p-sm">Als gebruiker wil ik mijn profiel kunnen zien, zodat ik mijn gegevens kan controleren.</td>
+          <td class="p-sm">- Profiel laadt correct<br>- Gegevens zichtbaar</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR11</td>
+          <td class="p-sm">Als gebruiker wil ik mijn profielgegevens kunnen wijzigen, zodat mijn informatie actueel blijft.</td>
+          <td class="p-sm">- Wijzigen mogelijk<br>- Opslaan werkt<br>- Validatie aanwezig</td>
+          <td class="p-sm">Should</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR12</td>
+          <td class="p-sm">Als gebruiker wil ik mijn wachtwoord kunnen wijzigen, zodat mijn account veilig blijft.</td>
+          <td class="p-sm">- Oud wachtwoord vereist<br>- Nieuw wachtwoord validatie<br>- Succesmelding</td>
+          <td class="p-sm">Should</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR13</td>
+          <td class="p-sm">Als admin wil ik docent-accounts kunnen aanmaken, zodat zij cursussen kunnen beheren.</td>
+          <td class="p-sm">- Admin kan account maken<br>- Rol correct ingesteld</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR14</td>
+          <td class="p-sm">Als admin/docent wil ik cursussen kunnen aanmaken, zodat deze aangeboden kunnen worden.</td>
+          <td class="p-sm">- Verplichte velden<br>- Opslaan werkt<br>- Zichtbaar in lijst</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR15</td>
+          <td class="p-sm">Als admin/docent wil ik cursussen kunnen wijzigen/verwijderen, zodat ik content kan beheren.</td>
+          <td class="p-sm">- Bewerken werkt<br>- Verwijderen werkt<br>- Autorisatie check</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR16</td>
+          <td class="p-sm">Als gebruiker wil ik overzichten zien van cursussen, lessen en gebruikers, zodat ik kan navigeren.</td>
+          <td class="p-sm">- Lijsten laden<br>- Data correct<br>- Navigatie mogelijk</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR17</td>
+          <td class="p-sm">Als gebruiker wil ik details zien van een cursus, les of gebruiker, zodat ik meer informatie krijg.</td>
+          <td class="p-sm">- Detailpagina correct<br>- Relaties zichtbaar</td>
+          <td class="p-sm">Must</td>
+        </tr>
+
+        <tr class="border-t">
+          <td class="p-sm">FR18</td>
+          <td class="p-sm">Als student wil ik een review kunnen achterlaten op een cursus, zodat ik mijn ervaring kan delen.</td>
+          <td class="p-sm">- Alleen ingeschreven studenten<br>- Review + rating<br>- Opslaan en tonen</td>
+          <td class="p-sm">Should</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</main>
 </div>
