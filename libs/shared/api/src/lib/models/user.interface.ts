@@ -8,14 +8,14 @@ export enum Role {
 
 export interface IUser {
   _id: Id;
-  
+
   role: Role;
   firstname: string;
   lastname: string;
   email: string;
   password: string;
-  token:string;
-  friends: Id[] | IUser[]
+  token: string;
+  friends: Id[] | IUser[];
 }
 
 export type ICreateUser = Pick<

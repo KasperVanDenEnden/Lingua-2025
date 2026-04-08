@@ -120,7 +120,9 @@ describe('CourseService', () => {
     it('should throw if not found', async () => {
       mockCourseModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.update(mockCourseId, {} as any)).rejects.toThrow(HttpException);
+      await expect(service.update(mockCourseId, {} as any)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -133,7 +135,9 @@ describe('CourseService', () => {
       const result = await service.delete(mockCourseId);
 
       expect(mockCourse.deleteOne).toHaveBeenCalled();
-      expect(mockNeoService.detachCourse).toHaveBeenCalledWith(mockCourseId.toString());
+      expect(mockNeoService.detachCourse).toHaveBeenCalledWith(
+        mockCourseId.toString(),
+      );
       expect(result).toBeInstanceOf(HttpException);
     });
 
@@ -170,9 +174,9 @@ describe('CourseService', () => {
         exec: jest.fn().mockResolvedValue(mockCourseWithStudent),
       });
 
-      await expect(
-        service.enroll(mockCourseId, mockUserId)
-      ).rejects.toThrow(HttpException);
+      await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw if course not found', async () => {
@@ -180,9 +184,9 @@ describe('CourseService', () => {
         exec: jest.fn().mockResolvedValue(null),
       });
 
-      await expect(
-        service.enroll(mockCourseId, mockUserId)
-      ).rejects.toThrow(HttpException);
+      await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -209,9 +213,9 @@ describe('CourseService', () => {
         exec: jest.fn().mockResolvedValue(mockCourse),
       });
 
-      await expect(
-        service.unenroll(mockCourseId, mockUserId)
-      ).rejects.toThrow(HttpException);
+      await expect(service.unenroll(mockCourseId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -224,7 +228,7 @@ describe('CourseService', () => {
       mockCourseModel.aggregate.mockResolvedValue(mockResult);
 
       const result = await service.getStudentDashboard(
-        mockUserId.toHexString()
+        mockUserId.toHexString(),
       );
 
       expect(mockCourseModel.aggregate).toHaveBeenCalled();

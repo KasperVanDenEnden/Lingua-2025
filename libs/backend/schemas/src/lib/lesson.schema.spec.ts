@@ -39,8 +39,8 @@ describe('LessonSchema Tests', () => {
       teacher: new Types.ObjectId(),
       students: [new Types.ObjectId()], // FIX: lege array faalt door @IsNotEmpty()
       status: LessonStatus.Open,
-      type: LessonType.Grammar,        // NIEUW: ontbrak in baseBody
-      isWorkshop: false,              // NIEUW: ontbrak in baseBody
+      type: LessonType.Grammar, // NIEUW: ontbrak in baseBody
+      isWorkshop: false, // NIEUW: ontbrak in baseBody
       title: 'Test title',
       day: new Date(),
       startTime: new Date(),
@@ -69,7 +69,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'course should not be empty'
+      'course should not be empty',
     );
   });
 
@@ -80,7 +80,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teacher');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'teacher should not be empty'
+      'teacher should not be empty',
     );
   });
 
@@ -91,7 +91,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'status should not be empty'
+      'status should not be empty',
     );
   });
 
@@ -102,7 +102,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('type');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'type should not be empty'
+      'type should not be empty',
     );
   });
 
@@ -113,7 +113,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('isWorkshop');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'isWorkshop should not be empty'
+      'isWorkshop should not be empty',
     );
   });
 
@@ -124,7 +124,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('title');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'title should not be empty'
+      'title should not be empty',
     );
   });
 
@@ -135,7 +135,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('day');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'day should not be empty'
+      'day should not be empty',
     );
   });
 
@@ -146,7 +146,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('startTime');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'startTime should not be empty'
+      'startTime should not be empty',
     );
   });
 
@@ -157,7 +157,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('endTime');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'endTime should not be empty'
+      'endTime should not be empty',
     );
   });
 
@@ -169,7 +169,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Status must be a valid enum value'
+      'Status must be a valid enum value',
     );
   });
 
@@ -180,7 +180,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('type');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Type must be a valid enum value'
+      'Type must be a valid enum value',
     );
   });
 
@@ -209,7 +209,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('day');
     expect(errors[0].constraints?.['isDate']).toBe(
-      'day must be a Date instance'
+      'day must be a Date instance',
     );
   });
 
@@ -220,7 +220,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('startTime');
     expect(errors[0].constraints?.['isDate']).toBe(
-      'startTime must be a Date instance'
+      'startTime must be a Date instance',
     );
   });
 
@@ -231,7 +231,7 @@ describe('LessonSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('endTime');
     expect(errors[0].constraints?.['isDate']).toBe(
-      'endTime must be a Date instance'
+      'endTime must be a Date instance',
     );
   });
 });

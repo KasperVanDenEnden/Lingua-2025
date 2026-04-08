@@ -1,15 +1,24 @@
 <div class="relative">
   <!-- Button -->
-  <button type="button" (click)="toggleDropdown()"
-    class="flex items-center gap-x-1 text-sm font-semibold text-gray-900">
+  <button
+    type="button"
+    (click)="toggleDropdown()"
+    class="flex items-center gap-x-1 text-sm font-semibold text-gray-900"
+  >
     <ng-content select="[dropdown-button]"></ng-content>
-    <i class="fa-solid fa-chevron-down flex-none text-primary-base transition" [class.rotate-180]="isOpen"></i>
+    <i
+      class="fa-solid fa-chevron-down flex-none text-primary-base transition"
+      [class.rotate-180]="isOpen"
+    ></i>
   </button>
 
   <!-- Dropdown items -->
   @if (isOpen) {
-    <div (mouseenter)="cancelCloseTimer()" (mouseleave)="startCloseTimer()"
-      class="absolute top-full -left-3 z-50 mt-3 max-w-md overflow-hidden rounded-xl bg-secondary-light border border-primary-dark shadow-lg ring-1 ring-gray-900/5">
+    <div
+      (mouseenter)="cancelCloseTimer()"
+      (mouseleave)="startCloseTimer()"
+      class="absolute top-full -left-3 z-50 mt-3 max-w-md overflow-hidden rounded-xl bg-secondary-light border border-primary-dark shadow-lg ring-1 ring-gray-900/5"
+    >
       <ng-content select="[dropdown-items]"></ng-content>
     </div>
   }

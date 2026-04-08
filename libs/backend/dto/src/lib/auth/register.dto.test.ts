@@ -19,7 +19,7 @@ describe('ClassDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('email');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'email should not be empty'
+      'email should not be empty',
     );
   });
   it('should fail validation when password is missing', async () => {
@@ -28,7 +28,7 @@ describe('ClassDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'password should not be empty'
+      'password should not be empty',
     );
   });
   it('should fail validation when role is missing', async () => {
@@ -37,7 +37,7 @@ describe('ClassDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('role');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'role should not be empty'
+      'role should not be empty',
     );
   });
   it('should fail validation when email is not valid type', async () => {
@@ -53,7 +53,7 @@ describe('ClassDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
     expect(errors[0].constraints?.['isString']).toBe(
-      'password must be a string'
+      'password must be a string',
     );
   });
   it('should fail validation when role is not valid type', async () => {
@@ -62,7 +62,7 @@ describe('ClassDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('role');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Role must be a valid enum value'
+      'Role must be a valid enum value',
     );
   });
 });

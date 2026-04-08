@@ -21,24 +21,24 @@ export class UserFormComponent implements OnInit, OnDestroy {
   private notify = inject(NotificationService);
 
   formSub?: Subscription;
-  isEditMode?:boolean;
+  isEditMode?: boolean;
   existId!: Id;
 
   userForm: FormGroup = new FormGroup({
     firstname: new FormControl(null, Validators.required),
-    lastname: new FormControl(null, Validators.required)
-  })
+    lastname: new FormControl(null, Validators.required),
+  });
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() {}
-  
+
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       const id = params.get('id');
 
-      if(id) {
+      if (id) {
         this.loadUserData(id);
         this.isEditMode = true;
         this.existId = id;
@@ -56,8 +56,14 @@ export class UserFormComponent implements OnInit, OnDestroy {
   initializeNewUser(): void {
     this.userForm.reset();
 
-    this.userForm.addControl('role', new FormControl(null, Validators.required));
-    this.userForm.addControl('email', new FormControl(null, Validators.required));
+    this.userForm.addControl(
+      'role',
+      new FormControl(null, Validators.required),
+    );
+    this.userForm.addControl(
+      'email',
+      new FormControl(null, Validators.required),
+    );
   }
 
   loadUserData(id: string): void {
@@ -65,13 +71,13 @@ export class UserFormComponent implements OnInit, OnDestroy {
       next: (user: IUser) => {
         this.userForm.patchValue({
           firstname: user.firstname,
-          lastname: user.lastname
+          lastname: user.lastname,
         });
       },
       error: (err: HttpErrorResponse) => {
         this.notify.error(err.error.message || 'Failed to load user data.');
-      }
-    })
+      },
+    });
   }
 
   onSubmit(): void {
@@ -79,29 +85,29 @@ export class UserFormComponent implements OnInit, OnDestroy {
       const data: IUpdateUser = {
         firstname: this.userForm.value.firstname,
         lastname: this.userForm.value.lastname,
-      }
+      };
 
       this.userService.update(data, this.existId).subscribe((updatedUser) => {
         this.userService.triggerRefresh();
         this.router.navigate(['/user', updatedUser._id]);
-      })
+      });
     } else {
-      const newPassword = uuidv4().slice(0,8);
+      const newPassword = uuidv4().slice(0, 8);
 
       const data: ICreateUser = {
         firstname: this.userForm.value.firstname,
         lastname: this.userForm.value.lastname,
         role: this.userForm.value.role,
         email: this.userForm.value.email,
-        password: newPassword
-      }  
+        password: newPassword,
+      };
 
       this.userService.create(data).subscribe(() => {
         this.userService.triggerRefresh();
 
         this.notify.copyToClipboard('Generated Password', newPassword);
-        this.router.navigate(['/user'])
-      })
+        this.router.navigate(['/user']);
+      });
     }
   }
 

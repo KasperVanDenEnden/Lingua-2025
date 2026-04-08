@@ -10,17 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  Id,
-  IUpdateUser,
-  IUser,
-  Role,
-} from '@lingua/api';
+import { Id, IUpdateUser, IUser, Role } from '@lingua/api';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/role.decorator';
 import { RolesGuard } from '../auth/guards/role-auth.guard';
-import { BodyObjectIdsPipe, StringObjectIdPipe } from '@lingua/features';
+import { BodyObjectIdsPipe } from '../pipes/bodyObjectIdsPipe';
+import { StringObjectIdPipe } from '../pipes/stringObjectIdPipe';
 import { Types } from 'mongoose';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
@@ -55,7 +51,7 @@ export class UserController {
   @Put(':id')
   async update(
     @Param('id', StringObjectIdPipe) id: Id,
-    @Body(BodyObjectIdsPipe) body: IUpdateUser
+    @Body(BodyObjectIdsPipe) body: IUpdateUser,
   ): Promise<IUser> {
     Logger.log('update', this.TAG);
     return await this.userService.update(id, body);
@@ -72,17 +68,17 @@ export class UserController {
   // === Friends === //
   @Post(':id/follow')
   async follow(
-        @Param('id', StringObjectIdPipe) id: Id,
-        @CurrentUser() user:any
+    @Param('id', StringObjectIdPipe) id: Id,
+    @CurrentUser() user: any,
   ) {
-    return await this.userService.follow(user.id, id)
+    return await this.userService.follow(user.id, id);
   }
 
   @Post(':id/unfollow')
   async unfollow(
-        @Param('id', StringObjectIdPipe) id: Id,
-        @CurrentUser() user:any
+    @Param('id', StringObjectIdPipe) id: Id,
+    @CurrentUser() user: any,
   ) {
-    return await this.userService.unfollow(user.id, id)
+    return await this.userService.unfollow(user.id, id);
   }
 }

@@ -29,7 +29,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
   course$!: Observable<ICourse | null>;
   students$ = new BehaviorSubject<IUser[]>([]);
-  
+
   private sub!: Subscription;
   courseId?: string | null;
 
@@ -37,13 +37,17 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   teachers: IUser[] = [];
   availableTeachers: IUser[] = [];
   selectedTeacher?: IUser | null;
-  
+
   isModalOpen = false;
   recordToDelete?: ICourse | null;
 
   reviewForm: FormGroup = new FormGroup({
-    rating: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(5)]),
-    comment: new FormControl(null, Validators.required)
+    rating: new FormControl(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(5),
+    ]),
+    comment: new FormControl(null, Validators.required),
   });
 
   currentUser?: any | null = null;
@@ -54,14 +58,16 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => this.currentUser = user);  
-    
+    this.authService.currentUser$.subscribe(
+      (user) => (this.currentUser = user),
+    );
+
     this.loadCourse();
     // subscribe to service refresh events
     this.courseService.refresh$.subscribe(() => {
       if (this.courseId) this.loadCourse();
     });
-}
+  }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
@@ -71,21 +77,24 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   // Load course and initialize arrays
   // -----------------------------
   loadCourse(): void {
-    this.sub = this.route.paramMap.subscribe(params => {
+    this.sub = this.route.paramMap.subscribe((params) => {
       this.courseId = params.get('id');
       if (!this.courseId) return;
-      
-      this.courseService.getCourseById(this.courseId).subscribe(course => {
-        this.course$ = new BehaviorSubject<ICourse | null>(course).asObservable();
-        this.teachers = course.teachers as IUser[] || [];
-        this.students$.next(course.students as IUser[] || []);
+
+      this.courseService.getCourseById(this.courseId).subscribe((course) => {
+        this.course$ = new BehaviorSubject<ICourse | null>(
+          course,
+        ).asObservable();
+        this.teachers = (course.teachers as IUser[]) || [];
+        this.students$.next((course.students as IUser[]) || []);
         this.recordToDelete = course;
 
-
-        this.userService.getUsers().subscribe(users => {
-          const allTeachers = users.filter(u => u.role === 'teacher');
-          const assignedIds = new Set(this.teachers.map(t => t._id));
-          this.availableTeachers = allTeachers.filter(t => !assignedIds.has(t._id));
+        this.userService.getUsers().subscribe((users) => {
+          const allTeachers = users.filter((u) => u.role === 'teacher');
+          const assignedIds = new Set(this.teachers.map((t) => t._id));
+          this.availableTeachers = allTeachers.filter(
+            (t) => !assignedIds.has(t._id),
+          );
         });
       });
     });
@@ -107,7 +116,9 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         this.router.navigate(['/courses']);
       },
       error: (error: HttpErrorResponse) => {
-        this.notify.error(error.error?.message || 'Failed to delete course: ' + error.message);
+        this.notify.error(
+          error.error?.message || 'Failed to delete course: ' + error.message,
+        );
       },
     });
   }
@@ -131,12 +142,16 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
     this.courseService.assignTeacher(this.courseId, teacher._id).subscribe({
       next: () => {
-        const assignedIds = new Set(this.teachers.map(t => t._id));
-        this.availableTeachers = this.availableTeachers?.filter(t => !assignedIds.has(t._id)) || [];
+        const assignedIds = new Set(this.teachers.map((t) => t._id));
+        this.availableTeachers =
+          this.availableTeachers?.filter((t) => !assignedIds.has(t._id)) || [];
         this.courseService.triggerRefresh();
         this.notify.success(`${teacher.firstname} is assigned to the course.`);
       },
-      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to assign teacher: ' + err.message)
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to assign teacher: ' + err.message,
+        ),
     });
   }
 
@@ -145,15 +160,19 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
     this.courseService.removeTeacher(this.courseId, teacher._id).subscribe({
       next: () => {
-        const assignedIds = new Set(this.teachers.map(t => t._id));
-        this.availableTeachers = this.availableTeachers?.filter(t => !assignedIds.has(t._id)) || [];
-        if (!this.availableTeachers.find(t => t._id === teacher._id)) {
+        const assignedIds = new Set(this.teachers.map((t) => t._id));
+        this.availableTeachers =
+          this.availableTeachers?.filter((t) => !assignedIds.has(t._id)) || [];
+        if (!this.availableTeachers.find((t) => t._id === teacher._id)) {
           this.availableTeachers.push(teacher);
         }
         this.courseService.triggerRefresh();
         this.notify.success(`${teacher.firstname} is removed from the course.`);
       },
-      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to remove teacher: ' + err.message)
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to remove teacher: ' + err.message,
+        ),
     });
   }
 
@@ -167,13 +186,22 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
       next: () => {
         this.notify.success('Enrolled successfully!');
         const currentStudents = this.students$.value;
-        if (!currentStudents.some(s => s._id.toString() === this.currentUser.id.toString())) {
-          this.userService.getUserById(this.currentUser.id).subscribe(user => {
-            this.students$.next([...currentStudents, user]);
-          });
+        if (
+          !currentStudents.some(
+            (s) => s._id.toString() === this.currentUser.id.toString(),
+          )
+        ) {
+          this.userService
+            .getUserById(this.currentUser.id)
+            .subscribe((user) => {
+              this.students$.next([...currentStudents, user]);
+            });
         }
       },
-      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to enroll: ' + err.message)
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to enroll: ' + err.message,
+        ),
     });
   }
 
@@ -184,10 +212,15 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
       next: () => {
         this.notify.success('Unenrolled successfully!');
         this.students$.next(
-          this.students$.value.filter(s => s._id.toString() !== this.currentUser.id.toString())
+          this.students$.value.filter(
+            (s) => s._id.toString() !== this.currentUser.id.toString(),
+          ),
         );
       },
-      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to unenroll: ' + err.message)
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to unenroll: ' + err.message,
+        ),
     });
   }
 
@@ -197,17 +230,20 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   submitReview(): void {
     const review: CreateReviewDto = {
       rating: parseInt(this.reviewForm.value.rating, 10),
-      comment: this.reviewForm.value.comment
-    }
+      comment: this.reviewForm.value.comment,
+    };
 
-    this.courseService.postReview(this.courseId!,review).subscribe({
+    this.courseService.postReview(this.courseId!, review).subscribe({
       next: () => {
-        this.notify.success('Review submitted successfully!');  
+        this.notify.success('Review submitted successfully!');
         this.courseService.triggerRefresh();
 
         this.reviewForm.reset();
       },
-      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to submit review: ' + err.message)
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to submit review: ' + err.message,
+        ),
     });
   }
 
@@ -223,13 +259,16 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   isUser(obj: Id | IUser): obj is IUser {
     return typeof obj !== 'string';
   }
-  
+
   isStudentEnrolled(): boolean {
     const students = this.students$.value;
-    return !!this.currentUser && students.some(s => s._id.toString() === this.currentUser.id.toString());
+    return (
+      !!this.currentUser &&
+      students.some((s) => s._id.toString() === this.currentUser.id.toString())
+    );
   }
 
-  canEdit():boolean {
+  canEdit(): boolean {
     return this.currentUser?.role !== 'student';
   }
 }

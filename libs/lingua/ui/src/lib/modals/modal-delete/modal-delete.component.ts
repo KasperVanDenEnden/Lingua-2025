@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-
 @Component({
   selector: 'lingua-modal-delete',
   imports: [],
@@ -10,7 +9,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ModalDeleteComponent {
   @Input() isOpen = false;
   @Input() title = 'Confirm Deletion';
-  @Input() message = 'Are you sure you want to delete this record? This action cannot be undone.';
+  @Input() message =
+    'Are you sure you want to delete this record? This action cannot be undone.';
   @Input() confirmText = 'Delete';
   @Input() cancelText = 'Cancel';
 

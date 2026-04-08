@@ -50,13 +50,13 @@ export class LoginComponent implements OnInit, OnDestroy {
             }
           },
           error: (err: HttpErrorResponse) => {
-            const message = err?.error?.message || 'Login failed: ' + err.message;
+            const message =
+              err?.error?.message || 'Login failed: ' + err.message;
             this.notify.error(message);
-          }
+          },
         });
     } else {
       this.loginForm.markAllAsTouched();
     }
-
   }
 }

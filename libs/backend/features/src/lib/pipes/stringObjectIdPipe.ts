@@ -8,9 +8,7 @@ export class StringObjectIdPipe
 {
   transform(value: string): Types.ObjectId {
     if (!Types.ObjectId.isValid(value)) {
-      throw new ValidationException([
-        `Invalid ObjectId: ${value}`,
-      ]);
+      throw new ValidationException([`Invalid ObjectId: ${value}`]);
     }
 
     return Types.ObjectId.createFromHexString(value);

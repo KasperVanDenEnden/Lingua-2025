@@ -10,18 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LessonService } from './lesson.service';
-import {
-  Id,
-  ILesson,
-  IUpdateLesson,
-  IUser,
-  Role,
-} from '@lingua/api';
+import { Id, ILesson, IUpdateLesson, IUser, Role } from '@lingua/api';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/role.decorator';
 import { RolesGuard } from '../auth/guards/role-auth.guard';
 import { CreateLessonDto } from '@lingua/dto';
-import { BodyObjectIdsPipe, StringObjectIdPipe } from '@lingua/features';
+import { BodyObjectIdsPipe } from '../pipes/bodyObjectIdsPipe';
+import { StringObjectIdPipe } from '../pipes/stringObjectIdPipe';
 import { Types } from 'mongoose';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
@@ -47,7 +42,9 @@ export class LessonController {
   @UseGuards(RolesGuard)
   @Roles(Role.Teacher, Role.Admin)
   @Post()
-  async create(@Body(BodyObjectIdsPipe) body: CreateLessonDto): Promise<ILesson> {
+  async create(
+    @Body(BodyObjectIdsPipe) body: CreateLessonDto,
+  ): Promise<ILesson> {
     Logger.log('create', this.TAG);
     return await this.lessonService.create(body);
   }
@@ -57,7 +54,7 @@ export class LessonController {
   @Put(':id')
   async update(
     @Param('id', StringObjectIdPipe) id: Id,
-    @Body(BodyObjectIdsPipe) body: IUpdateLesson
+    @Body(BodyObjectIdsPipe) body: IUpdateLesson,
   ): Promise<ILesson> {
     Logger.log('update', this.TAG);
     return await this.lessonService.update(id, body);
@@ -80,7 +77,10 @@ export class LessonController {
     @CurrentUser() user: any,
   ) {
     Logger.log('attend', this.TAG);
-    return await this.lessonService.attend(id, Types.ObjectId.createFromHexString(user.id));
+    return await this.lessonService.attend(
+      id,
+      Types.ObjectId.createFromHexString(user.id),
+    );
   }
 
   @UseGuards(RolesGuard)
@@ -91,6 +91,9 @@ export class LessonController {
     @CurrentUser() user: any,
   ) {
     Logger.log('unattend', this.TAG);
-    return await this.lessonService.unattend(id, Types.ObjectId.createFromHexString(user.id));
+    return await this.lessonService.unattend(
+      id,
+      Types.ObjectId.createFromHexString(user.id),
+    );
   }
 }

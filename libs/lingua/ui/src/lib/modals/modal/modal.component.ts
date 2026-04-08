@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-
 @Component({
   selector: 'lingua-modal',
   imports: [],
@@ -10,7 +9,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ModalComponent {
   @Input() isOpen = false;
   @Input() title = 'Confirm';
-  @Input() message = 'Confirm action!'
+  @Input() message = 'Confirm action!';
   @Input() confirmText = 'Confirm';
   @Input() cancelText = 'Cancel';
 

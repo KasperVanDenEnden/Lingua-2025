@@ -86,7 +86,7 @@ describe('AuthService', () => {
 
       expect(bcrypt.compare).toHaveBeenCalledWith(
         'password',
-        mockUser.password
+        mockUser.password,
       );
 
       expect(mockJwtService.sign).toHaveBeenCalledWith({
@@ -104,7 +104,7 @@ describe('AuthService', () => {
       });
 
       await expect(
-        service.login({ email: 'x', password: 'x' })
+        service.login({ email: 'x', password: 'x' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -116,7 +116,7 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(
-        service.login({ email: 'x', password: 'wrong' })
+        service.login({ email: 'x', password: 'wrong' }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });
@@ -168,7 +168,7 @@ describe('AuthService', () => {
       });
 
       await expect(
-        service.register({ email: 'test@test.com' } as any)
+        service.register({ email: 'test@test.com' } as any),
       ).rejects.toThrow(UnauthorizedException);
     });
   });
@@ -187,15 +187,12 @@ describe('AuthService', () => {
           oldPassword: 'old',
           newPassword: 'new',
         },
-        mockUserId
+        mockUserId,
       );
 
       expect(mockUserModel.findById).toHaveBeenCalledWith(mockUserId);
 
-      expect(bcrypt.compare).toHaveBeenCalledWith(
-        'old',
-        'hashed-password'
-      );
+      expect(bcrypt.compare).toHaveBeenCalledWith('old', 'hashed-password');
 
       expect(bcrypt.hash).toHaveBeenCalledWith('new', 10);
 
@@ -210,7 +207,7 @@ describe('AuthService', () => {
       mockUserModel.findById.mockResolvedValue(null);
 
       await expect(
-        service.changePassword({} as any, mockUserId)
+        service.changePassword({} as any, mockUserId),
       ).rejects.toThrow(HttpException);
     });
 
@@ -222,8 +219,8 @@ describe('AuthService', () => {
       await expect(
         service.changePassword(
           { oldPassword: 'wrong', newPassword: 'new' },
-          mockUserId
-        )
+          mockUserId,
+        ),
       ).rejects.toThrow(HttpException);
     });
   });

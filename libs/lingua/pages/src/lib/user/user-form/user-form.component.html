@@ -1,5 +1,7 @@
 <main class="flex justify-center">
-  <div class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg">
+  <div
+    class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg"
+  >
     <div class="flex justify-between items-center">
       <h1 class="font-semibold text-xl mb-3">User Form</h1>
       <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
@@ -8,79 +10,118 @@
     </div>
 
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
-
       <div class="grid grid-cols-2 gap-md">
         <div class="form-group">
-          <label for="firstname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Firstname</label>
-          <input id="firstname" type="text" formControlName="firstname"
-            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-            @if (userForm.get('firstname')?.touched && userForm.get('firstname')?.invalid) {
-              <div
-                class="text-red-500 text-sm mt-1">
-                @if (userForm.get('firstname')?.errors?.['required']) {
-                  <span>Firstname is required</span>
+          <label
+            for="firstname"
+            class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Firstname</label
+          >
+          <input
+            id="firstname"
+            type="text"
+            formControlName="firstname"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            required
+          />
+          @if (
+            userForm.get('firstname')?.touched &&
+            userForm.get('firstname')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (userForm.get('firstname')?.errors?.['required']) {
+                <span>Firstname is required</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label
+            for="lastname"
+            class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Lastname</label
+          >
+          <input
+            id="lastname"
+            type="text"
+            formControlName="lastname"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            required
+          />
+          @if (
+            userForm.get('lastname')?.touched &&
+            userForm.get('lastname')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (userForm.get('lastname')?.errors?.['required']) {
+                <span>Lastname is required</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (!isEditMode) {
+        <div class="grid grid-cols-2 gap-md">
+          <div class="form-group">
+            <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+              >Email</label
+            >
+            <input
+              id="email"
+              type="text"
+              formControlName="email"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+              required
+            />
+            @if (
+              userForm.get('email')?.touched && userForm.get('email')?.invalid
+            ) {
+              <div class="text-red-500 text-sm mt-1">
+                @if (userForm.get('email')?.errors?.['required']) {
+                  <span>Email is required</span>
                 }
               </div>
             }
           </div>
 
           <div class="form-group">
-            <label for="lastname" class="mb-1.5 ml-2.5 block text-sm font-semibold">Lastname</label>
-            <input id="lastname" type="text" formControlName="lastname"
-              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-              @if (userForm.get('lastname')?.touched && userForm.get('lastname')?.invalid) {
-                <div
-                  class="text-red-500 text-sm mt-1">
-                  @if (userForm.get('lastname')?.errors?.['required']) {
-                    <span>Lastname is required</span>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-
-          @if(!isEditMode) {
-
-            <div class="grid grid-cols-2 gap-md">
-              <div class="form-group">
-                <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold">Email</label>
-                <input id="email" type="text" formControlName="email"
-                  class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-                  @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
-                    <div
-                      class="text-red-500 text-sm mt-1">
-                      @if (userForm.get('email')?.errors?.['required']) {
-                        <span>Email is required</span>
-                      }
-                    </div>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="role" class="mb-1.5 ml-2.5 block text-sm font-semibold">Role</label>
-                  <select id="role" formControlName="role"
-                    class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-                    <option value="teacher">Teacher</option>
-                    <option value="student">Student</option>
-                  </select>
-                  @if (userForm.get('role')?.touched && userForm.get('role')?.invalid) {
-                    <div
-                      class="text-red-500 text-sm mt-1">
-                      @if (userForm.get('role')?.errors?.['required']) {
-                        <span>Select an option</span>
-                      }
-                    </div>
-                  }
-                </div>
+            <label for="role" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+              >Role</label
+            >
+            <select
+              id="role"
+              formControlName="role"
+              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            >
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
+            @if (
+              userForm.get('role')?.touched && userForm.get('role')?.invalid
+            ) {
+              <div class="text-red-500 text-sm mt-1">
+                @if (userForm.get('role')?.errors?.['required']) {
+                  <span>Select an option</span>
+                }
               </div>
             }
-
-            <button type="submit"
-              [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !userForm.invalid, 'bg-gray-300 text-gray-500': userForm.invalid }"
-              class="py-sm px-md text-white flex self-end" [disabled]="userForm.invalid">
-              Save
-            </button>
-
-          </form>
+          </div>
         </div>
-      </main>
+      }
+
+      <button
+        type="submit"
+        [ngClass]="{
+          'bg-primary-dark hover:bg-primary-light': !userForm.invalid,
+          'bg-gray-300 text-gray-500': userForm.invalid,
+        }"
+        class="py-sm px-md text-white flex self-end"
+        [disabled]="userForm.invalid"
+      >
+        Save
+      </button>
+    </form>
+  </div>
+</main>

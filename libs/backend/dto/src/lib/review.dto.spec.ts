@@ -25,7 +25,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'student should not be empty'
+      'student should not be empty',
     );
   });
 
@@ -35,7 +35,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'course should not be empty'
+      'course should not be empty',
     );
   });
 
@@ -45,7 +45,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'comment should not be empty'
+      'comment should not be empty',
     );
   });
 
@@ -55,7 +55,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'rating should not be empty'
+      'rating should not be empty',
     );
   });
 
@@ -67,7 +67,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
     expect(errors[0].constraints?.['isMongoId']).toBe(
-      'student must be a valid ObjectId'
+      'student must be a valid ObjectId',
     );
   });
 
@@ -77,7 +77,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
     expect(errors[0].constraints?.['isMongoId']).toBe(
-      'course must be a valid ObjectId'
+      'course must be a valid ObjectId',
     );
   });
 
@@ -87,7 +87,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isString']).toBe(
-      'comment must be a string'
+      'comment must be a string',
     );
   });
 
@@ -97,7 +97,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isInt']).toBe(
-      'rating must be an integer number'
+      'rating must be an integer number',
     );
   });
 
@@ -109,7 +109,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['min']).toBe(
-      'rating must not be less than 0'
+      'rating must not be less than 0',
     );
   });
 
@@ -119,7 +119,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['max']).toBe(
-      'rating must not be greater than 5'
+      'rating must not be greater than 5',
     );
   });
 });

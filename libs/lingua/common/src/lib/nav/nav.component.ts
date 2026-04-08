@@ -12,14 +12,14 @@ import { UiModule } from '@lingua/ui';
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css',
 })
-export class NavComponent implements OnInit, OnDestroy  {
+export class NavComponent implements OnInit, OnDestroy {
   auth = inject<AuthService>(AuthService);
 
   isMobileMenuOpen = false;
   isLocationMenuOpen = false;
 
-  isClassMenuOpen = false; 
-  isLessonMenuOpen = false; 
+  isClassMenuOpen = false;
+  isLessonMenuOpen = false;
 
   userSub!: Subscription;
   currentUser: ICurrentUser | undefined;
@@ -35,7 +35,7 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   ngOnInit(): void {
     this.auth.getUserFromLocalStorage().subscribe(
-      (user:  IUser | null) => {
+      (user: IUser | null) => {
         if (user) {
           const { role, email } = user;
           this.role = role;
@@ -44,18 +44,18 @@ export class NavComponent implements OnInit, OnDestroy  {
       },
       (error) => {
         console.error(error);
-      }
+      },
     );
 
     this.userSub = this.auth.currentUser$.subscribe({
       next: (user) => {
         if (user) {
-            this.currentUser = {
-              id: (user as any).id.toString(),
-              email: user.email,
-              role: user.role,
-            };
-          }
+          this.currentUser = {
+            id: (user as any).id.toString(),
+            email: user.email,
+            role: user.role,
+          };
+        }
       },
     });
   }
@@ -75,13 +75,13 @@ export class NavComponent implements OnInit, OnDestroy  {
   toggleClassMenu() {
     this.isClassMenuOpen = !this.isClassMenuOpen;
   }
-  
+
   toggleLessonMenu() {
     this.isLessonMenuOpen = !this.isLessonMenuOpen;
   }
 
   openLogoutModal() {
-    this.isLogoutModalOpen = true
+    this.isLogoutModalOpen = true;
   }
 
   closeLogoutModal() {

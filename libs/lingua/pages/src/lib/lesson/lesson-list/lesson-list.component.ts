@@ -1,7 +1,11 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
-import { AuthService, LessonService, NotificationService } from '@lingua/services';
+import {
+  AuthService,
+  LessonService,
+  NotificationService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { PagesModule } from '../../pages.module';
 import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
@@ -25,7 +29,7 @@ export class LessonListComponent implements OnInit, OnDestroy {
   lessonList$?: Observable<ILesson[]>;
 
   searchQuery = '';
-  selectedStatus: string = '';
+  selectedStatus = '';
 
   isModalOpen = false;
   recordToDelete?: ILesson | null;
@@ -40,7 +44,7 @@ export class LessonListComponent implements OnInit, OnDestroy {
 
     this.lessonService.refresh$.subscribe(() => {
       this.loadLessons();
-    })
+    });
   }
 
   ngOnDestroy(): void {
@@ -56,17 +60,21 @@ export class LessonListComponent implements OnInit, OnDestroy {
 
   get filteredLessons(): ILesson[] {
     if (!this.lessons) return [];
-    return this.lessons.filter(lesson => {
-      const matchesQuery = lesson.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-      
-      const matchesStatus =  this.selectedStatus ? lesson.status === this.selectedStatus : true;
+    return this.lessons.filter((lesson) => {
+      const matchesQuery = lesson.title
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.selectedStatus
+        ? lesson.status === this.selectedStatus
+        : true;
 
       return matchesQuery && matchesStatus;
-    });  
+    });
   }
 
-  getClass(lesson:ILesson) {
-    return (lesson.course as ICourse)?.title || ''
+  getClass(lesson: ILesson) {
+    return (lesson.course as ICourse)?.title || '';
   }
 
   getTeacher(lesson: ILesson): string {
@@ -89,7 +97,7 @@ export class LessonListComponent implements OnInit, OnDestroy {
         return 'text-gray-500 border-gray-500';
     }
   }
-  
+
   handleDelete(record: ILesson): void {
     console.log(record, 'record');
     this.recordToDelete = record;
@@ -99,7 +107,7 @@ export class LessonListComponent implements OnInit, OnDestroy {
   confirmDelete(): void {
     console.log('confirmed deletion');
     if (this.recordToDelete) {
-      console.log('recordToDeleteIsSet', this.recordToDelete._id)
+      console.log('recordToDeleteIsSet', this.recordToDelete._id);
       this.lessonService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           // Reload the list after successful deletion
@@ -108,24 +116,26 @@ export class LessonListComponent implements OnInit, OnDestroy {
           this.notify.success('Deleted successfully!');
         },
         error: (error: HttpErrorResponse) => {
-          this.notify.error(error.error?.message || 'Failed to delete lesson: ' + error.message);
+          this.notify.error(
+            error.error?.message || 'Failed to delete lesson: ' + error.message,
+          );
         },
         complete: () => {
           // Reset the recordToDelete and close modal
           this.recordToDelete = null;
           this.isModalOpen = false;
-        }
+        },
       });
     }
   }
-  
+
   closeModal(): void {
     console.log('close modal');
     this.isModalOpen = false;
   }
 
   isChildRouteActive(): boolean {
-    return this.route.children.length > 0; 
+    return this.route.children.length > 0;
   }
 
   canCreate(): boolean {

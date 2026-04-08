@@ -27,11 +27,11 @@ export enum Level {
 
 export interface ICourse {
   _id: Id;
-  
+
   title: string;
   description: string;
   price: number;
-  maxStudents:number; 
+  maxStudents: number;
   starts: Date;
   ends: Date | null;
 
@@ -49,7 +49,15 @@ export interface ICourse {
 
 export type ICreateCourse = Pick<
   ICourse,
-  'status' | 'title' | 'description' | 'language' | 'level' | 'price' | 'maxStudents' | 'starts' | 'ends'
+  | 'status'
+  | 'title'
+  | 'description'
+  | 'language'
+  | 'level'
+  | 'price'
+  | 'maxStudents'
+  | 'starts'
+  | 'ends'
 >;
 export type IUpdateCourse = Partial<Omit<ICourse, '_id'>>;
 export type IUpsertCourse = ICourse;

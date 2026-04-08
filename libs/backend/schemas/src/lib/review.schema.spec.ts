@@ -64,7 +64,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('student');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'student should not be empty'
+      'student should not be empty',
     );
   });
 
@@ -75,7 +75,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('course');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'course should not be empty'
+      'course should not be empty',
     );
   });
 
@@ -86,7 +86,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'comment should not be empty'
+      'comment should not be empty',
     );
   });
 
@@ -97,7 +97,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'rating should not be empty'
+      'rating should not be empty',
     );
   });
 
@@ -108,7 +108,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('createdAt');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'createdAt should not be empty'
+      'createdAt should not be empty',
     );
   });
 
@@ -120,7 +120,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isString']).toBe(
-      'comment must be a string'
+      'comment must be a string',
     );
   });
 
@@ -131,7 +131,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isInt']).toBe(
-      'rating must be an integer number'
+      'rating must be an integer number',
     );
   });
 
@@ -142,7 +142,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isInt']).toBe(
-      'rating must be an integer number'
+      'rating must be an integer number',
     );
   });
 
@@ -153,7 +153,7 @@ describe('ReviewSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('createdAt');
     expect(errors[0].constraints?.['isDate']).toBe(
-      'createdAt must be a Date instance'
+      'createdAt must be a Date instance',
     );
   });
 });

@@ -24,7 +24,7 @@ function setupAndVisit(path: string) {
 
   cy.loginAs('teacher');
 
- // Mock profile
+  // Mock profile
   cy.intercept('GET', '**/profile**', {
     statusCode: 200,
     body: { id: 'me', firstname: 'Test', lastname: 'User', role: 'teacher' },
@@ -158,9 +158,7 @@ describe('Course Form', () => {
       cy.get('#language').select('English');
       cy.get('#teacher').select('Teacher User');
 
-      cy.get('#starts')
-        .invoke('val', '2026-01-01')
-        .trigger('change');
+      cy.get('#starts').invoke('val', '2026-01-01').trigger('change');
 
       cy.get('button[type="submit"]').should('not.be.disabled');
     });
@@ -190,9 +188,7 @@ describe('Course Form', () => {
       cy.get('#language').select('English');
       cy.get('#teacher').select('Teacher User');
 
-      cy.get('#starts')
-        .invoke('val', '2026-01-01')
-        .trigger('change');
+      cy.get('#starts').invoke('val', '2026-01-01').trigger('change');
 
       cy.get('button[type="submit"]').click();
       cy.wait('@createCourse');
@@ -227,7 +223,10 @@ describe('Course Form', () => {
       cy.get('#title').should('have.value', mockCourse.title);
       cy.get('#description').should('have.value', mockCourse.description);
       cy.get('#price').should('have.value', String(mockCourse.price));
-      cy.get('#maxStudents').should('have.value', String(mockCourse.maxStudents));
+      cy.get('#maxStudents').should(
+        'have.value',
+        String(mockCourse.maxStudents),
+      );
       cy.get('#language').should('have.value', mockCourse.language);
     });
 

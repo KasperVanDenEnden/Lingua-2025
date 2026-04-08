@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { PagesModule } from '../../pages.module';
 import { IUser } from '@lingua/api';
 import { Subscription, Observable, BehaviorSubject, map } from 'rxjs';
-import { AuthService, NotificationService, UserService } from '@lingua/services';
+import {
+  AuthService,
+  NotificationService,
+  UserService,
+} from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -30,11 +34,11 @@ export class UserDetailComponent implements OnInit, OnDestroy {
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
-  
+
   constructor() {}
-  
+
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
 
@@ -42,19 +46,19 @@ export class UserDetailComponent implements OnInit, OnDestroy {
 
     this.userService.refresh$.subscribe(() => {
       this.loadUser();
-    })
+    });
   }
-  
+
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }
-  
- loadUser() {
+
+  loadUser() {
     this.sub = this.route.paramMap.subscribe((params) => {
       this.userId = params.get('id');
 
       if (this.userId) {
-        this.userService.getUserById(this.userId).subscribe(user => {
+        this.userService.getUserById(this.userId).subscribe((user) => {
           this.user$.next(user);
           console.log('user van backend:', user);
           console.log('friends:', user.friends);
@@ -62,14 +66,13 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   handleDelete(): void {
     this.isModalOpen = true;
   }
 
-  confirmDelete(): void
-  {
-    if(this.recordToDelete) {
+  confirmDelete(): void {
+    if (this.recordToDelete) {
       this.userService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           this.notify.success('User succesfully deleted');
@@ -77,8 +80,8 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         },
         error: (error: HttpErrorResponse) => {
           this.notify.error(error.error.message || 'Failed to delete user.');
-        }
-      })
+        },
+      });
     }
   }
 
@@ -86,34 +89,37 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     console.log('close modal');
     this.isModalOpen = false;
   }
-  
+
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
   }
 
   get friends$(): Observable<IUser[]> {
     return this.user$.pipe(
-      map(user => {
+      map((user) => {
         if (!user?.friends) return [];
         if ((user.friends as IUser[])[0]?.firstname !== undefined) {
           return user.friends as IUser[];
         }
-        return []; 
-      })
+        return [];
+      }),
     );
   }
 
   removeFriend(friendId: string): void {
     this.userService.removeFriend(friendId).subscribe({
       next: () => {
-        this.userService.getUserById(this.userId!).subscribe(user => {
+        this.userService.getUserById(this.userId!).subscribe((user) => {
           this.user$.next(user); // update bestaande subject
         });
         this.notify.success('Vriend succesvol verwijderd');
       },
       error: (err: HttpErrorResponse) => {
-        this.notify.error(err.error.message || 'Er is een fout opgetreden bij het verwijderen van de vriend.');
-      }
+        this.notify.error(
+          err.error.message ||
+            'Er is een fout opgetreden bij het verwijderen van de vriend.',
+        );
+      },
     });
   }
 
@@ -122,6 +128,9 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   }
 
   canDelete(): boolean {
-    return this.currentUser?._id === this.userId || this.currentUser?.role === 'admin';
+    return (
+      this.currentUser?._id === this.userId ||
+      this.currentUser?.role === 'admin'
+    );
   }
 }

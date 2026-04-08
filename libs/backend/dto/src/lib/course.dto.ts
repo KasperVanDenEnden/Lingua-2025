@@ -20,24 +20,24 @@ export class CreateCourseDto implements ICreateCourse {
   @IsNotEmpty()
   @IsEnum(CourseStatus, { message: 'Status must be a valid enum value' })
   status!: CourseStatus;
-  
+
   @IsNotEmpty()
   @IsString()
   title!: string;
-  
+
   @IsString()
   @IsNotEmpty()
   description!: string;
 
   @IsNotEmpty()
   @IsNumber()
-  @Max(50, { message: 'price cannot exceed 50,00' }) 
+  @Max(50, { message: 'price cannot exceed 50,00' })
   @Min(0, { message: 'price cannot be negative' })
   price!: number;
 
   @IsNotEmpty()
   @IsNumber()
-  @Max(20, { message: 'maxStudents cannot exceed 20' }) 
+  @Max(20, { message: 'maxStudents cannot exceed 20' })
   maxStudents!: number;
 
   @IsNotEmpty()
@@ -46,10 +46,10 @@ export class CreateCourseDto implements ICreateCourse {
   starts!: Date;
 
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : null)
+  @Transform(({ value }) => (value ? new Date(value) : null))
   @IsDate()
-  ends!: Date | null;;
-  
+  ends!: Date | null;
+
   @IsEnum(Language, { message: 'Language must be a valid enum value' })
   @IsNotEmpty()
   language!: Language;

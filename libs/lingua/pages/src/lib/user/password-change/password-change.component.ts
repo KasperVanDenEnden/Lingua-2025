@@ -36,7 +36,7 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
       newPassword: new FormControl(null, Validators.required),
       repeatPassword: new FormControl(null, Validators.required),
     },
-    { validators: passwordMatchValidator() }
+    { validators: passwordMatchValidator() },
   );
 
   /** Inserted by Angular inject() migration for backwards compatibility */
@@ -76,7 +76,7 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
         },
         error: (error: HttpErrorResponse) => {
           this.notify.error(
-            error.error.message || 'Failed to update password.'
+            error.error.message || 'Failed to update password.',
           );
         },
         complete: () => {

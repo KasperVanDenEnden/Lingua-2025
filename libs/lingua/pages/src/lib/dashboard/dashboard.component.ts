@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PagesModule } from '../pages.module';
 import { AuthService, CourseService } from '@lingua/services';
-import { ICourse } from 'libs/shared/api/src/lib/models/course.interface';
+import { ICourse } from '@lingua/api';
 import { switchMap, filter } from 'rxjs/operators';
 import { ICurrentUser, Id, IUser } from '@lingua/api';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private courseService = inject(CourseService);
   private authService = inject(AuthService);
 
@@ -29,21 +29,23 @@ export class DashboardComponent {
 
   ngOnInit(): void {
     this.userSub = this.authService.currentUser$.subscribe({
-        next: (user) => {
+      next: (user) => {
         if (user) {
-            this.currentUser = {
-              id: (user as any).id.toString(),
-              email: user.email,
-              role: user.role,
-            };
-          }
+          this.currentUser = {
+            id: (user as any).id.toString(),
+            email: user.email,
+            role: user.role,
+          };
+        }
       },
     });
 
-    this.courseService.getRecomendations(this.currentUser?.id.toString() || '').subscribe({
-      next: (courses) => {
-        this.rcmndCourses = courses;
-      }
-    });
+    this.courseService
+      .getRecomendations(this.currentUser?.id.toString() || '')
+      .subscribe({
+        next: (courses) => {
+          this.rcmndCourses = courses;
+        },
+      });
   }
 }

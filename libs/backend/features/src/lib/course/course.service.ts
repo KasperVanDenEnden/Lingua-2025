@@ -8,11 +8,10 @@ import { NeoOperationsService } from '../neo4j/neo-operations.service';
 
 @Injectable()
 export class CourseService {
-  
   private TAG = 'CourseService';
   constructor(
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
-    private neoService: NeoOperationsService
+    private neoService: NeoOperationsService,
   ) {}
 
   async getAll(): Promise<ICourse[]> {
@@ -27,10 +26,13 @@ export class CourseService {
       .findById(id)
       .populate('teachers', '-password')
       .populate('students', '-password')
-      .populate({ path: 'reviews', populate: { path: 'student', select: 'firstname lastname' } })
+      .populate({
+        path: 'reviews',
+        populate: { path: 'student', select: 'firstname lastname' },
+      })
       .exec();
 
-    if (!instance) 
+    if (!instance)
       throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
     return instance;
@@ -38,22 +40,20 @@ export class CourseService {
 
   async create(body: CreateCourseDto): Promise<ICourse> {
     Logger.log('create', this.TAG);
-    
+
     const mongoCourse = await this.courseModel.create(body);
 
     await this.neoService.mergeCourse(mongoCourse);
-    
-    return mongoCourse
+
+    return mongoCourse;
   }
 
   async update(id: Id, body: IUpdateCourse): Promise<ICourse> {
     Logger.log('update', this.TAG);
-    
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      id,
-      body,
-      { new: true }
-    );
+
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     if (!updatedCourse)
       throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
@@ -66,7 +66,8 @@ export class CourseService {
 
     const course = await this.courseModel.findById(id);
 
-    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    if (!course)
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
     await course.deleteOne();
     await this.neoService.detachCourse(id.toString());
@@ -74,78 +75,123 @@ export class CourseService {
     return new HttpException('Course deleted successfully', HttpStatus.OK);
   }
 
-  async enroll(courseId: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
-    const course = await this.courseModel.findById(courseId).exec();    
-    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-
-    if (course.students.some(studentId => studentId.toString() === userId.toString())) 
-      throw new HttpException('User is already enrolled in this course', HttpStatus.BAD_REQUEST);
-
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      courseId, 
-      { $addToSet: { students: userId } },
-      { new: true }
-    ).exec();
-    
-    await this.neoService.enrollInCourse(userId.toString(), courseId.toString());
-
-    return updatedCourse as ICourse;
-  }
-
-  async unenroll(courseId: Types.ObjectId, userId: Types.ObjectId): Promise<ICourse> {
+  async enroll(
+    courseId: Types.ObjectId,
+    userId: Types.ObjectId,
+  ): Promise<ICourse> {
     const course = await this.courseModel.findById(courseId).exec();
-    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-    
-    if (!course.students.some(studentId => studentId.toString() === userId.toString())) 
-      throw new HttpException('User is not enrolled in this course', HttpStatus.BAD_REQUEST);
+    if (!course)
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
-    const updatedCourse  =  await this.courseModel.findByIdAndUpdate(
-      courseId,
-      { $pull: { students: userId } },
-      { new: true }
-    ).exec();
+    if (
+      course.students.some(
+        (studentId) => studentId.toString() === userId.toString(),
+      )
+    )
+      throw new HttpException(
+        'User is already enrolled in this course',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    await this.neoService.unenrollInCourse(userId.toString(), courseId.toString());
-    
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(
+        courseId,
+        { $addToSet: { students: userId } },
+        { new: true },
+      )
+      .exec();
+
+    await this.neoService.enrollInCourse(
+      userId.toString(),
+      courseId.toString(),
+    );
+
     return updatedCourse as ICourse;
   }
 
-  async assignTeacher(id: Types.ObjectId, teacherId: Types.ObjectId): Promise<ICourse> {
+  async unenroll(
+    courseId: Types.ObjectId,
+    userId: Types.ObjectId,
+  ): Promise<ICourse> {
+    const course = await this.courseModel.findById(courseId).exec();
+    if (!course)
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+
+    if (
+      !course.students.some(
+        (studentId) => studentId.toString() === userId.toString(),
+      )
+    )
+      throw new HttpException(
+        'User is not enrolled in this course',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(
+        courseId,
+        { $pull: { students: userId } },
+        { new: true },
+      )
+      .exec();
+
+    await this.neoService.unenrollInCourse(
+      userId.toString(),
+      courseId.toString(),
+    );
+
+    return updatedCourse as ICourse;
+  }
+
+  async assignTeacher(
+    id: Types.ObjectId,
+    teacherId: Types.ObjectId,
+  ): Promise<ICourse> {
     const course = await this.courseModel.findById(id).exec();
-    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    if (!course)
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
-    if (course.teachers.some(t => t.toString() === teacherId.toString()))
-      throw new HttpException('This teacher is already assigned to the course', HttpStatus.BAD_REQUEST);
+    if (course.teachers.some((t) => t.toString() === teacherId.toString()))
+      throw new HttpException(
+        'This teacher is already assigned to the course',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      id,
-      { $addToSet: { teachers: teacherId } },
-      { new: true }
-    ).exec();
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(
+        id,
+        { $addToSet: { teachers: teacherId } },
+        { new: true },
+      )
+      .exec();
 
     this.neoService.teachCourse(teacherId.toString(), id.toString());
 
     return updatedCourse as ICourse;
   }
 
-  async removeTeacher(id: Types.ObjectId, teacherId: Types.ObjectId): Promise<ICourse> {
+  async removeTeacher(
+    id: Types.ObjectId,
+    teacherId: Types.ObjectId,
+  ): Promise<ICourse> {
     const course = await this.courseModel.findById(id).exec();
-    if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    if (!course)
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
 
-    if (!course.teachers.some(t => t.toString() === teacherId.toString()))
-      throw new HttpException('This teacher is not assigned to the course', HttpStatus.BAD_REQUEST);
+    if (!course.teachers.some((t) => t.toString() === teacherId.toString()))
+      throw new HttpException(
+        'This teacher is not assigned to the course',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(
-      id,
-      { $pull: { teachers: teacherId } },
-      { new: true }
-    ).exec();
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(id, { $pull: { teachers: teacherId } }, { new: true })
+      .exec();
 
     this.neoService.unteachCourse(teacherId.toString(), id.toString());
 
     return updatedCourse as ICourse;
   }
- 
 
   async getStudentDashboard(userId: string): Promise<ICourse[]> {
     Logger.log('Get course suggestions for student dashboard', this.TAG);
@@ -153,7 +199,7 @@ export class CourseService {
 
     return await this.courseModel.aggregate([
       // Alleen courses waar de student inzit
-      { $match: { students: objectId }},
+      { $match: { students: objectId } },
 
       // Lessen ophalen van die course
       {
@@ -161,8 +207,8 @@ export class CourseService {
           from: 'lessons',
           localField: '_id',
           foreignField: 'course',
-          as: 'lessons'
-        }
+          as: 'lessons',
+        },
       },
 
       // Docenteninformatie ophalen
@@ -171,8 +217,8 @@ export class CourseService {
           from: 'users',
           localField: 'teachers',
           foreignField: '_id',
-          as: 'teacherInfo'
-        }
+          as: 'teacherInfo',
+        },
       },
 
       // Bijgewoonde lessen filteren
@@ -182,10 +228,10 @@ export class CourseService {
             $filter: {
               input: '$lessons',
               as: 'lesson',
-              cond: { $in: [objectId, '$$lesson.students'] }
-            }
-          }
-        }
+              cond: { $in: [objectId, '$$lesson.students'] },
+            },
+          },
+        },
       },
 
       // Alleen relevante velden teruggeven
@@ -196,8 +242,8 @@ export class CourseService {
             $map: {
               input: '$teacherInfo',
               as: 't',
-              in: { firstname: '$$t.firstname', lastname: '$$t.lastname' }
-            }
+              in: { firstname: '$$t.firstname', lastname: '$$t.lastname' },
+            },
           },
           totalLessons: { $size: '$lessons' },
           attendedCount: { $size: '$attendedLessons' },
@@ -206,15 +252,20 @@ export class CourseService {
               if: { $gt: [{ $size: '$lessons' }, 0] },
               then: {
                 $multiply: [
-                  { $divide: [{ $size: '$attendedLessons' }, { $size: '$lessons' }] },
-                  100
-                ]
+                  {
+                    $divide: [
+                      { $size: '$attendedLessons' },
+                      { $size: '$lessons' },
+                    ],
+                  },
+                  100,
+                ],
               },
-              else: 0
-            }
-          }
-        }
-      }
-    ])
+              else: 0,
+            },
+          },
+        },
+      },
+    ]);
   }
 }

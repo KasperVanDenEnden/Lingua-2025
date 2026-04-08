@@ -2,13 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
-import {
-  ICourse,
-  ICreateLesson,
-  Id,
-  ILesson,
-  IUser,
-} from '@lingua/api';
+import { ICourse, ICreateLesson, Id, ILesson, IUser } from '@lingua/api';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   LessonService,
@@ -46,11 +40,20 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     course: new FormControl(null, Validators.required),
     status: new FormControl(null, Validators.required),
     type: new FormControl(null, Validators.required),
-    title: new FormControl(null, [Validators.required, Validators.minLength(3)]),
+    title: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(3),
+    ]),
     isWorkshop: new FormControl(false),
     day: new FormControl(null, Validators.required),
-    startTime: new FormControl(null, [Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')]),
-    endTime: new FormControl(null, [Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')]),
+    startTime: new FormControl(null, [
+      Validators.required,
+      Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'),
+    ]),
+    endTime: new FormControl(null, [
+      Validators.required,
+      Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'),
+    ]),
   });
 
   /** Inserted by Angular inject() migration for backwards compatibility */
@@ -66,10 +69,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (results) => {
         this.teachers = results.teachers.filter(
-          (user) => user.role === 'teacher'
+          (user) => user.role === 'teacher',
         );
         this.courses = results.courses.filter(
-          (course) => course.status !== 'Archived'
+          (course) => course.status !== 'Archived',
         );
 
         // Nadat de gegevens geladen zijn, laad je de lesgegevens (indien bewerken)
@@ -90,7 +93,9 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         });
       },
       error: (err: HttpErrorResponse) => {
-        this.notify.error(err.error?.message || 'Failed to load initial data: ' + err.message);
+        this.notify.error(
+          err.error?.message || 'Failed to load initial data: ' + err.message,
+        );
       },
     });
   }
@@ -123,7 +128,9 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         this.lessonForm.get('teacher')?.setValue((lesson.teacher as IUser)._id);
       },
       error: (err: HttpErrorResponse) => {
-        this.notify.error(err.error?.message || 'Failed to load lesson data: ' + err.message);
+        this.notify.error(
+          err.error?.message || 'Failed to load lesson data: ' + err.message,
+        );
       },
     });
   }
@@ -137,21 +144,20 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     }
 
     const selectedCourse = this.courses.find(
-      (courses) => courses._id === selectedCourseId
+      (courses) => courses._id === selectedCourseId,
     );
     if (selectedCourse) {
       console.log('Filtering gestart');
 
       const assignedTeacherIds = [
         selectedCourse.teachers, // Hoofdleraar ID (direct toegevoegd)
-        
       ].filter((id) => id);
 
       console.log('Toegewezen leraren:', assignedTeacherIds);
 
       // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
       this.filteredTeachers = this.teachers.filter((teacher) =>
-        (selectedCourse.teachers as Id[]).includes(teacher._id)
+        (selectedCourse.teachers as Id[]).includes(teacher._id),
       );
     } else {
       this.filteredTeachers = [];

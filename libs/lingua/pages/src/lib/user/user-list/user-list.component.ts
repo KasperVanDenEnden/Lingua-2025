@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { PagesModule } from '../../pages.module';
-import { AuthService, NotificationService, UserService } from '@lingua/services';
+import {
+  AuthService,
+  NotificationService,
+  UserService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { IUser } from '@lingua/api';
 import { Observable, Subscription } from 'rxjs';
@@ -25,7 +29,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   friendIds: string[] = [];
 
   searchQuery = '';
-  selectedRole: string = '';
+  selectedRole = '';
 
   userList$?: Observable<IUser[]>;
 
@@ -38,7 +42,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
 
@@ -62,12 +66,16 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   loadCurrentUser() {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.currentUserId = (user as any).id;
-        this.userService.getUserById(this.currentUserId!).subscribe(fullUser => {
-        this.friendIds = (fullUser.friends as any[]).map(f => f._id?.toString() || f.toString());
-        });
+        this.userService
+          .getUserById(this.currentUserId!)
+          .subscribe((fullUser) => {
+            this.friendIds = (fullUser.friends as any[]).map(
+              (f) => f._id?.toString() || f.toString(),
+            );
+          });
       }
     });
   }
@@ -75,18 +83,20 @@ export class UserListComponent implements OnInit, OnDestroy {
   get filteredUsers(): IUser[] {
     if (!this.users) return [];
 
-    return this.users.filter(user => {
+    return this.users.filter((user) => {
       const fullname = user.firstname + ' ' + user.lastname;
-      
+
       const matchesSearch = this.searchQuery
-        ? fullname.toLowerCase().includes(this.searchQuery.toLowerCase()) 
-          || user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+        ? fullname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
         : true;
-      
-      const matchesRole =  this.selectedRole ? user.role === this.selectedRole : true;
-      
+
+      const matchesRole = this.selectedRole
+        ? user.role === this.selectedRole
+        : true;
+
       return matchesSearch && matchesRole;
-    })
+    });
   }
 
   handleDelete(record: IUser): void {
@@ -129,16 +139,18 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   addFriend(userId: string): void {
-  this.userService.addFriend(userId).subscribe({
-    next: () => {
-      this.friendIds.push(userId.toString());
-      this.notify.success('Added friend successfully!');
-    },
-    error: (err: HttpErrorResponse) => {
-      this.notify.error(err.error.message || 'Something went wrong while adding friend.');
-    }
-  });
-}
+    this.userService.addFriend(userId).subscribe({
+      next: () => {
+        this.friendIds.push(userId.toString());
+        this.notify.success('Added friend successfully!');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(
+          err.error.message || 'Something went wrong while adding friend.',
+        );
+      },
+    });
+  }
 
   canEdit(): boolean {
     return this.currentUser?._id === this.currentUserId;

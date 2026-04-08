@@ -6,7 +6,7 @@ export enum LessonStatus {
   Open = 'Open',
   Full = 'Full',
   Canceled = 'Canceled',
-  Concept = 'Concept'
+  Concept = 'Concept',
 }
 
 export enum LessonType {
@@ -23,7 +23,7 @@ export interface ILesson {
   _id: Id;
 
   course: Id | ICourse;
-  
+
   teacher: Id | IUser; // Teacher Id
   students: Id[] | IUser[]; // Attending students
 
@@ -39,7 +39,15 @@ export interface ILesson {
 
 export type ICreateLesson = Pick<
   ILesson,
-  'course' | 'teacher' | 'status' | 'title' | 'type' | 'isWorkshop' | 'day' | 'startTime' | 'endTime'
+  | 'course'
+  | 'teacher'
+  | 'status'
+  | 'title'
+  | 'type'
+  | 'isWorkshop'
+  | 'day'
+  | 'startTime'
+  | 'endTime'
 >;
 export type IUpdateLesson = Partial<Omit<ILesson, '_id'>>;
 export type IUpsertLesson = ILesson;

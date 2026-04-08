@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICourse, ILesson, IUser } from '@lingua/api';
 import { Subscription, Observable } from 'rxjs';
-import { AuthService, LessonService, NotificationService } from '@lingua/services';
+import {
+  AuthService,
+  LessonService,
+  NotificationService,
+} from '@lingua/services';
 import { PagesModule } from '../../pages.module';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -18,7 +22,6 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private notify = inject(NotificationService);
   private authService = inject(AuthService);
-
 
   lesson$!: Observable<ILesson>;
   lessonId?: string | null;
@@ -49,9 +52,9 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
       this.loadLesson();
     });
 
-    this.authService.currentUser$.subscribe(user => {
-        this.currentUser = user;
-      });
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+    });
   }
 
   ngOnDestroy(): void {
@@ -64,19 +67,19 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
     this.routeSub?.unsubscribe();
     this.lessonSub?.unsubscribe();
 
-    this.routeSub = this.route.paramMap.subscribe(params => {
+    this.routeSub = this.route.paramMap.subscribe((params) => {
       this.lessonId = params.get('id');
       if (!this.lessonId) return;
 
       this.lesson$ = this.lessonService.getLessonById(this.lessonId);
 
-      this.lessonSub = this.lesson$.subscribe(lesson => {
+      this.lessonSub = this.lesson$.subscribe((lesson) => {
         this.course = lesson.course as ICourse;
         this.teacher = lesson.teacher as IUser;
         this.recordToDelete = lesson;
 
         this.students = Array.isArray(lesson.students)
-          ? lesson.students as IUser[]
+          ? (lesson.students as IUser[])
           : [];
       });
     });
@@ -124,31 +127,35 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
         this.notify.success('Succesfully attended the lesson!');
         this.loadLesson();
       },
-     error: (error: HttpErrorResponse) => {
-        this.notify.error(error.error?.message || 
-          'Something went wrong while attending the lesson'
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(
+          error.error?.message ||
+            'Something went wrong while attending the lesson',
         );
-      }
+      },
     });
   }
 
   unattend(): void {
-      this.lessonService.unattend(this.lessonId!).subscribe({
-        next: () => {
-          this.notify.success('Succesfully unattended the lesson!');
-          this.loadLesson();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.notify.error(
-            error.error?.message || 'Something went wrong while unattending the lesson'
-          );
-        }
-      });
+    this.lessonService.unattend(this.lessonId!).subscribe({
+      next: () => {
+        this.notify.success('Succesfully unattended the lesson!');
+        this.loadLesson();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(
+          error.error?.message ||
+            'Something went wrong while unattending the lesson',
+        );
+      },
+    });
   }
 
-  isAttending(): boolean {  
+  isAttending(): boolean {
     if (!this.currentUser) return false;
-    return this.students.some(student => student._id === this.currentUser?.id);
+    return this.students.some(
+      (student) => student._id === this.currentUser?.id,
+    );
   }
 
   canEdit(): boolean {

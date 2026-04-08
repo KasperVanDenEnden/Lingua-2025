@@ -1,6 +1,11 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CourseStatus, ICourse, IUser, Language } from '@lingua/api';
-import { AuthService, CourseService, NotificationService, UserService } from '@lingua/services';
+import {
+  AuthService,
+  CourseService,
+  NotificationService,
+  UserService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
@@ -24,13 +29,13 @@ export class CourseListComponent implements OnInit, OnDestroy {
   sub!: Subscription;
   currentUserId?: string;
   currentUser?: IUser | null = null;
-  
-  statuses = Object.values(CourseStatus); 
-  languages = Object.values(Language); 
+
+  statuses = Object.values(CourseStatus);
+  languages = Object.values(Language);
 
   searchQuery = '';
-  selectedStatus: string = '';
-  selectedLanguage: string = '';
+  selectedStatus = '';
+  selectedLanguage = '';
 
   courseList$?: Observable<ICourse[]>;
 
@@ -43,7 +48,9 @@ export class CourseListComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => this.currentUser = user);  
+    this.authService.currentUser$.subscribe(
+      (user) => (this.currentUser = user),
+    );
 
     this.loadCourses();
 
@@ -65,14 +72,20 @@ export class CourseListComponent implements OnInit, OnDestroy {
 
   get filteredCourses(): ICourse[] {
     if (!this.courses) return [];
-    return this.courses.filter(course => {
-      const matchesQuery = course.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-      
-      const matchesStatus =  this.selectedStatus ? course.status === this.selectedStatus : true;
-      const matchesLanguage = this.selectedLanguage ? course.language === this.selectedLanguage : true; 
+    return this.courses.filter((course) => {
+      const matchesQuery = course.title
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.selectedStatus
+        ? course.status === this.selectedStatus
+        : true;
+      const matchesLanguage = this.selectedLanguage
+        ? course.language === this.selectedLanguage
+        : true;
 
       return matchesQuery && matchesStatus && matchesLanguage;
-    });  
+    });
   }
 
   handleDelete(record: ICourse): void {
@@ -88,7 +101,9 @@ export class CourseListComponent implements OnInit, OnDestroy {
           this.notify.success('Gelukt!');
         },
         error: (error: HttpErrorResponse) => {
-          this.notify.error(error.error?.message || 'Failed to delete course: ' + error.message);
+          this.notify.error(
+            error.error?.message || 'Failed to delete course: ' + error.message,
+          );
         },
         complete: () => {
           this.recordToDelete = null;
@@ -111,7 +126,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
     return role === 'admin' || role === 'teacher';
   }
 
-  canEdit():boolean {
+  canEdit(): boolean {
     return this.currentUser?.role !== 'student';
   }
 }

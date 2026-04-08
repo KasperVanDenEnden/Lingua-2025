@@ -6,7 +6,7 @@ export * from './lib/models/review.interface';
 export * from './lib/models/id';
 
 // Validators
-export * from './lib/validators/passwordMatch.validator'
+export * from './lib/validators/passwordMatch.validator';
 
 // queries
-export * from './lib/queries/neo4j.cyphers'
+export * from './lib/queries/neo4j.cyphers';

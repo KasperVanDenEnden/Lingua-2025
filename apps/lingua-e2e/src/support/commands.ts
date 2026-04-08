@@ -34,20 +34,24 @@ Cypress.Commands.add('loginAs', (role: 'admin' | 'teacher' | 'student') => {
     throw new Error(`User with role '${role}' not found`);
   }
 
-  cy.session(role, () => {
-    // 🔑 Zet storage ZONDER app bootstrap
-    cy.window().then((win) => {
-      win.localStorage.setItem('currentuser', JSON.stringify(user));
-      win.localStorage.setItem('JWT', 'fake-jwt-token');
-    });
-  }, {
-    validate() {
-      cy.window()
-        .its('localStorage')
-        .invoke('getItem', 'JWT')
-        .should('exist');
-    }
-  });
+  cy.session(
+    role,
+    () => {
+      // 🔑 Zet storage ZONDER app bootstrap
+      cy.window().then((win) => {
+        win.localStorage.setItem('currentuser', JSON.stringify(user));
+        win.localStorage.setItem('JWT', 'fake-jwt-token');
+      });
+    },
+    {
+      validate() {
+        cy.window()
+          .its('localStorage')
+          .invoke('getItem', 'JWT')
+          .should('exist');
+      },
+    },
+  );
 
   // 🔑 ALTIJD auth endpoint mocken buiten session
   cy.intercept('GET', '**/auth/profile', {

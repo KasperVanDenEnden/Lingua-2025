@@ -134,7 +134,9 @@ describe('UserService', () => {
     it('should throw if email exists', async () => {
       mockUserModel.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.create(mockUser as any)).rejects.toThrow(HttpException);
+      await expect(service.create(mockUser as any)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -142,7 +144,9 @@ describe('UserService', () => {
     it('should update user', async () => {
       mockUserModel.findByIdAndUpdate.mockResolvedValue(mockUser);
 
-      const result = await service.update(mockUserId, { email: 'new@test.com' });
+      const result = await service.update(mockUserId, {
+        email: 'new@test.com',
+      });
 
       expect(result).toEqual(mockUser);
     });
@@ -150,7 +154,9 @@ describe('UserService', () => {
     it('should throw if not found', async () => {
       mockUserModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.update(mockUserId, {} as any)).rejects.toThrow(HttpException);
+      await expect(service.update(mockUserId, {} as any)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -208,12 +214,14 @@ describe('UserService', () => {
       };
 
       mockUserModel.findById
-        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(userWithFriend) })
+        .mockReturnValueOnce({
+          exec: jest.fn().mockResolvedValue(userWithFriend),
+        })
         .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(mockFriend) });
 
-      await expect(
-        service.follow(mockUserId, mockFriendId)
-      ).rejects.toThrow(HttpException);
+      await expect(service.follow(mockUserId, mockFriendId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -227,7 +235,9 @@ describe('UserService', () => {
       };
 
       mockUserModel.findById
-        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(userWithFriend) })
+        .mockReturnValueOnce({
+          exec: jest.fn().mockResolvedValue(userWithFriend),
+        })
         .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(mockFriend) });
 
       const result = await service.unfollow(mockUserId, mockFriendId);
@@ -243,9 +253,9 @@ describe('UserService', () => {
         .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(mockUser) })
         .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(mockFriend) });
 
-      await expect(
-        service.unfollow(mockUserId, mockFriendId)
-      ).rejects.toThrow(HttpException);
+      await expect(service.unfollow(mockUserId, mockFriendId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 });

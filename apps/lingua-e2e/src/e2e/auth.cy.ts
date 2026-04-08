@@ -11,19 +11,19 @@ describe('Authentication', () => {
 
   it('should login with valid credentials', () => {
     cy.intercept('POST', '**/auth/login', {
-        statusCode: 200,
-        body: { access_token: 'fake-jwt-token' },
+      statusCode: 200,
+      body: { access_token: 'fake-jwt-token' },
     }).as('loginRequest');
 
     cy.intercept('GET', '**/auth/profile', {
-        statusCode: 200,
-        body: {
+      statusCode: 200,
+      body: {
         _id: '1',
         firstname: 'Test',
         lastname: 'Admin',
         email: 'admin@lingua.com',
-        role: 'admin'
-      }
+        role: 'admin',
+      },
     }).as('profileRequest');
     cy.visit('/login');
 
@@ -40,7 +40,7 @@ describe('Authentication', () => {
   it('shows error message with invalid credentials', () => {
     cy.intercept('POST', '**/auth/login', {
       statusCode: 401,
-      body: { message: 'Ongeldige inloggegevens' }
+      body: { message: 'Ongeldige inloggegevens' },
     }).as('loginFailed');
 
     cy.get('input[type="email"]').type('fout@lingua.com');
@@ -63,10 +63,10 @@ describe('Authentication', () => {
     cy.contains('Invalid email format').should('be.visible');
   });
 
- it('shows error toastr with invalid credentials', () => {
+  it('shows error toastr with invalid credentials', () => {
     cy.intercept('POST', '**/auth/login', {
-        statusCode: 401,
-        body: { message: 'Ongeldige inloggegevens' }  
+      statusCode: 401,
+      body: { message: 'Ongeldige inloggegevens' },
     }).as('loginFailed');
 
     cy.visit('/login');
@@ -77,7 +77,7 @@ describe('Authentication', () => {
 
     cy.wait('@loginFailed');
     cy.get('.toast-error')
-        .should('be.visible')
-        .and('contain', 'Ongeldige inloggegevens');
-    });
+      .should('be.visible')
+      .and('contain', 'Ongeldige inloggegevens');
+  });
 });

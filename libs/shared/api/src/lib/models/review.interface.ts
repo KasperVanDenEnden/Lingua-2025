@@ -5,7 +5,7 @@ import { IUser } from './user.interface';
 export interface IReview {
   _id: Id;
 
-  student: Id | IUser; 
+  student: Id | IUser;
   course: Id | ICourse;
 
   comment: string;

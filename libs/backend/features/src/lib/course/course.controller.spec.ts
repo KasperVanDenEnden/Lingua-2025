@@ -112,7 +112,7 @@ describe('CourseController', () => {
       const result = await controller.enroll(mockCourseId, mockUser);
       expect(service.enroll).toHaveBeenCalledWith(
         mockCourseId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual(mockCourse);
     });
@@ -124,7 +124,7 @@ describe('CourseController', () => {
       const result = await controller.unenroll(mockCourseId, mockUser);
       expect(service.unenroll).toHaveBeenCalledWith(
         mockCourseId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual(mockCourse);
     });

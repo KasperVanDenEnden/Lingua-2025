@@ -73,11 +73,7 @@ describe('ReviewService', () => {
 
       const dto = { rating: 5, comment: 'Nice' };
 
-      const result = await service.create(
-        dto as any,
-        mockCourseId,
-        mockUserId
-      );
+      const result = await service.create(dto as any, mockCourseId, mockUserId);
 
       expect(mockCourseModel.findOne).toHaveBeenCalledWith({
         _id: mockCourseId,
@@ -97,7 +93,7 @@ describe('ReviewService', () => {
       });
 
       await expect(
-        service.create({} as any, mockCourseId, mockUserId)
+        service.create({} as any, mockCourseId, mockUserId),
       ).rejects.toThrow(HttpException);
     });
 
@@ -107,7 +103,7 @@ describe('ReviewService', () => {
       });
 
       await expect(
-        service.create({} as any, mockCourseId, mockUserId)
+        service.create({} as any, mockCourseId, mockUserId),
       ).rejects.toThrow(HttpException);
     });
   });
@@ -128,7 +124,7 @@ describe('ReviewService', () => {
       const result = await service.delete(
         mockReviewId,
         mockCourseId,
-        mockUserId
+        mockUserId,
       );
 
       expect(mockCourseModel.findOne).toHaveBeenCalledWith({
@@ -139,12 +135,12 @@ describe('ReviewService', () => {
       expect(mockCourseModel.findByIdAndUpdate).toHaveBeenCalledWith(
         mockCourseId,
         { $pull: { reviews: { _id: mockReviewId } } },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
 
       expect(mockNeoService.deleteReview).toHaveBeenCalledWith(
         mockUserId.toString(),
-        mockCourseId.toString()
+        mockCourseId.toString(),
       );
 
       expect(result).toBeDefined();
@@ -156,7 +152,7 @@ describe('ReviewService', () => {
       });
 
       await expect(
-        service.delete(mockReviewId, mockCourseId, mockUserId)
+        service.delete(mockReviewId, mockCourseId, mockUserId),
       ).rejects.toThrow(HttpException);
     });
 
@@ -178,7 +174,7 @@ describe('ReviewService', () => {
       });
 
       await expect(
-        service.delete(mockReviewId, mockCourseId, mockUserId)
+        service.delete(mockReviewId, mockCourseId, mockUserId),
       ).rejects.toThrow(HttpException);
     });
   });

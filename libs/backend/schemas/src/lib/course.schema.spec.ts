@@ -70,7 +70,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('title');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'title should not be empty'
+      'title should not be empty',
     );
   });
 
@@ -81,7 +81,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('description');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'description should not be empty'
+      'description should not be empty',
     );
   });
 
@@ -92,7 +92,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'status should not be empty'
+      'status should not be empty',
     );
   });
 
@@ -103,7 +103,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('language');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'language should not be empty'
+      'language should not be empty',
     );
   });
 
@@ -114,7 +114,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('level');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'level should not be empty'
+      'level should not be empty',
     );
   });
 
@@ -125,7 +125,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('price');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'price should not be empty'
+      'price should not be empty',
     );
   });
 
@@ -136,7 +136,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('maxStudents');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'maxStudents should not be empty'
+      'maxStudents should not be empty',
     );
   });
 
@@ -147,7 +147,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('starts');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'starts should not be empty'
+      'starts should not be empty',
     );
   });
 
@@ -158,7 +158,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('teachers');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'teachers should not be empty'
+      'teachers should not be empty',
     );
   });
 
@@ -180,7 +180,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('description');
     expect(errors[0].constraints?.['isString']).toBe(
-      'description must be a string'
+      'description must be a string',
     );
   });
 
@@ -191,7 +191,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('status');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Status must be a valid enum value'
+      'Status must be a valid enum value',
     );
   });
 
@@ -202,7 +202,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('language');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Language must be a valid enum value'
+      'Language must be a valid enum value',
     );
   });
 
@@ -213,7 +213,7 @@ describe('CourseSchema Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('level');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Level must be a valid enum value'
+      'Level must be a valid enum value',
     );
   });
 
@@ -270,9 +270,7 @@ describe('CourseSchema Tests', () => {
     const errors = await validate(plain);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('maxStudents');
-    expect(errors[0].constraints?.['max']).toBe(
-      'maxStudents cannot exceed 20'
-    );
+    expect(errors[0].constraints?.['max']).toBe('maxStudents cannot exceed 20');
   });
 
   // === Optional fields === //
