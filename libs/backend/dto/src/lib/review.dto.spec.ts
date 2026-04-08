@@ -6,8 +6,6 @@ describe('ReviewDto Tests', () => {
 
   beforeEach(() => {
     DTO = new CreateReviewDto();
-    DTO.student = '507f1f77bcf86cd799439011';
-    DTO.course = '507f1f77bcf86cd799439011';
     DTO.comment = 'Review';
     DTO.rating = 1;
   });
@@ -18,26 +16,6 @@ describe('ReviewDto Tests', () => {
   });
 
   // === Missing === //
-
-  it('should fail validation when student is missing', async () => {
-    DTO.student = undefined as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'student should not be empty',
-    );
-  });
-
-  it('should fail validation when course is missing', async () => {
-    DTO.course = undefined as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'course should not be empty',
-    );
-  });
 
   it('should fail validation when comment is missing', async () => {
     DTO.comment = undefined as any;
@@ -60,26 +38,6 @@ describe('ReviewDto Tests', () => {
   });
 
   // === Invalid type === //
-
-  it('should fail validation when student is not valid type', async () => {
-    DTO.student = 'invalid' as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'student must be a valid ObjectId',
-    );
-  });
-
-  it('should fail validation when course is not valid type', async () => {
-    DTO.course = 'invalid' as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'course must be a valid ObjectId',
-    );
-  });
 
   it('should fail validation when comment is not valid type', async () => {
     DTO.comment = 0 as any;
