@@ -15,11 +15,6 @@ export class LessonService {
   private refreshSubject = new BehaviorSubject<boolean>(false);
   refresh$ = this.refreshSubject.asObservable();
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   triggerRefresh() {
     this.refreshSubject.next(true);
   }

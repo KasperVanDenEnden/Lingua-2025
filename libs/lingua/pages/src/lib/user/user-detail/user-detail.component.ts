@@ -32,11 +32,6 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   recordToDelete?: IUser | null;
   isFriendsOpen = false;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
@@ -112,12 +107,12 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         this.userService.getUserById(this.userId!).subscribe((user) => {
           this.user$.next(user); // update bestaande subject
         });
-        this.notify.success('Vriend succesvol verwijderd');
+        this.notify.success('Friends sucessfully unfollowed');
       },
       error: (err: HttpErrorResponse) => {
         this.notify.error(
           err.error.message ||
-            'Er is een fout opgetreden bij het verwijderen van de vriend.',
+            'An error occurred while removing the friend.',
         );
       },
     });

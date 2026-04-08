@@ -47,11 +47,6 @@ export class CourseFormComponent implements OnInit, OnDestroy {
     ends: new FormControl(null, this.dateRangeValidator()),
   });
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       const id = params.get('id');

@@ -40,11 +40,6 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   private lessonSub!: Subscription;
   private refreshSub!: Subscription;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.loadLesson();
 
@@ -104,7 +99,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
 
     this.lessonService.delete(this.recordToDelete._id).subscribe({
       next: () => {
-        this.notify.success('Les succesvol verwijderd');
+        this.notify.success('Lesson succesfully deleted!');
         this.router.navigate(['/lessons']);
       },
       error: (error) => {

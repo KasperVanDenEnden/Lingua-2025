@@ -22,11 +22,6 @@ export class DashboardComponent implements OnInit {
   userSub!: Subscription;
   currentUser: ICurrentUser | undefined;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.userSub = this.authService.currentUser$.subscribe({
       next: (user) => {

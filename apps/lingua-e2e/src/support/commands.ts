@@ -1,6 +1,11 @@
-declare namespace Cypress {
-  interface Chainable {
-    loginAs(role: 'admin' | 'teacher' | 'student'): void;
+// 🔹 support/commands.ts
+export {}; // Zorgt dat het een module is
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      loginAs(role: 'admin' | 'teacher' | 'student'): void;
+    }
   }
 }
 
@@ -37,7 +42,6 @@ Cypress.Commands.add('loginAs', (role: 'admin' | 'teacher' | 'student') => {
   cy.session(
     role,
     () => {
-      // 🔑 Zet storage ZONDER app bootstrap
       cy.window().then((win) => {
         win.localStorage.setItem('currentuser', JSON.stringify(user));
         win.localStorage.setItem('JWT', 'fake-jwt-token');
@@ -53,7 +57,7 @@ Cypress.Commands.add('loginAs', (role: 'admin' | 'teacher' | 'student') => {
     },
   );
 
-  // 🔑 ALTIJD auth endpoint mocken buiten session
+  // Auth profile altijd mocken buiten de session
   cy.intercept('GET', '**/auth/profile', {
     statusCode: 200,
     body: user,

@@ -56,11 +56,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     ]),
   });
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     // Laad de docenten, kamers en klassen tegelijk
     forkJoin({

@@ -18,23 +18,25 @@
         Edit
       </a>
 
-      <button
-        *ngIf="canDelete()"
-        (click)="handleDelete()"
-        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-trash"></i>
-        Delete
-      </button>
+      @if (canDelete()) {
+        <button
+          (click)="handleDelete()"
+          class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-trash"></i>
+          Delete
+        </button>
+      }
 
-      <button
-        *ngIf="canEdit()"
-        [routerLink]="['/user', (user$ | async)?._id, 'change-password']"
-        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-lock"></i>
-        Change password
-      </button>
+      @if (canEdit()) {
+        <button
+          [routerLink]="['/user', (user$ | async)?._id, 'change-password']"
+          class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-lock"></i>
+          Change password
+        </button>
+      }
 
       <a
         [routerLink]="['/dashboard']"
@@ -123,40 +125,39 @@
         </svg>
       </button>
 
-      <div *ngIf="isFriendsOpen" class="border-t divide-y divide-gray-200">
-        <ng-container *ngIf="friends$ | async as friends; else noFriends">
-          <div
-            *ngFor="let friend of friends"
-            class="flex items-center gap-3 px-4 py-3"
-          >
-            <div
-              class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium flex-shrink-0"
-            >
-              {{ friend.firstname[0] }}{{ friend.lastname[0] }}
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-medium">
-                {{ friend.firstname }} {{ friend.lastname }}
+      @if (isFriendsOpen) {
+        <div class="border-t divide-y divide-gray-200">
+          @if (friends$ | async; as friends) {
+            @for (friend of friends; track friend) {
+              <div class="flex items-center gap-3 px-4 py-3">
+                <div
+                  class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium flex-shrink-0"
+                >
+                  {{ friend.firstname[0] }}{{ friend.lastname[0] }}
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium">
+                    {{ friend.firstname }} {{ friend.lastname }}
+                  </p>
+                  <p class="text-xs text-gray-400">{{ friend.email }}</p>
+                </div>
+                <button
+                  (click)="removeFriend(friend._id.toString())"
+                  class="text-gray-300 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-50"
+                >
+                  <i class="fa-solid fa-user-minus text-sm"></i>
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="px-4 py-6 text-center bg-white">
+              <p class="text-sm text-gray-400">
+                Geen vrienden gevonden, voeg ze toe!
               </p>
-              <p class="text-xs text-gray-400">{{ friend.email }}</p>
             </div>
-            <button
-              (click)="removeFriend(friend._id.toString())"
-              class="text-gray-300 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-50"
-            >
-              <i class="fa-solid fa-user-minus text-sm"></i>
-            </button>
-          </div>
-        </ng-container>
-
-        <ng-template #noFriends>
-          <div class="px-4 py-6 text-center bg-white">
-            <p class="text-sm text-gray-400">
-              Geen vrienden gevonden, voeg ze toe!
-            </p>
-          </div>
-        </ng-template>
-      </div>
+          }
+        </div>
+      }
     </div>
   </div>
 </main>
@@ -173,6 +174,6 @@
       : ''
   "
   title="Delete Record"
-  (close)="closeModal()"
-  (confirm)="confirmDelete()"
+  (closed)="closeModal()"
+  (confirmed)="confirmDelete()"
 ></lingua-modal-delete>

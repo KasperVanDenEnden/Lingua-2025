@@ -36,49 +36,52 @@
     </h2>
 
     <!-- Empty state -->
-    <div *ngIf="!rcmndCourses.length" class="text-center py-10 text-gray-400">
-      No recommendations yet.
-    </div>
+    @if (!rcmndCourses.length) {
+      <div class="text-center py-10 text-gray-400">
+        No recommendations yet.
+      </div>
+    }
 
     <!-- Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div
-        *ngFor="let rec of rcmndCourses"
-        [routerLink]="['/courses', rec.course.id]"
-        class="cursor-pointer bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5 hover:shadow-md hover:scale-[1.01] transition"
-      >
-        <!-- Title -->
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">
-          {{ rec.course.title }}
-        </h3>
+      @for (rec of rcmndCourses; track rec) {
+        <div
+          [routerLink]="['/courses', rec.course.id]"
+          class="cursor-pointer bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5 hover:shadow-md hover:scale-[1.01] transition"
+        >
+          <!-- Title -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            {{ rec.course.title }}
+          </h3>
 
-        <!-- Rating -->
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs text-gray-500">Rating</span>
-          <span class="text-amber-500 text-sm font-medium">
-            {{ '★'.repeat(rec.rating) }}{{ '☆'.repeat(5 - rec.rating) }}
-          </span>
-        </div>
-
-        <!-- Recommended by -->
-        <div class="flex items-center gap-3 mt-4">
-          <div
-            class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium"
-          >
-            {{ rec.recommendedBy.firstname[0]
-            }}{{ rec.recommendedBy.lastname[0] }}
+          <!-- Rating -->
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-gray-500">Rating</span>
+            <span class="text-amber-500 text-sm font-medium">
+              {{ '★'.repeat(rec.rating) }}{{ '☆'.repeat(5 - rec.rating) }}
+            </span>
           </div>
 
-          <div>
-            <p class="text-sm font-medium text-gray-800">
-              {{ rec.recommendedBy.firstname }} {{ rec.recommendedBy.lastname }}
-            </p>
-            <p class="text-xs text-gray-400">
-              {{ rec.recommendedBy.email }}
-            </p>
+          <!-- Recommended by -->
+          <div class="flex items-center gap-3 mt-4">
+            <div
+              class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium"
+            >
+              {{ rec.recommendedBy.firstname[0]
+              }}{{ rec.recommendedBy.lastname[0] }}
+            </div>
+
+            <div>
+              <p class="text-sm font-medium text-gray-800">
+                {{ rec.recommendedBy.firstname }} {{ rec.recommendedBy.lastname }}
+              </p>
+              <p class="text-xs text-gray-400">
+                {{ rec.recommendedBy.email }}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   </section>
 </div>

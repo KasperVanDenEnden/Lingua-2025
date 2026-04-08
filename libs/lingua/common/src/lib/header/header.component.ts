@@ -17,11 +17,6 @@ export class HeaderComponent implements OnInit {
   userSubscription!: Subscription;
   currentUser: IUser | undefined = undefined;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;

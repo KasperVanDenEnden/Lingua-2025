@@ -282,6 +282,6 @@
   [isOpen]="isLogoutModalOpen"
   [message]="'Are you sure you want to logout?'"
   title="Logout confirmation"
-  (close)="closeLogoutModal()"
-  (confirm)="logout()"
+  (closed)="closeLogoutModal()"
+  (confirmed)="logout()"
 ></lingua-modal>

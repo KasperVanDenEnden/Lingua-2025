@@ -21,11 +21,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   registerForm!: FormGroup;
   subs: Subscription = new Subscription();
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.registerForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),

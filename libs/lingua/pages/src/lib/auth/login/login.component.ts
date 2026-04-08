@@ -21,11 +21,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   subs: Subscription = new Subscription();
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),

@@ -25,6 +25,7 @@ describe('Authentication', () => {
         role: 'admin',
       },
     }).as('profileRequest');
+
     cy.visit('/login');
 
     cy.get('input[type="email"]').type('admin@lingua.com');
@@ -43,41 +44,29 @@ describe('Authentication', () => {
       body: { message: 'Ongeldige inloggegevens' },
     }).as('loginFailed');
 
+    cy.visit('/login');
+
     cy.get('input[type="email"]').type('fout@lingua.com');
     cy.get('input[type="password"]').type('foutpassword');
     cy.get('button[type="submit"]').click();
 
     cy.wait('@loginFailed');
-    cy.contains('Ongeldige inloggegevens').should('be.visible');
+
+    cy.get('.toast-error').should('be.visible');
+    cy.get('.toast-error').should('contain', 'Ongeldige inloggegevens');
   });
 
   it('shows validation error when email is empty', () => {
     cy.visit('/login');
+
     cy.get('input[type="email"]').click().blur();
     cy.contains('Email is required').should('be.visible');
   });
 
   it('shows validation error when email has invalid format', () => {
     cy.visit('/login');
+
     cy.get('input[type="email"]').type('geengeldigemail').blur();
     cy.contains('Invalid email format').should('be.visible');
-  });
-
-  it('shows error toastr with invalid credentials', () => {
-    cy.intercept('POST', '**/auth/login', {
-      statusCode: 401,
-      body: { message: 'Ongeldige inloggegevens' },
-    }).as('loginFailed');
-
-    cy.visit('/login');
-
-    cy.get('input[type="email"]').type('fout@lingua.com');
-    cy.get('input[type="password"]').type('foutpassword');
-    cy.get('button[type="submit"]').click();
-
-    cy.wait('@loginFailed');
-    cy.get('.toast-error')
-      .should('be.visible')
-      .and('contain', 'Ongeldige inloggegevens');
   });
 });

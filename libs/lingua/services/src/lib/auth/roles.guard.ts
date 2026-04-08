@@ -9,11 +9,6 @@ export class RolesGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const role = this.authService.getUserRole()?.toLowerCase();
     if (role === 'admin') {

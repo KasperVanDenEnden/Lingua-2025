@@ -42,11 +42,6 @@ export class CourseListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: ICourse | null;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(
       (user) => (this.currentUser = user),
@@ -98,7 +93,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
       this.courseService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           this.loadCourses();
-          this.notify.success('Gelukt!');
+          this.notify.success('Course deleted successfully!');
         },
         error: (error: HttpErrorResponse) => {
           this.notify.error(

@@ -29,11 +29,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
     lastname: new FormControl(null, Validators.required),
   });
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       const id = params.get('id');

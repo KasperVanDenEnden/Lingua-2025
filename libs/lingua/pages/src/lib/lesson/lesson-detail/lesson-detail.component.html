@@ -10,42 +10,41 @@
     </div>
 
     <div class="flex gap-2 flex-wrap">
-      <ng-container *ngIf="currentUser">
-        <button
-          *ngIf="isAttending(); else attendButton"
-          (click)="unattend()"
-          class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-        >
-          Unattend
-        </button>
-
-        <ng-template #attendButton>
+      @if (currentUser) {
+        @if (isAttending()) {
+          <button
+            (click)="unattend()"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+          >
+            Unattend
+          </button>
+        } @else {
           <button
             (click)="attend()"
             class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
           >
             Attend
           </button>
-        </ng-template>
-      </ng-container>
+        }
+      }
 
-      <a
-        *ngIf="canEdit()"
-        [routerLink]="['/lessons', (lesson$ | async)?._id, 'edit']"
-        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-pencil"></i>
-        Edit
-      </a>
+      @if (canEdit()) {
+        <a
+          [routerLink]="['/lessons', (lesson$ | async)?._id, 'edit']"
+          class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-pencil"></i>
+          Edit
+        </a>
 
-      <button
-        *ngIf="canEdit()"
-        (click)="handleDelete()"
-        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-trash"></i>
-        Delete
-      </button>
+        <button
+          (click)="handleDelete()"
+          class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-trash"></i>
+          Delete
+        </button>
+      }
 
       <a
         [routerLink]="['/lessons']"
@@ -106,19 +105,23 @@
             </p>
           </div>
 
-          <div *ngIf="(lesson$ | async)?.type">
-            <span class="text-xs font-medium text-gray-500">Type</span>
-            <p class="text-sm text-gray-800 mt-0.5">
-              {{ (lesson$ | async)?.type }}
-            </p>
-          </div>
+          @if ((lesson$ | async)?.type) {
+            <div>
+              <span class="text-xs font-medium text-gray-500">Type</span>
+              <p class="text-sm text-gray-800 mt-0.5">
+                {{ (lesson$ | async)?.type }}
+              </p>
+            </div>
+          }
 
-          <div *ngIf="(lesson$ | async)?.status">
-            <span class="text-xs font-medium text-gray-500">Status</span>
-            <p class="text-sm text-gray-800 mt-0.5">
-              {{ (lesson$ | async)?.status }}
-            </p>
-          </div>
+          @if ((lesson$ | async)?.status) {
+            <div>
+              <span class="text-xs font-medium text-gray-500">Status</span>
+              <p class="text-sm text-gray-800 mt-0.5">
+                {{ (lesson$ | async)?.status }}
+              </p>
+            </div>
+          }
         </div>
       </div>
 
@@ -194,32 +197,29 @@
           Students ({{ students.length }}/{{ course?.maxStudents }})
         </p>
 
-        <ng-container *ngIf="students.length; else noStudents">
+        @if (students.length) {
           <div class="divide-y divide-gray-200">
-            <div
-              *ngFor="let student of students"
-              class="flex items-center gap-3 px-2 py-3"
-            >
-              <!-- Info -->
-              <div class="flex-1">
-                <p class="text-sm font-medium text-gray-800">
-                  {{ student.firstname }} {{ student.lastname }}
-                </p>
-                <p class="text-xs text-gray-400">
-                  {{ student.email }}
-                </p>
+            @for (student of students; track student) {
+              <div class="flex items-center gap-3 px-2 py-3">
+                <!-- Info -->
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-800">
+                    {{ student.firstname }} {{ student.lastname }}
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    {{ student.email }}
+                  </p>
+                </div>
               </div>
-            </div>
+            }
           </div>
-        </ng-container>
-
-        <ng-template #noStudents>
+        } @else {
           <div class="px-4 py-6 text-center bg-white rounded-md">
             <p class="text-sm text-gray-400">
               Geen studenten gevonden voor deze les.
             </p>
           </div>
-        </ng-template>
+        }
       </div>
     </div>
 
@@ -239,6 +239,6 @@
       : ''
   "
   title="Delete Record"
-  (close)="closeModal()"
-  (confirm)="confirmDelete()"
+  (closed)="closeModal()"
+  (confirmed)="confirmDelete()"
 ></lingua-modal-delete>

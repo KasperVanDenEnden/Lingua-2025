@@ -9,12 +9,13 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '@lingua/util-env';
 import { ICreateUser, IUser } from '@lingua/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChangePasswordDto } from '@lingua/dto';
 import { throwError } from 'rxjs';
+import { NotificationService } from '../toastr/toastr.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,7 @@ export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
 
   public currentUser$ = new BehaviorSubject<IUser | undefined>(undefined);
   private readonly CURRENT_USER = 'currentuser';
@@ -33,9 +35,6 @@ export class AuthService implements OnDestroy {
   private readonly headers = new HttpHeaders({
     'Content-Type': 'application/json',
   });
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
 
   constructor() {
     // Get current user out of the local storage
@@ -75,8 +74,8 @@ export class AuthService implements OnDestroy {
           this.currentUser$.next(user);
         }),
         map(() => true),
-        catchError((err: any) => {
-          console.error('Login error:', err);
+        catchError((err: HttpErrorResponse) => {
+          this.notify.error(err.error.message || 'Login failed');
           return throwError(() => err);
         }),
       );
@@ -91,7 +90,8 @@ export class AuthService implements OnDestroy {
         map((user) => {
           return user;
         }),
-        catchError((err: any) => {
+        catchError((err: HttpErrorResponse) => {
+          this.notify.error(err.error.message || 'Registration failed');  
           return throwError(() => err);
         }),
       );
@@ -132,7 +132,8 @@ export class AuthService implements OnDestroy {
       map((response) => {
         return response;
       }),
-      catchError(() => {
+      catchError((err: HttpErrorResponse) => {
+        this.notify.error(err.error.message || 'Token validation failed');
         this.logout();
         this.currentUser$.next(undefined);
         return throwError(() => new Error('Token validation failed'));

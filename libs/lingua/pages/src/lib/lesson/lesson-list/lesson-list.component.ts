@@ -34,11 +34,6 @@ export class LessonListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.loadLessons();
 

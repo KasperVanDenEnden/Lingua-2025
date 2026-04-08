@@ -39,11 +39,6 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
     { validators: passwordMatchValidator() },
   );
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       const id = params.get('id');

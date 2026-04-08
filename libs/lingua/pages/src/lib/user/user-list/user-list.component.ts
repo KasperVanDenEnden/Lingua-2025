@@ -36,11 +36,6 @@ export class UserListComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: IUser;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;

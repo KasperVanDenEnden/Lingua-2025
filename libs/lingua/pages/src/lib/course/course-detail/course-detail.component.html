@@ -21,41 +21,40 @@
     </div>
 
     <div class="flex gap-2 flex-wrap">
-      <ng-container *ngIf="currentUser">
-        <button
-          *ngIf="isStudentEnrolled(); else enrollButton"
-          (click)="unenroll()"
-          class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-        >
-          Unenroll
-        </button>
-
-        <ng-template #enrollButton>
+      @if (currentUser) {
+        @if (isStudentEnrolled()) {
+          <button
+            (click)="unenroll()"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+          >
+            Unenroll
+          </button>
+        } @else {
           <button
             (click)="enroll()"
             class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
           >
             Enroll
           </button>
-        </ng-template>
-      </ng-container>
+        }
+      }
 
       <!-- Edit / Delete buttons alleen voor teacher/admin -->
-      <a
-        *ngIf="canEdit()"
-        [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
-        class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-pencil text-xs"></i> Edit
-      </a>
+      @if (canEdit()) {
+        <a
+          [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
+          class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-pencil text-xs"></i> Edit
+        </a>
 
-      <button
-        *ngIf="canEdit()"
-        (click)="handleDelete()"
-        class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-      >
-        <i class="fa-solid fa-trash text-xs"></i> Delete
-      </button>
+        <button
+          (click)="handleDelete()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-trash text-xs"></i> Delete
+        </button>
+      }
 
       <a
         [routerLink]="['/courses']"
@@ -200,31 +199,27 @@
         Teachers
       </p>
 
-      <div
-        *ngIf="teachers.length; else noTeachers"
-        class="flex flex-col gap-3 mb-4"
-      >
-        <div
-          *ngFor="let teacher of teachers; let i = index"
-          class="flex items-center gap-3"
-        >
-          <div>
-            <p class="text-sm font-medium text-gray-800">
-              {{ teacher.firstname }} {{ teacher.lastname }}
-            </p>
-          </div>
-          <button
-            (click)="removeTeacher(teacher)"
-            class="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-0.5 rounded-md"
-          >
-            ×
-          </button>
+      @if (teachers.length) {
+        <div class="flex flex-col gap-3 mb-4">
+          @for (teacher of teachers; track teacher) {
+            <div class="flex items-center gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-800">
+                  {{ teacher.firstname }} {{ teacher.lastname }}
+                </p>
+              </div>
+              <button
+                (click)="removeTeacher(teacher)"
+                class="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-0.5 rounded-md"
+              >
+                ×
+              </button>
+            </div>
+          }
         </div>
-      </div>
-
-      <ng-template #noTeachers>
+      } @else {
         <p class="text-sm text-gray-400 mb-4">No teachers assigned yet.</p>
-      </ng-template>
+      }
 
       <hr class="border-gray-200 my-4" />
 
@@ -234,31 +229,30 @@
         Assign teacher
       </p>
 
-      <div
-        *ngIf="availableTeachers.length; else noAvailable"
-        class="flex gap-2 items-center"
-      >
-        <select
-          [(ngModel)]="selectedTeacher"
-          class="flex-1 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800"
-        >
-          <option *ngFor="let t of availableTeachers" [ngValue]="t">
-            {{ t.firstname || 'No name' }} {{ t.lastname || '' }}
-          </option>
-        </select>
+      @if (availableTeachers.length) {
+        <div class="flex gap-2 items-center">
+          <select
+            [(ngModel)]="selectedTeacher"
+            class="flex-1 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800"
+          >
+            @for (t of availableTeachers; track t) {
+              <option [ngValue]="t">
+                {{ t.firstname || 'No name' }} {{ t.lastname || '' }}
+              </option>
+            }
+          </select>
 
-        <button
-          (click)="assignTeacher(selectedTeacher!)"
-          [disabled]="!selectedTeacher"
-          class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-        >
-          Assign
-        </button>
-      </div>
-
-      <ng-template #noAvailable>
+          <button
+            (click)="assignTeacher(selectedTeacher!)"
+            [disabled]="!selectedTeacher"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+          >
+            Assign
+          </button>
+        </div>
+      } @else {
         <p class="text-sm text-gray-400">No more teachers to assign!</p>
-      </ng-template>
+      }
     </div>
 
     <!-- Reviews -->
@@ -271,34 +265,31 @@
         Latest reviews
       </p>
 
-      <div
-        *ngIf="(course$ | async)?.reviews?.length; else noReviews"
-        class="flex flex-col gap-3"
-      >
-        <div
-          *ngFor="let review of (course$ | async)?.reviews | slice: 0 : 3"
-          class="bg-gray-50 rounded-md px-3 py-2.5"
-        >
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm font-semibold text-gray-800">
-              <ng-container *ngIf="isUser(review.student); else anonymous">
-                {{ review.student.firstname }}
-              </ng-container>
-              <ng-template #anonymous>Anonymous</ng-template>
-            </span>
-            <span class="text-amber-500 text-xs">{{
-              getStars(review.rating)
-            }}</span>
-          </div>
-          <p class="text-xs text-gray-500 leading-relaxed">
-            {{ review.comment || '—' }}
-          </p>
+      @if ((course$ | async)?.reviews?.length) {
+        <div class="flex flex-col gap-3">
+          @for (review of (course$ | async)?.reviews | slice: 0 : 3; track review) {
+            <div class="bg-gray-50 rounded-md px-3 py-2.5">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-semibold text-gray-800">
+                  @if (isUser(review.student)) {
+                    {{ review.student.firstname }}
+                  } @else {
+                    Anonymous
+                  }
+                </span>
+                <span class="text-amber-500 text-xs">{{
+                  getStars(review.rating)
+                }}</span>
+              </div>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                {{ review.comment || '—' }}
+              </p>
+            </div>
+          }
         </div>
-      </div>
-
-      <ng-template #noReviews>
+      } @else {
         <p class="text-sm text-gray-400">No reviews yet.</p>
-      </ng-template>
+      }
     </div>
   </div>
 
@@ -314,22 +305,22 @@
 
     <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
       <div class="mb-3">
-        <label class="text-xs font-medium text-gray-500 mb-1 block"
-          >Rating</label
-        >
+        <label for="rating" class="text-xs font-medium text-gray-500 mb-1 block">Rating</label>
         <select
+          id="rating"
           formControlName="rating"
           class="w-24 px-2 py-1 border border-gray-300 rounded-md text-sm"
         >
-          <option *ngFor="let r of [1, 2, 3, 4, 5]" [value]="r">{{ r }}</option>
+          @for (r of [1, 2, 3, 4, 5]; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
         </select>
       </div>
 
       <div class="mb-3">
-        <label class="text-xs font-medium text-gray-500 mb-1 block"
-          >Comment</label
-        >
+        <label for="comment" class="text-xs font-medium text-gray-500 mb-1 block">Comment</label>
         <textarea
+          id="comment"
           formControlName="comment"
           rows="3"
           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
@@ -355,7 +346,7 @@
       : ''
   "
   title="Delete Record"
-  (close)="closeModal()"
-  (confirm)="confirmDelete()"
+  (closed)="closeModal()"
+  (confirmed)="confirmDelete()"
 >
 </lingua-modal-delete>
