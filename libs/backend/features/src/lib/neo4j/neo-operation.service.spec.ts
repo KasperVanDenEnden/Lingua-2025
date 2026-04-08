@@ -73,11 +73,11 @@ describe('NeoOperationsService', () => {
   });
 
   it('should call REL_UNENROLL_IN_CYPHER on unenrollInCourse', async () => {
-    await service.unenrollInCourse('c1', 'u1');
+    await service.unenrollInCourse('u1', 'c1');
 
     expect(mockNeo4j.run).toHaveBeenCalledWith(expect.any(String), {
       userId: 'u1',
-      id: 'c1',
+      courseId: 'c1',
     });
   });
 

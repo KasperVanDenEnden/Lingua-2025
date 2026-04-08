@@ -8,11 +8,19 @@ import { Types } from 'mongoose';
 const mockCourseId = new Types.ObjectId();
 const mockUserId = new Types.ObjectId();
 
+// 🔹 Helper voor mongoose queries
+function mockQuery(result: any) {
+  return {
+    populate: jest.fn().mockReturnThis(),
+    exec: jest.fn().mockResolvedValue(result),
+  };
+}
+
 const mockCourse = {
   _id: mockCourseId,
   students: [],
   teachers: [],
-  deleteOne: jest.fn(),
+  deleteOne: jest.fn().mockResolvedValue(true),
 };
 
 const mockCourseWithStudent = {
@@ -61,7 +69,7 @@ describe('CourseService', () => {
 
   describe('getAll', () => {
     it('should return all courses', async () => {
-      mockCourseModel.find.mockResolvedValue([mockCourse]);
+      mockCourseModel.find.mockReturnValue(mockQuery([mockCourse]));
 
       const result = await service.getAll();
 
@@ -73,10 +81,7 @@ describe('CourseService', () => {
 
   describe('getOne', () => {
     it('should return course with populate', async () => {
-      mockCourseModel.findById.mockReturnValue({
-        populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(mockCourse),
-      });
+      mockCourseModel.findById.mockReturnValue(mockQuery(mockCourse));
 
       const result = await service.getOne(mockCourseId);
 
@@ -84,10 +89,7 @@ describe('CourseService', () => {
     });
 
     it('should throw if not found', async () => {
-      mockCourseModel.findById.mockReturnValue({
-        populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      mockCourseModel.findById.mockReturnValue(mockQuery(null));
 
       await expect(service.getOne(mockCourseId)).rejects.toThrow(HttpException);
     });
@@ -130,7 +132,7 @@ describe('CourseService', () => {
 
   describe('delete', () => {
     it('should delete course', async () => {
-      mockCourseModel.findById.mockResolvedValue(mockCourse);
+      mockCourseModel.findById.mockReturnValue(mockQuery(mockCourse));
 
       const result = await service.delete(mockCourseId);
 
@@ -142,7 +144,7 @@ describe('CourseService', () => {
     });
 
     it('should throw if not found', async () => {
-      mockCourseModel.findById.mockResolvedValue(null);
+      mockCourseModel.findById.mockReturnValue(mockQuery(null));
 
       await expect(service.delete(mockCourseId)).rejects.toThrow(HttpException);
     });
@@ -152,16 +154,14 @@ describe('CourseService', () => {
 
   describe('enroll', () => {
     it('should enroll user', async () => {
-      mockCourseModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockCourse),
-      });
+      mockCourseModel.findOne.mockReturnValue(mockQuery(mockCourse));
 
-      mockCourseModel.findByIdAndUpdate.mockReturnValue({
-        exec: jest.fn().mockResolvedValue({
+      mockCourseModel.findByIdAndUpdate.mockReturnValue(
+        mockQuery({
           ...mockCourse,
           students: [mockUserId],
         }),
-      });
+      );
 
       const result = await service.enroll(mockCourseId, mockUserId);
 
@@ -170,9 +170,9 @@ describe('CourseService', () => {
     });
 
     it('should throw if already enrolled', async () => {
-      mockCourseModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockCourseWithStudent),
-      });
+      mockCourseModel.findOne.mockReturnValue(
+        mockQuery(mockCourseWithStudent),
+      );
 
       await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
         HttpException,
@@ -180,9 +180,7 @@ describe('CourseService', () => {
     });
 
     it('should throw if course not found', async () => {
-      mockCourseModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      mockCourseModel.findOne.mockReturnValue(mockQuery(null));
 
       await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
         HttpException,
@@ -194,13 +192,13 @@ describe('CourseService', () => {
 
   describe('unenroll', () => {
     it('should unenroll user', async () => {
-      mockCourseModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockCourseWithStudent),
-      });
+      mockCourseModel.findOne.mockReturnValue(
+        mockQuery(mockCourseWithStudent),
+      );
 
-      mockCourseModel.findByIdAndUpdate.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockCourse),
-      });
+      mockCourseModel.findByIdAndUpdate.mockReturnValue(
+        mockQuery(mockCourse),
+      );
 
       const result = await service.unenroll(mockCourseId, mockUserId);
 
@@ -209,13 +207,11 @@ describe('CourseService', () => {
     });
 
     it('should throw if not enrolled', async () => {
-      mockCourseModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockCourse),
-      });
+      mockCourseModel.findOne.mockReturnValue(mockQuery(mockCourse));
 
-      await expect(service.unenroll(mockCourseId, mockUserId)).rejects.toThrow(
-        HttpException,
-      );
+      await expect(
+        service.unenroll(mockCourseId, mockUserId),
+      ).rejects.toThrow(HttpException);
     });
   });
 

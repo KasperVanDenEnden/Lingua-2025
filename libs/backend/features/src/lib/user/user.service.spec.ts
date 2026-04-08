@@ -98,7 +98,9 @@ describe('UserService', () => {
   describe('getOne', () => {
     it('should return a user', async () => {
       mockUserModel.findById.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockUser),
+        populate: jest.fn().mockReturnValue({
+          exec: jest.fn().mockResolvedValue(mockUser),
+        })
       });
 
       const result = await service.getOne(mockUserId);
@@ -108,7 +110,9 @@ describe('UserService', () => {
 
     it('should throw if not found', async () => {
       mockUserModel.findById.mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
+          populate: jest.fn().mockReturnValue({
+          exec: jest.fn().mockResolvedValue(null),
+        })
       });
 
       await expect(service.getOne(mockUserId)).rejects.toThrow(HttpException);
