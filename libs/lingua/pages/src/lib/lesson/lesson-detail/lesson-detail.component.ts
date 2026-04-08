@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICourse, ILesson, IUser } from '@lingua/api';
 import { Subscription, Observable } from 'rxjs';
-import { LessonService, NotificationService } from '@lingua/services';
+import { AuthService, LessonService, NotificationService } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-lesson-detail',
@@ -23,6 +24,9 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
+  userSubscription!: Subscription;
+  currentUser: IUser | undefined = undefined;
+
   private routeSub!: Subscription;
   private lessonSub!: Subscription;
   private refreshSub!: Subscription;
@@ -32,6 +36,7 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private notify: NotificationService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +45,10 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
     this.refreshSub = this.lessonService.refresh$.subscribe(() => {
       this.loadLesson();
     });
+
+    this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user;
+      });
   }
 
   ngOnDestroy(): void {
@@ -82,21 +91,6 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
     return `${this.course.title}: ${this.course.description}`;
   }
 
-  removeStudent(studentId: string): void {
-    if (!this.lessonId) return;
-
-    // this.lessonService.removeStudentFromLesson(this.lessonId, studentId)
-    //   .subscribe({
-    //     next: () => {
-    //       this.notify.success('Student verwijderd');
-    //       this.loadLesson(); // refresh
-    //     },
-    //     error: (err: any) => {
-    //       this.notify.error(err.message || 'Fout bij verwijderen van student');
-    //     }
-    //   });
-  }
-
   handleDelete(): void {
     this.isModalOpen = true;
   }
@@ -121,5 +115,38 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
 
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
+  }
+
+  attend(): void {
+    this.lessonService.attend(this.lessonId!).subscribe({
+      next: () => {
+        this.notify.success('Je bent succesvol ingeschreven voor deze les!');
+        this.loadLesson();
+      },
+     error: (error: HttpErrorResponse) => {
+        this.notify.error(error.error?.message || 
+          'Something went wrong while attending the lesson'
+        );
+      }
+    });
+  }
+
+  unattend(): void {
+      this.lessonService.unattend(this.lessonId!).subscribe({
+        next: () => {
+          this.notify.success('Je bent succesvol uitgeschreven voor deze les!');
+          this.loadLesson();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(
+            error.error?.message || 'Something went wrong while unattending the lesson'
+          );
+        }
+      });
+  }
+
+  isAttending(): boolean {  
+    if (!this.currentUser) return false;
+    return this.students.some(student => student._id === this.currentUser?._id);
   }
 }

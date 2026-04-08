@@ -11,6 +11,7 @@ import {
 } from '@lingua/services';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CreateReviewDto } from '@lingua/dto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-course-detail',
@@ -27,7 +28,6 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
   // teachers / students / available teachers
   teachers: IUser[] = [];
-  // students: IUser[] = [];
   availableTeachers: IUser[] = [];
   selectedTeacher?: IUser | null;
   
@@ -103,8 +103,8 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         this.notify.success('Course deleted successfully!');
         this.router.navigate(['/courses']);
       },
-      error: (error) => {
-        this.notify.error(error);
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(error.error?.message || 'Failed to delete course: ' + error.message);
       },
     });
   }
@@ -133,7 +133,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         this.courseService.triggerRefresh();
         this.notify.success(`${teacher.firstname} is assigned to the course.`);
       },
-      error: (err) => this.notify.error('Failed to assign teacher: ' + err)
+      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to assign teacher: ' + err.message)
     });
   }
 
@@ -150,7 +150,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         this.courseService.triggerRefresh();
         this.notify.success(`${teacher.firstname} is removed from the course.`);
       },
-      error: (err) => this.notify.error('Failed to remove teacher: ' + err)
+      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to remove teacher: ' + err.message)
     });
   }
 
@@ -170,7 +170,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
           });
         }
       },
-      error: (err) => this.notify.error('Failed to enroll: ' + err.message)
+      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to enroll: ' + err.message)
     });
   }
 
@@ -184,8 +184,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
           this.students$.value.filter(s => s._id.toString() !== this.currentUser.id.toString())
         );
       },
-      // error: (err) => this.notify.error('Failed to unenroll: ' + err.message)
-      error: (err) => console.log(err)
+      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to unenroll: ' + err.message)
     });
   }
 
@@ -205,7 +204,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
 
         this.reviewForm.reset();
       },
-      error: (err) => this.notify.error('Failed to submit review: ' + err)
+      error: (err: HttpErrorResponse) => this.notify.error(err.error?.message || 'Failed to submit review: ' + err.message)
     });
   }
 

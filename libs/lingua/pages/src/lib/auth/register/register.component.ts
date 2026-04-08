@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription, switchMap } from 'rxjs';
-import { AuthService } from '@lingua/services';
+import { AuthService, NotificationService } from '@lingua/services';
 import { Router } from '@angular/router';
 import { ICreateUser } from '@lingua/api';
 import { PagesModule } from '../../pages.module';
-import { ToastrService } from 'ngx-toastr';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-register',
@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router:Router,
-    private toastr: ToastrService
+    private notify: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -53,18 +53,18 @@ export class RegisterComponent implements OnInit, OnDestroy {
           if (user) {
             return this.authService.login(this.registerForm.value.email, this.registerForm.value.password);
           } else {
-            throw new Error('Registratie mislukt');
+            throw new Error('Registration failed');
           }
         })
       ).subscribe({
         next: () => {
-          console.log('Succesvol geregistreerd en ingelogd!');
+          console.log('Successfully registered and logged in');
           this.router.navigate(['/dashboard']);
         },
-         error: (err) => {
+         error: (err: HttpErrorResponse) => {
             console.log('ERROR:', err);
-            const message = err?.error?.message || 'Registreren mislukt. Probeer het opnieuw.';
-            this.toastr.error(message, 'Fout');
+            const message = err?.error?.message || 'Registration failed: ' + err.message;
+            this.notify.error(message);
           }
       });
       

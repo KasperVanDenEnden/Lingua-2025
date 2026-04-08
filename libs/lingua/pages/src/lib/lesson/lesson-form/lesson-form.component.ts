@@ -14,8 +14,10 @@ import {
   LessonService,
   UserService,
   CourseService,
+  NotificationService,
 } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-lesson-form',
@@ -49,7 +51,8 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private lessonService: LessonService,
     private userService: UserService,
-    private courseService: CourseService
+    private courseService: CourseService,
+    private notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -83,8 +86,8 @@ export class LessonFormComponent implements OnInit, OnDestroy {
           this.updateTeacherOptions();
         });
       },
-      error: (err) => {
-        console.error('Fout bij het ophalen van gegevens:', err);
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(err.error?.message || 'Failed to load initial data: ' + err.message);
       },
     });
   }
@@ -116,8 +119,8 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         // Selecteer de juiste leraar in de dropdown
         this.lessonForm.get('teacher')?.setValue((lesson.teacher as IUser)._id);
       },
-      error: (err) => {
-        console.error('Fout bij ophalen lesgegevens:', err);
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(err.error?.message || 'Failed to load lesson data: ' + err.message);
       },
     });
   }

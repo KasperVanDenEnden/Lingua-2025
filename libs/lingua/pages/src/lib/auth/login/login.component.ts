@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AuthService } from '@lingua/services';
+import { AuthService, NotificationService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PagesModule } from '../../pages.module';
-import { ToastrService } from 'ngx-toastr';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-login',
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private notify: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -46,10 +46,9 @@ export class LoginComponent implements OnInit, OnDestroy {
               this.router.navigate([returnUrl]);
             }
           },
-          error: (err) => {
-            console.log('ERROR:', err);
-            const message = err?.error?.message || 'Inloggen mislukt. Probeer het opnieuw.';
-            this.toastr.error(message, 'Fout');
+          error: (err: HttpErrorResponse) => {
+            const message = err?.error?.message || 'Login failed: ' + err.message;
+            this.notify.error(message);
           }
         });
     } else {

@@ -4,7 +4,7 @@ import { IUser } from '@lingua/api';
 import { Subscription, Observable, BehaviorSubject, map } from 'rxjs';
 import { AuthService, NotificationService, UserService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-user-detail',
@@ -72,8 +72,8 @@ export class UserDetailComponent implements OnInit, OnDestroy {
           this.notify.success('User succesfully deleted');
           this.router.navigate(['/login']);
         },
-        error: (error) => {
-          console.error('Error deleting user: ', error);
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(error.error.message || 'Failed to delete user.');
         }
       })
     }
@@ -108,8 +108,8 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         });
         this.notify.success('Vriend succesvol verwijderd');
       },
-      error: (err: any) => {
-        this.notify.error(err.message || 'Er is een fout opgetreden bij het verwijderen van de vriend.');
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(err.error.message || 'Er is een fout opgetreden bij het verwijderen van de vriend.');
       }
     });
   }

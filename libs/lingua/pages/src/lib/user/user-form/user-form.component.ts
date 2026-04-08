@@ -6,6 +6,7 @@ import { PagesModule } from '../../pages.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICreateUser, Id, IUpdateUser, IUser } from '@lingua/api';
 import { v4 as uuidv4 } from 'uuid';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-user-form',
@@ -64,8 +65,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
           lastname: user.lastname
         });
       },
-      error: (err) => {
-        console.error('Fout bij ophalen gebruikergegevens:', err)
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(err.error.message || 'Failed to load user data.');
       }
     })
   }

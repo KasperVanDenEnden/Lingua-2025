@@ -9,6 +9,7 @@ import { AuthService } from "./auth/auth.service";
     providedIn: 'root'
 })
 export class LessonService {
+    
     private refreshSubject = new BehaviorSubject<boolean>(false);
     refresh$ = this.refreshSubject.asObservable();
 
@@ -42,4 +43,15 @@ export class LessonService {
         return this.http
             .delete<ILesson>(`${environment.dataApiUrl}/lesson/${id}`, this.auth.getHttpOptions());
     }
+
+    attend(lessonId: string, ) {
+        return this.http
+            .post<ILesson>(`${environment.dataApiUrl}/lesson/${lessonId}/attend`, {}, this.auth.getHttpOptions());
+    }
+
+    unattend(lessonId: string) {
+      return this.http
+            .post<ILesson>(`${environment.dataApiUrl}/lesson/${lessonId}/unattend`, {}, this.auth.getHttpOptions());
+    }
+    
 }

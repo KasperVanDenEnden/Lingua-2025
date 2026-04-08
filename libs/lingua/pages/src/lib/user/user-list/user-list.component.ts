@@ -4,6 +4,7 @@ import { AuthService, NotificationService, UserService } from '@lingua/services'
 import { ActivatedRoute } from '@angular/router';
 import { IUser } from '@lingua/api';
 import { Observable, Subscription } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-user-list',
@@ -97,8 +98,8 @@ export class UserListComponent implements OnInit, OnDestroy {
           this.loadUsers();
           this.notify.success('Gelukt!');
         },
-        error: (error) => {
-          this.notify.error(error);
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(error.error.message || 'Failed to delete user.');
         },
         complete: () => {
           this.recordToDelete = undefined;
@@ -128,10 +129,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   this.userService.addFriend(userId).subscribe({
     next: () => {
       this.friendIds.push(userId.toString());
-      this.notify.success('Vriend toegevoegd!');
+      this.notify.success('Added friend successfully!');
     },
-    error: () => {
-      this.notify.error('Toevoegen mislukt.');
+    error: (err: HttpErrorResponse) => {
+      this.notify.error(err.error.message || 'Something went wrong while adding friend.');
     }
   });
 }

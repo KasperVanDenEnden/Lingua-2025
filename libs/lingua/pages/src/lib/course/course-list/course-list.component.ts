@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
 import { Types } from 'mongoose';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-course-list',
@@ -83,8 +84,8 @@ export class CourseListComponent implements OnInit, OnDestroy {
           this.loadCourses();
           this.notify.success('Gelukt!');
         },
-        error: (error) => {
-          this.notify.error(error);
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(error.error?.message || 'Failed to delete course: ' + error.message);
         },
         complete: () => {
           this.recordToDelete = null;

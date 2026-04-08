@@ -3,8 +3,9 @@ import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
 import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UserService, CourseService, NotificationService } from '@lingua/services';
+import { CourseService, NotificationService } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-course-form',
@@ -73,8 +74,8 @@ export class CourseFormComponent implements OnInit, OnDestroy{
             ends: this.formatDate(courseData.ends?.toString()),
           });
         },
-        error: (err) => {
-          console.error('Fout bij ophalen kamergegevens:', err);
+        error: (err: HttpErrorResponse) => {
+          this.notify.error(err.error?.message || 'Failed to load course data: ' + err.message);
         },
       });
     }

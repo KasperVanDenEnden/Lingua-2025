@@ -20,6 +20,21 @@
 
     <div class="flex gap-2 flex-wrap">
       
+    <ng-container *ngIf="currentUser">
+      <button *ngIf="isStudentEnrolled(); else enrollButton"
+              (click)="unenroll()"
+              class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
+        Unenroll
+      </button>
+
+      <ng-template #enrollButton>
+        <button (click)="enroll()"
+                class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
+          Enroll
+        </button>
+      </ng-template>
+    </ng-container>
+    
    <!-- Edit / Delete buttons alleen voor teacher/admin -->
     <a *ngIf="canEdit()" [routerLink]="['/courses', (course$ | async)?._id, 'edit']"
       class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
@@ -27,24 +42,10 @@
     </a>
 
     <button *ngIf="canEdit()" (click)="handleDelete()"
-            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 transition">
+            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">
       <i class="fa-solid fa-trash text-xs"></i> Delete
     </button>
 
-    <ng-container *ngIf="currentUser">
-      <button *ngIf="isStudentEnrolled(); else enrollButton"
-              (click)="unenroll()"
-              class="px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 transition">
-        Unenroll
-      </button>
-
-      <ng-template #enrollButton>
-        <button (click)="enroll()"
-                class="px-4 py-2 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 transition">
-          Enroll
-        </button>
-      </ng-template>
-    </ng-container>
 
       <a [routerLink]="['/courses']"
         class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition">

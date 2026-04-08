@@ -13,6 +13,7 @@ import { AuthService, NotificationService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PagesModule } from '../../pages.module';
 import { ChangePasswordDto } from '@lingua/dto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-password-change',
@@ -70,7 +71,7 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
         next: () => {
           this.notify.success('Password updated successfully!');
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.notify.error(
             error.error.message || 'Failed to update password.'
           );

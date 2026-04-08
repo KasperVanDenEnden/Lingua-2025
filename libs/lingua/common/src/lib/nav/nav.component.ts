@@ -28,7 +28,6 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   constructor(
     @Inject(AuthService) public auth: AuthService,
-    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -88,5 +87,6 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   logout() {
     this.auth.logout();
+    this.currentUser = undefined;
   }
 }

@@ -4,6 +4,7 @@ import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
 import { AuthService, LessonService, NotificationService } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-lesson-list',
@@ -96,11 +97,10 @@ export class LessonListComponent implements OnInit, OnDestroy {
           // Reload the list after successful deletion
           this.loadLessons();
           // Show success message (optional)
-          this.notify.success('Gelukt!');
+          this.notify.success('Deleted successfully!');
         },
-        error: (error) => {
-          console.error('Error deleting lesson:', error);
-          // Show error message (optional)
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(error.error?.message || 'Failed to delete lesson: ' + error.message);
         },
         complete: () => {
           // Reset the recordToDelete and close modal
