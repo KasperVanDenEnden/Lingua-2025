@@ -38,7 +38,7 @@ jobs:
 
       - name: Zip artifacts
         run: |
-          cd ${{ github.workspace }}/dist/apps/lingua && zip ${{ github.workspace }}/lingua-release.zip ./* -r
+          cd ${{ github.workspace }}/dist/apps/lingua/browser && zip ${{ github.workspace }}/lingua-release.zip ./* -r
           cd ${{ github.workspace }}/dist/apps/data-api && zip ${{ github.workspace }}/data-api-release.zip ./* -r
           cd ${{ github.workspace }}/dist/apps/rcmnd-api && zip ${{ github.workspace }}/rcmnd-api-release.zip ./* -r
 
