@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - avanstourneyapi
+name: Build and deploy a Node.js app and an Angular app to an Azure
 
 on:
   push:
@@ -16,25 +16,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           cache: 'npm'
 
       - name: npm install, build, and test
         run: |
-          npm install --legacy-peer-deps
+          npm install
           npm run build --if-present
           npm run test --if-present
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: .
+      - name: Zip artifacts for deployment
+        run: |
+          echo ${GITHUB_WORKSPACE}
+          cd ${GITHUB_WORKSPACE}/dist/apps/data-api/ && zip ${GITHUB_WORKSPACE}/data-api-release.zip ./* -r
+          cd ${GITHUB_WORKSPACE}/dist/apps/rcmnd-api/ && zip ${GITHUB_WORKSPACE}/rcmnd-api-release.zip ./* -r
+          cd ${GITHUB_WORKSPACE}/dist/apps/frontend-app/ && zip ${GITHUB_WORKSPACE}/frontend-app-release.zip ./* -r
 
-  deploy:
+      - name: Upload frontend-app artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-app
+          path: frontend-app-release.zip
+          
+      - name: Upload data-api artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: data-api
+          path: data-api-release.zip
+          
+          
+  deploy-frontend-app:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-app
+
+      - name: Unzip artifact for deployment
+        run: unzip frontend-app-release.zip
+        
+      - name: Deploy to static azure web app
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.ANGULAR_PUBLISHTOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          app_location: "/" # App source code path
+          api_location: "" # Api source code path - optional
+          output_location: "" # Built app content directory - optional
+
+
+  deploy-data-api:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -43,15 +84,51 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
-          name: node-app
+          name: data-api
+
+      - name: Unzip artifact for deployment
+        run: unzip data-api-release.zip
+
+      - name: Install dependencies
+        run: npm install
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: 'avanstourneyapi'
+          app-name: 'NxWorkshop'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_624DFA1293E34C39A7220AD08A629643 }}
-          package: '.'
+          publish-profile: ${{ secrets.NEXTJS_PUBLISHPROFILE }}
+          package: .
+
+  deploy-rcmnd-api:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: rcmnd-api
+
+      - name: Unzip artifact for deployment
+        run: unzip rcmnd-api-release.zip
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'NxWorkshop'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.RCMND_PUBLISHPROFILE }}
+          package: .
+
+
