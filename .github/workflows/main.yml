@@ -102,7 +102,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'nestjs'
+          app-name: 'nestjs-c9cxd8gzbyb7ajhr'
           publish-profile: ${{ secrets.NESTJS_PUBLISHPROFILE }}
           package: data-api            # ← verwijst naar submap
           type: 'zip'
@@ -124,7 +124,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'rcmnd-api'
+          app-name: 'rcmnd-api-g4dxdkcqd4fsaghr'
           publish-profile: ${{ secrets.RCMND_PUBLISHPROFILE }}
           package: rcmnd-api           # ← verwijst naar submap
           type: 'zip'
