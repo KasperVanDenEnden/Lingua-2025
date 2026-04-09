@@ -1,5 +1,7 @@
 <main class="flex justify-center">
-  <div class="p-4 max-w-xl w-full h-auto border border-primary-dark bg-secondary-light rounded-lg">
+  <div
+    class="p-4 max-w-xl w-full h-auto border-2 border-primary-dark bg-secondary-light rounded-lg"
+  >
     <div class="flex justify-between items-center">
       <h1 class="font-semibold text-xl mb-3">Course Form</h1>
       <button (click)="closeForm()" class="text-gray-500 hover:text-red-600">
@@ -8,18 +10,24 @@
     </div>
 
     <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="space-y-4">
-
-      @if(isEditMode) {
+      @if (isEditMode) {
         <div class="form-group">
-          <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold">Status</label>
-          <select id="status" formControlName="status"
-            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
+          <label for="status" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Status</label
+          >
+          <select
+            id="status"
+            formControlName="status"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+          >
             <option value="Active">Active</option>
             <option value="Archived">Archived</option>
           </select>
-          @if (courseForm.get('status')?.touched && courseForm.get('status')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
+          @if (
+            courseForm.get('status')?.touched &&
+            courseForm.get('status')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
               @if (courseForm.get('status')?.errors?.['required']) {
                 <span>Select an option</span>
               }
@@ -29,81 +37,184 @@
       }
 
       <div class="form-group">
-        <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold">Title</label>
-        <input id="title" type="text" formControlName="title"
-          class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full" required>
-          @if (courseForm.get('title')?.touched && courseForm.get('title')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
-              @if (courseForm.get('title')?.errors?.['required']) {
-                <span>title is required</span>
+        <label for="title" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+          >Title</label
+        >
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+          required
+        />
+        @if (
+          courseForm.get('title')?.touched && courseForm.get('title')?.invalid
+        ) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (courseForm.get('title')?.errors?.['required']) {
+              <span>title is required</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label
+          for="description"
+          class="mb-1.5 ml-2.5 block text-sm font-semibold"
+          >Description</label
+        >
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Write..."
+          rows="4"
+          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full"
+          required
+        ></textarea>
+        @if (
+          courseForm.get('description')?.touched &&
+          courseForm.get('description')?.invalid
+        ) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (courseForm.get('description')?.errors?.['required']) {
+              <span>Description is required</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label for="starts" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Starts</label
+          >
+          <input
+            id="starts"
+            type="date"
+            formControlName="starts"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            required
+          />
+          @if (
+            courseForm.get('starts')?.touched &&
+            courseForm.get('starts')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('starts')?.errors?.['required']) {
+                <span>Starts is required</span>
               }
             </div>
           }
         </div>
 
         <div class="form-group">
-          <label for="description" class="mb-1.5 ml-2.5 block text-sm font-semibold">Description</label>
-          <textarea id="description" formControlName="description" placeholder="Write..." rows="4"
-          class="form-input border border-primary-dark rounded-md block px-2 py-1 w-full" required></textarea>
-          @if (courseForm.get('description')?.touched && courseForm.get('description')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
-              @if (courseForm.get('description')?.errors?.['required']) {
-                <span>Description is required</span>
+          <label for="ends" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Ends</label
+          >
+          <input
+            id="ends"
+            type="date"
+            formControlName="ends"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+          />
+          @if (
+            courseForm.get('ends')?.touched && courseForm.get('ends')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1"></div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="price" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Price</label
+          >
+          <input
+            id="price"
+            type="number"
+            formControlName="price"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            required
+          />
+          @if (
+            courseForm.get('price')?.touched && courseForm.get('price')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('price')?.errors?.['required']) {
+                <span>Price is required</span>
               }
             </div>
           }
         </div>
-        <div class="grid grid-cols-2 gap-md">
 
-          <div class="form-group">
-            <label for="language" class="mb-1.5 ml-2.5 block text-sm font-semibold">Language</label>
-            <select id="language" formControlName="language"
-              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-              <option value="" disabled selected>Select a language</option>
-              <option value="Dutch">Dutch</option>
-              <option value="English">English</option>
-              <option value="French">French</option>
-              <option value="German">German</option>
-              <option value="Korean">Korean</option>
-            </select>
-            @if (courseForm.get('language')?.touched && courseForm.get('language')?.invalid) {
-              <div
-                class="text-red-500 text-sm mt-1">
-                @if (courseForm.get('language')?.errors?.['required']) {
-                  <span>Please select a language</span>
-                }
-              </div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="teacher" class="mb-1.5 ml-2.5 block text-sm font-semibold">Select teacher</label>
-            <select id="teacher" formControlName="teacher"
-              class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full">
-              @for (teacher of teachers; track teacher) {
-                <option [value]="teacher._id">{{ teacher.firstname }} {{
-                teacher.lastname }}</option>
+        <div class="form-group">
+          <label
+            for="maxStudents"
+            class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Max Students</label
+          >
+          <input
+            id="maxStudents"
+            type="number"
+            formControlName="maxStudents"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+            required
+          />
+          @if (
+            courseForm.get('maxStudents')?.touched &&
+            courseForm.get('maxStudents')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('maxStudents')?.errors?.['required']) {
+                <span>Max Students is required</span>
               }
-            </select>
-            @if (courseForm.get('teacher')?.touched && courseForm.get('teacher')?.invalid) {
-              <div
-                class="text-red-500 text-sm mt-1">
-                @if (courseForm.get('teacher')?.errors?.['required']) {
-                  <span>Select a teacher</span>
-                }
-              </div>
-            }
-          </div>
-
+            </div>
+          }
         </div>
-        <button type="submit"
-          [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !courseForm.invalid, 'bg-gray-300 text-gray-500': courseForm.invalid }"
-          class="py-sm px-md text-white flex self-end" [disabled]="courseForm.invalid">
-          {{ isEditMode ? 'Save' : 'Submit'}}
-        </button>
+      </div>
 
-      </form>
-    </div>
-  </main>
+      <div class="grid grid-cols-2 gap-md">
+        <div class="form-group">
+          <label
+            for="language"
+            class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Language</label
+          >
+          <select
+            id="language"
+            formControlName="language"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+          >
+            <option value="" disabled selected>Select a language</option>
+            <option value="Dutch">Dutch</option>
+            <option value="English">English</option>
+            <option value="French">French</option>
+            <option value="German">German</option>
+            <option value="Korean">Korean</option>
+          </select>
+          @if (
+            courseForm.get('language')?.touched &&
+            courseForm.get('language')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('language')?.errors?.['required']) {
+                <span>Please select a language</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <button
+        type="submit"
+        [ngClass]="{
+          'bg-primary-dark hover:bg-primary-light': !courseForm.invalid,
+          'bg-gray-300 text-gray-500': courseForm.invalid,
+        }"
+        class="py-sm px-md text-white flex self-end"
+        [disabled]="courseForm.invalid"
+      >
+        {{ isEditMode ? 'Save' : 'Submit' }}
+      </button>
+    </form>
+  </div>
+</main>

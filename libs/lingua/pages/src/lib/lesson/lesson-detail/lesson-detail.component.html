@@ -1,63 +1,244 @@
-<lingua-header [pageTitle]="'Lessons'"></lingua-header>
+<lingua-header [pageTitle]="'Lesson'"></lingua-header>
 
-<main class="mx-auto p-4 mx-4">
-    <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
-        <div class="w-auto bg-secondary-light shadow-lg border-2 border-primary-dark rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-primary-dark mb-4">Details</h2>
-                <div>
-                    <a [routerLink]="['/lessons', (lesson$ | async)?._id, 'edit']"
-                        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-pencil"></i>
-                        Edit
-                    </a>
-                    <button (click)="handleDelete()"
-                        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-trash"></i>
-                        Delete
-                    </button>
-                    <a [routerLink]="['/lessons']"
-                        class="bg-primary-dark text-white px-4 py-2 ml-3 rounded-md hover:bg-primary-light transition">
-                        <i class="fa-solid fa-xmark"></i>
-                        Previous
-                    </a>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-black">Day: </span>
-                    <span class="text-sm text-gray-800">{{ (lesson$ | async)?.day | date:'longDate' }} </span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-black">Time: </span>
-                    <span class="text-sm text-gray-800">{{ (lesson$ | async)?.startTime | date: 'HH:mm'}} - {{ (lesson$ | async)?.endTime | date: 'HH:mm' }}</span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-black">Room: </span>
-                    <span class="text-sm text-gray-800">{{ getRoomSlug()}} <span class="font-medium text-primary-dark"></span></span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-black">Teacher: </span>
-                    <span class="text-sm text-gray-800">{{ getTeacher()}} <span class="font-medium text-primary-dark"></span></span>
-                </div>
-                <div class="flex gap-md">
-                    <span class="text-sm font-medium text-black">Class: </span>
-                    <span class="text-sm text-gray-800">{{ getClass()}} <span class="font-medium text-primary-dark"></span></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Child component (formulier verschijnt hier als hij actief is) -->
-        <div>
-            <router-outlet></router-outlet>
-        </div>
+<main class="max-w-screen-xl mx-auto p-6">
+  <!-- Top bar -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div class="flex items-center gap-3 flex-wrap">
+      <h1 class="text-2xl font-semibold text-gray-800">
+        {{ (lesson$ | async)?.title }}
+      </h1>
     </div>
+
+    <div class="flex gap-2 flex-wrap">
+      @if (currentUser) {
+        @if (isAttending()) {
+          <button
+            (click)="unattend()"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+          >
+            Unattend
+          </button>
+        } @else {
+          <button
+            (click)="attend()"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+          >
+            Attend
+          </button>
+        }
+      }
+
+      @if (canEdit()) {
+        <a
+          [routerLink]="['/lessons', (lesson$ | async)?._id, 'edit']"
+          class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-pencil"></i>
+          Edit
+        </a>
+
+        <button
+          (click)="handleDelete()"
+          class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
+        >
+          <i class="fa-solid fa-trash"></i>
+          Delete
+        </button>
+      }
+
+      <a
+        [routerLink]="['/lessons']"
+        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition"
+      >
+        <i class="fa-solid fa-xmark"></i>
+        Previous
+      </a>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div
+    class="grid gap-4 mb-4"
+    [ngClass]="
+      isChildRouteActive() ? 'lg:grid-cols-2 grid-cols-1' : 'grid-cols-1'
+    "
+  >
+    <!-- LEFT COLUMN -->
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Lesson info -->
+      <div
+        class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5"
+      >
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4"
+        >
+          Lesson info
+        </p>
+
+        <div class="space-y-3">
+          <div>
+            <span class="text-xs font-medium text-gray-500">Day</span>
+            <p class="text-sm text-gray-800 mt-0.5">
+              {{ (lesson$ | async)?.day | date: 'longDate' }}
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Time</span>
+            <p class="text-sm text-gray-800 mt-0.5">
+              {{ (lesson$ | async)?.startTime | date: 'HH:mm' }} -
+              {{ (lesson$ | async)?.endTime | date: 'HH:mm' }}
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Teacher</span>
+            <p class="text-sm text-gray-800 mt-0.5">
+              {{ getTeacher() }}
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Class</span>
+            <p class="text-sm text-gray-800 mt-0.5">
+              {{ getClass() }}
+            </p>
+          </div>
+
+          @if ((lesson$ | async)?.type) {
+            <div>
+              <span class="text-xs font-medium text-gray-500">Type</span>
+              <p class="text-sm text-gray-800 mt-0.5">
+                {{ (lesson$ | async)?.type }}
+              </p>
+            </div>
+          }
+
+          @if ((lesson$ | async)?.status) {
+            <div>
+              <span class="text-xs font-medium text-gray-500">Status</span>
+              <p class="text-sm text-gray-800 mt-0.5">
+                {{ (lesson$ | async)?.status }}
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Course info -->
+      <div
+        class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5"
+      >
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4"
+        >
+          Course info
+        </p>
+
+        <div class="mb-3">
+          <span class="text-xs font-medium text-gray-500">Description</span>
+          <p class="text-sm text-gray-800 leading-relaxed mt-0.5">
+            {{ course?.description || '—' }}
+          </p>
+        </div>
+
+        <hr class="border-gray-200 my-4" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <span class="text-xs font-medium text-gray-500">Language</span>
+            <div class="mt-1">
+              <span
+                class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+              >
+                {{ course?.language || '—' }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Level</span>
+            <div class="mt-1">
+              <span
+                class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
+              >
+                {{ course?.level || '—' }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Starts</span>
+            <p class="text-sm font-medium text-gray-800 mt-0.5">
+              {{ course?.starts | date: 'd MMM yyyy' }}
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-medium text-gray-500">Ends</span>
+            <p class="text-sm text-gray-400 mt-0.5">
+              {{
+                course?.ends
+                  ? (course?.ends | date: 'd MMM yyyy')
+                  : 'No end date'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students -->
+      <div
+        class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5"
+      >
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4"
+        >
+          Students ({{ students.length }}/{{ course?.maxStudents }})
+        </p>
+
+        @if (students.length) {
+          <div class="divide-y divide-gray-200">
+            @for (student of students; track student) {
+              <div class="flex items-center gap-3 px-2 py-3">
+                <!-- Info -->
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-800">
+                    {{ student.firstname }} {{ student.lastname }}
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    {{ student.email }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="px-4 py-6 text-center bg-white rounded-md">
+            <p class="text-sm text-gray-400">
+              Geen studenten gevonden voor deze les.
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </main>
 
+<!-- Delete modal -->
 <lingua-modal-delete
-[isOpen]="isModalOpen"
-[message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.title + '?' : ''"
-title="Delete Record"
-(close)="closeModal()"
-(confirm)="confirmDelete()"
+  [isOpen]="isModalOpen"
+  [message]="
+    recordToDelete
+      ? 'Are you sure you want to delete ' + recordToDelete.title + '?'
+      : ''
+  "
+  title="Delete Record"
+  (closed)="closeModal()"
+  (confirmed)="confirmDelete()"
 ></lingua-modal-delete>

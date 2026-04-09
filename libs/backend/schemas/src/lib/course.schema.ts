@@ -1,4 +1,10 @@
-import { CourseStatus, ICourse, IsObjectId, IUpsertReview, Language } from '@lingua/api';
+import {
+  CourseStatus,
+  ICourseSchema,
+  IUpsertReview,
+  Language,
+  Level,
+} from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -8,18 +14,23 @@ import {
   IsDate,
   ArrayMinSize,
   IsArray,
+  IsMongoId,
+  IsNumber,
+  Max,
+  Min,
+  IsOptional,
+  ValidateIf,
 } from 'class-validator';
 import { ReviewSchema } from './review.schema';
 
 export type CourseDocument = Course & Document;
 
-@Schema()
-export class Course implements ICourse {
-  @Prop({ default: () => new Types.ObjectId() })
-  @IsNotEmpty()
-  @IsObjectId()
-  _id!: Types.ObjectId;
-
+@Schema({
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
+export class Course implements ICourseSchema {
   @Prop()
   @IsNotEmpty()
   @IsString()
@@ -30,38 +41,77 @@ export class Course implements ICourse {
   @IsString()
   description!: string;
 
-  @Prop({ type: String, enum: Object.values(CourseStatus) })
+  @Prop({ default: 0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Max(50, { message: 'price cannot exceed 50,00' })
+  @Min(0, { message: 'price cannot be negative' })
+  price!: number;
+
+  @Prop({ default: 0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Max(20, { message: 'maxStudents cannot exceed 20' })
+  maxStudents!: number;
+
+  @Prop({
+    type: String,
+    enum: Object.values(CourseStatus),
+    default: CourseStatus.Concept,
+  })
   @IsNotEmpty()
   @IsEnum(CourseStatus, { message: 'Status must be a valid enum value' })
   status!: CourseStatus;
 
-  @Prop({ default: Date.now() })
+  @Prop()
   @IsNotEmpty()
   @IsDate()
-  createdOn!: Date;
+  starts!: Date;
+
+  @Prop({ type: Date, default: null })
+  @IsOptional()
+  @ValidateIf((o) => o.ends !== null)
+  @IsDate()
+  ends!: Date | null;
 
   @Prop({ type: String, enum: Object.values(Language) })
   @IsNotEmpty()
   @IsEnum(Language, { message: 'Language must be a valid enum value' })
   language!: Language;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: String, enum: Object.values(Level), default: Level.A1 })
   @IsNotEmpty()
-  @IsObjectId()
-  teacher!: Types.ObjectId;
+  @IsEnum(Level, { message: 'Level must be a valid enum value' })
+  level!: Level;
 
-  @Prop({ type: [Types.ObjectId], ref: 'User' })
+  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
   @IsNotEmpty()
-  @IsObjectId({
-    each: true,
-    message: 'Each asstisant must be a valid ObjectId',
-  })
+  teachers!: Types.ObjectId[];
+
+  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
+  @IsNotEmpty()
   @IsArray()
-  @ArrayMinSize(0, { message: 'Assistants must be an array (can be empty)' })
-  assistants!: Types.ObjectId[];
+  @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
+  students!: Types.ObjectId[];
 
   @Prop({ type: [ReviewSchema] })
   reviews!: IUpsertReview[];
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
+
+CourseSchema.virtual('averageRating').get(function (this: CourseDocument) {
+  if (!this.reviews || this.reviews.length === 0) {
+    return 0;
+  }
+  const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+  return total / this.reviews.length;
+});
+
+CourseSchema.pre(
+  'deleteOne',
+  { document: true, query: false },
+  async function () {
+    await this.model('Lesson').deleteMany({ course: this._id });
+  },
+);

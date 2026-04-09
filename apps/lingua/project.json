@@ -16,9 +16,11 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/lingua/tsconfig.app.json",
         "assets": [
+          "apps/frontend/src/assets",
           {
             "glob": "**/*",
-            "input": "apps/lingua/public"
+            "input": "libs/shared/assets",
+            "output": "assets/shared"
           }
         ],
         "styles": [

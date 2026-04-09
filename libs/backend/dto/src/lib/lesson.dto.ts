@@ -1,45 +1,52 @@
-import { ICreateLesson, Id, IsObjectId, LessonStatus } from '@lingua/api';
-import { Lesson } from '@lingua/schemas';
-import { ArrayMinSize, IsArray, IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ICreateLesson, Id, LessonStatus, LessonType } from '@lingua/api';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateLessonDto implements ICreateLesson {
   @IsNotEmpty()
-  @IsObjectId()
+  @IsMongoId()
   course!: Id;
 
   @IsNotEmpty()
-  @IsObjectId()
-  room!: Id;
-
-  @IsNotEmpty()
-  @IsObjectId()
+  @IsMongoId()
   teacher!: Id;
 
-  @IsArray()
-  @ArrayMinSize(0, { message: 'Students must be an array (can be empty)' })
-  @IsObjectId({ each: true, message: 'Each student must be a valid ObjectId' })
-  students!: Id[];
-
-  @IsEnum(LessonStatus, { message: 'Status must be a valid enum value'})
+  @IsEnum(LessonStatus, { message: 'Status must be a valid enum value' })
   @IsNotEmpty()
   status!: LessonStatus;
-  
+
   @IsNotEmpty()
   @IsString()
   title!: string;
 
   @IsNotEmpty()
-  @IsString()
-  description!: string;
+  @IsEnum(LessonType, { message: 'Type must be a valid enum value' })
+  type!: LessonType;
 
+  @IsNotEmpty()
+  @IsBoolean()
+  isWorkshop!: boolean;
+
+  @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
   @IsDate()
   day!: Date;
 
+  @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
   @IsDate()
   startTime!: Date;
 
+  @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
   @IsDate()
   endTime!: Date;

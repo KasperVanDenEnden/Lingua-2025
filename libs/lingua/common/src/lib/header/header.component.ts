@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 
 import { IUser } from '@lingua/api';
 import { AuthService } from '@lingua/services';
@@ -11,15 +11,15 @@ import { Subscription } from 'rxjs';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
+  private authService = inject(AuthService);
+
   @Input() pageTitle!: string;
   userSubscription!: Subscription;
   currentUser: IUser | undefined = undefined;
 
-  constructor(private authService: AuthService) {}
-
   ngOnInit(): void {
-      this.authService.currentUser$.subscribe(user => {
-        this.currentUser = user;
-      });
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+    });
   }
 }

@@ -1,9 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ICourse } from '@lingua/api';
-import { CourseService, NotificationService } from '@lingua/services';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CourseStatus, ICourse, IUser, Language } from '@lingua/api';
+import {
+  AuthService,
+  CourseService,
+  NotificationService,
+  UserService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
+import { Types } from 'mongoose';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-course-list',
@@ -12,21 +19,34 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './course-list.component.css',
 })
 export class CourseListComponent implements OnInit, OnDestroy {
+  private courseService = inject(CourseService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+
   courses?: ICourse[] | null;
   sub!: Subscription;
+  currentUserId?: string;
+  currentUser?: IUser | null = null;
+
+  statuses = Object.values(CourseStatus);
+  languages = Object.values(Language);
+
+  searchQuery = '';
+  selectedStatus = '';
+  selectedLanguage = '';
 
   courseList$?: Observable<ICourse[]>;
 
   isModalOpen = false;
   recordToDelete?: ICourse | null;
 
-  constructor(
-    private courseService: CourseService,
-    private route: ActivatedRoute,
-    private notify: NotificationService
-  ) {}
-
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(
+      (user) => (this.currentUser = user),
+    );
+
     this.loadCourses();
 
     this.courseService.refresh$.subscribe(() => {
@@ -45,6 +65,24 @@ export class CourseListComponent implements OnInit, OnDestroy {
     });
   }
 
+  get filteredCourses(): ICourse[] {
+    if (!this.courses) return [];
+    return this.courses.filter((course) => {
+      const matchesQuery = course.title
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.selectedStatus
+        ? course.status === this.selectedStatus
+        : true;
+      const matchesLanguage = this.selectedLanguage
+        ? course.language === this.selectedLanguage
+        : true;
+
+      return matchesQuery && matchesStatus && matchesLanguage;
+    });
+  }
+
   handleDelete(record: ICourse): void {
     this.recordToDelete = record;
     this.isModalOpen = true;
@@ -55,10 +93,12 @@ export class CourseListComponent implements OnInit, OnDestroy {
       this.courseService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           this.loadCourses();
-          this.notify.success('Gelukt!');
+          this.notify.success('Course deleted successfully!');
         },
-        error: (error) => {
-          this.notify.error(error);
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(
+            error.error?.message || 'Failed to delete course: ' + error.message,
+          );
         },
         complete: () => {
           this.recordToDelete = null;
@@ -74,5 +114,14 @@ export class CourseListComponent implements OnInit, OnDestroy {
 
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
+  }
+
+  canCreate(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'admin' || role === 'teacher';
+  }
+
+  canEdit(): boolean {
+    return this.currentUser?.role !== 'student';
   }
 }

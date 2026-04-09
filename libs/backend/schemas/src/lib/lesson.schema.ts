@@ -1,4 +1,4 @@
-import { ILesson, IsObjectId, LessonStatus } from '@lingua/api';
+import { ILessonSchema, LessonStatus, LessonType } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
@@ -8,57 +8,48 @@ import {
   IsArray,
   ArrayMinSize,
   IsEnum,
+  IsMongoId,
+  IsBoolean,
 } from 'class-validator';
 
 export type LessonDocument = Lesson & Document;
 
-@Schema()
-export class Lesson implements ILesson {
-  @Prop({ default: () => new Types.ObjectId() })
-  @IsObjectId()
-  @IsNotEmpty()
-  _id!: Types.ObjectId;
-  
+@Schema({ timestamps: true })
+export class Lesson implements ILessonSchema {
   @Prop({ type: Types.ObjectId, ref: 'Course' })
   @IsNotEmpty()
-  @IsObjectId()
   course!: Types.ObjectId;
-  
-  @Prop({ type: Types.ObjectId, ref: 'Room' })
-  @IsNotEmpty()
-  @IsObjectId()
-  room!: Types.ObjectId;
-  
+
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId()
   teacher!: Types.ObjectId;
-  
+
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   @IsNotEmpty()
-  @IsObjectId({
-    each: true,
-    message: 'Each user must be a valid ObjectId',
-  })
   @IsArray()
   @ArrayMinSize(0, { message: 'Assistants must be an array (can be empty)' })
   students!: Types.ObjectId[];
-  
+
   @Prop({ type: String, enum: Object.values(LessonStatus) })
-  @IsEnum(LessonStatus, { message: 'Status must be a valid enum value'})
+  @IsEnum(LessonStatus, { message: 'Status must be a valid enum value' })
   @IsNotEmpty()
   status!: LessonStatus;
+
+  @Prop({ type: String, enum: Object.values(LessonType) })
+  @IsEnum(LessonType, { message: 'Type must be a valid enum value' })
+  @IsNotEmpty()
+  type!: LessonType;
+
+  @Prop({ default: false })
+  @IsNotEmpty()
+  @IsBoolean()
+  isWorkshop!: boolean;
 
   @Prop()
   @IsNotEmpty()
   @IsString()
   title!: string;
-  
-  @Prop()
-  @IsNotEmpty()
-  @IsString()
-  description!: string;
-  
+
   @Prop()
   @IsNotEmpty()
   @IsDate()

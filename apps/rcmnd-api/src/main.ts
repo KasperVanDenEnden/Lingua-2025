@@ -6,11 +6,15 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
+
+  const corsOptions: CorsOptions = {};
+  app.enableCors(corsOptions);
 
   const config = new DocumentBuilder()
     .setTitle('Lingua Data API')
@@ -25,7 +29,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3100;
   await app.listen(port);
   Logger.log(
-    `🚀 Application rcmnd-api is running on: http://localhost:${port}/${globalPrefix}`
+    `🚀 Application rcmnd-api is running on: http://localhost:${port}/${globalPrefix}`,
   );
 }
 

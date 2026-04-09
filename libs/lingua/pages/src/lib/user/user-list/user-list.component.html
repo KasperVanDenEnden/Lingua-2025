@@ -3,61 +3,157 @@
 <main class="p-4 mx-4">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold">Overview</h1>
-    @if (isAdmin()) {
-      <a [routerLink]="['/users/new']"
-        class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition">
-        <i class="fa-solid fa-plus"></i>
-        New user
-      </a>
-    }
+
+    <div class="flex items-center gap-3">
+      <input
+        type="text"
+        placeholder="Zoek op naam of e-mail..."
+        [(ngModel)]="searchQuery"
+        class="search-input"
+      />
+
+      <select [(ngModel)]="selectedRole" class="role-select">
+        <option value="">Alle rollen</option>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+      </select>
+
+      @if (isAdmin()) {
+        <a
+          [routerLink]="['/users/new']"
+          class="bg-primary-dark text-white px-4 py-2 rounded-md hover:bg-primary-light transition whitespace-nowrap"
+        >
+          <i class="fa-solid fa-plus mr-1"></i>
+          New user
+        </a>
+      }
+    </div>
   </div>
 
-  <div class="grid" [ngClass]="{'lg:grid-cols-2 grid-cols-1': isChildRouteActive()}">
+  <div
+    class="grid"
+    [ngClass]="{ 'lg:grid-cols-2 grid-cols-1': isChildRouteActive() }"
+  >
     <!-- users table (neemt volledige breedte als er geen child is) -->
     <div>
-      <div class="flex-1 overflow-x-auto bg-white rounded-lg shadow" >
+      <div class="flex-1 overflow-x-auto bg-white rounded-lg shadow">
         <div class="overflow-x-auto bg-white rounded-lg shadow">
           <table class="min-w-full divide-y divide-primary-dark shadow-lg">
             <thead class="bg-secondary-light">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider">Name</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider">Role</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-primary-base uppercase tracking-wider">Actions</th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider"
+                >
+                  Email
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider"
+                >
+                  Role
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider"
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              @for (user of users; track user) {
+              @for (user of filteredUsers; track user._id) {
                 <tr class="hover:bg-gray-100">
-                  <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ user?.firstname }} {{ user?.lastname }}</div></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ user?.email }}</div></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ user?.role | titlecase }}</div></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <a [routerLink]="['/users', user._id]" class="text-primary-dark hover:text-primary-light mr-4" title="Show"><i class="fa-solid fa-eye fa-lg"></i></a>
-                    <a [routerLink]="['/users', user._id, 'edit']" class="text-primary-dark hover:text-primary-light mr-4" title="Edit"><i class="fa-solid fa-pencil fa-lg"></i></a>
-                    @if (isAdmin()) {
-                      <button (click)="handleDelete(user)" class="text-primary-dark hover:text-primary-light mr-4"
-                        title="Delete"><i class="fa-solid fa-trash fa-lg"></i></button>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">
+                      {{ user?.firstname }} {{ user?.lastname }}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">{{ user?.email }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">
+                      {{ user?.role | titlecase }}
+                    </div>
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium"
+                  >
+                    <span class="inline-block w-8">
+                      <a
+                        [routerLink]="['/users', user._id]"
+                        class="text-primary-dark hover:text-primary-light"
+                        title="Show"
+                      >
+                        <i class="fa-solid fa-eye fa-lg"></i>
+                      </a>
+                    </span>
+                      @if(canEdit()) {
+                        <span class="inline-block w-8">
+                          <a
+                            [routerLink]="['/users', user._id, 'edit']"
+                            class="text-primary-dark hover:text-primary-light"
+                            title="Edit"
+                          >
+                            <i class="fa-solid fa-pencil fa-lg"></i>
+                          </a>
+                        </span>
                       }
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                      @if (canDelete()) {
+                        <span  class="inline-block w-8">
+                          <button
+                            (click)="handleDelete(user)"
+                            class="text-primary-dark hover:text-primary-light"
+                            title="Delete"
+                          >
+                            <i class="fa-solid fa-trash fa-lg"></i>
+                          </button>
+                        </span>
+                      }
+                    <span class="inline-block w-8">
+                      @if (
+                        !isFriend(user._id.toString()) &&
+                        user._id !== currentUserId
+                      ) {
+                        <button
+                          (click)="addFriend(user._id.toString())"
+                          class="text-primary-dark hover:text-primary-light"
+                          title="Add friend"
+                        >
+                          <i class="fa-solid fa-user-plus fa-lg"></i>
+                        </button>
+                      }
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-        @if (users) {
-          <div>Showing: {{ users.length }} entries</div>
-        }
       </div>
-
-      <!-- Child component (formulier verschijnt hier als hij actief is) -->
-      <div>
-        <router-outlet></router-outlet>
-      </div>
+      @if (users) {
+        <div>Showing: {{ users.length }} entries</div>
+      }
     </div>
-  </main>
 
-  <lingua-modal-delete [isOpen]="isModalOpen"
-    [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.email + '?' : ''"
-  title="Delete Record" (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
+    <!-- Child component (formulier verschijnt hier als hij actief is) -->
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</main>
+
+<lingua-modal-delete
+  [isOpen]="isModalOpen"
+  [message]="
+    recordToDelete
+      ? 'Are you sure you want to delete ' + recordToDelete.email + '?'
+      : ''
+  "
+  title="Delete Record"
+  (closed)="closeModal()"
+  (confirmed)="confirmDelete()"
+></lingua-modal-delete>

@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AuthService } from '@lingua/services';
+import { AuthService, NotificationService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-login',
@@ -12,14 +13,13 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+
   loginForm!: FormGroup;
   subs: Subscription = new Subscription();
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
@@ -37,12 +37,17 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.subs = this.authService
         .login(this.loginForm.value.email, this.loginForm.value.password)
         .subscribe({
-          next: (user) => {
-            if (user) {
+          next: (success) => {
+            if (success) {
               const returnUrl =
                 this.route.snapshot.queryParamMap.get('returnUrl') || '/';
               this.router.navigate([returnUrl]);
             }
+          },
+          error: (err: HttpErrorResponse) => {
+            const message =
+              err?.error?.message || 'Login failed: ' + err.message;
+            this.notify.error(message);
           },
         });
     } else {

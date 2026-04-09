@@ -1,37 +1,65 @@
-/// <reference types="cypress" />
-
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
+/* eslint-disable @typescript-eslint/no-namespace */
+export {}; 
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface Chainable<Subject> {
-      login(email: string, password: string): void;
+    interface Chainable {
+      loginAs(role: 'admin' | 'teacher' | 'student'): void;
     }
   }
 }
 
-// -- This is a parent command --
-Cypress.Commands.add('login', (email, password) => {
-  console.log('Custom command example: Login', email, password);
+Cypress.Commands.add('loginAs', (role: 'admin' | 'teacher' | 'student') => {
+  const users = {
+    admin: {
+      _id: '1',
+      firstname: 'Admin',
+      lastname: 'User',
+      email: 'admin@lingua.com',
+      role: 'admin',
+    },
+    teacher: {
+      _id: '2',
+      firstname: 'Teacher',
+      lastname: 'User',
+      email: 'teacher@lingua.com',
+      role: 'teacher',
+    },
+    student: {
+      _id: '3',
+      firstname: 'Student',
+      lastname: 'User',
+      email: 'student@lingua.com',
+      role: 'student',
+    },
+  };
+
+  const user = users[role];
+  if (!user) {
+    throw new Error(`User with role '${role}' not found`);
+  }
+
+  cy.session(
+    role,
+    () => {
+      cy.window().then((win) => {
+        win.localStorage.setItem('currentuser', JSON.stringify(user));
+        win.localStorage.setItem('JWT', 'fake-jwt-token');
+      });
+    },
+    {
+      validate() {
+        cy.window()
+          .its('localStorage')
+          .invoke('getItem', 'JWT')
+          .should('exist');
+      },
+    },
+  );
+
+  // Auth profile altijd mocken buiten de session
+  cy.intercept('GET', '**/auth/profile', {
+    statusCode: 200,
+    body: user,
+  }).as('getProfile');
 });
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })

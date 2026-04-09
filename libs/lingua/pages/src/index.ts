@@ -3,12 +3,6 @@ export * from './lib/pages/pages.component';
 export * from './lib/auth/login/login.component';
 export * from './lib/auth/register/register.component';
 export * from './lib/dashboard/dashboard.component';
-export * from './lib/location/location-list/location-list.component';
-export * from './lib/location/location-detail/location-detail.component';
-export * from './lib/location/location-form/location-form.component';
-export * from './lib/room/room-list/room-list.component';
-export * from './lib/room/room-detail/room-detail.component';
-export * from './lib/room/room-form/room-form.component';
 export * from './lib/course/course-list/course-list.component';
 export * from './lib/course/course-detail/course-detail.component';
 export * from './lib/course/course-form/course-form.component';
@@ -18,4 +12,4 @@ export * from './lib/lesson/lesson-form/lesson-form.component';
 export * from './lib/user/user-detail/user-detail.component';
 export * from './lib/user/user-form/user-form.component';
 export * from './lib/user/user-list/user-list.component';
-export * from './lib/user/password-change/password-change.component'
+export * from './lib/user/password-change/password-change.component';

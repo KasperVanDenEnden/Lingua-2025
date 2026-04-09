@@ -1,14 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ICourse, IUser } from '@lingua/api';
-import { Subscription, Observable } from 'rxjs';
+import { ICourse, Id, IUser } from '@lingua/api';
+import { Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { PagesModule } from '../../pages.module';
 import {
   CourseService,
-  CourseAssistantService,
   UserService,
   NotificationService,
+  AuthService,
 } from '@lingua/services';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CreateReviewDto } from '@lingua/dto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-course-detail',
@@ -17,32 +20,47 @@ import {
   styleUrl: './course-detail.component.css',
 })
 export class CourseDetailComponent implements OnInit, OnDestroy {
-  sub!: Subscription;
-  course$!: Observable<ICourse>;
+  private courseService = inject(CourseService);
+  private route = inject(ActivatedRoute);
+  private userService = inject(UserService);
+  private notify = inject(NotificationService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  course$!: Observable<ICourse | null>;
+  students$ = new BehaviorSubject<IUser[]>([]);
+
+  private sub!: Subscription;
   courseId?: string | null;
 
-  teacher?: IUser | null;
-  assistants?: IUser[] | null;
-  availableTeachers?: IUser[] | null;
+  // teachers / students / available teachers
+  teachers: IUser[] = [];
+  availableTeachers: IUser[] = [];
   selectedTeacher?: IUser | null;
 
   isModalOpen = false;
   recordToDelete?: ICourse | null;
 
-  constructor(
-    private courseService: CourseService,
-    private courseAssistantService: CourseAssistantService,
-    private route: ActivatedRoute,
-    private userService: UserService,
-    private notify: NotificationService,
-    private router: Router
-  ) {}
+  reviewForm: FormGroup = new FormGroup({
+    rating: new FormControl(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(5),
+    ]),
+    comment: new FormControl(null, Validators.required),
+  });
+
+  currentUser?: any | null = null;
 
   ngOnInit(): void {
-    this.loadCourse();
+    this.authService.currentUser$.subscribe(
+      (user) => (this.currentUser = user),
+    );
 
+    this.loadCourse();
+    // subscribe to service refresh events
     this.courseService.refresh$.subscribe(() => {
-      this.loadCourse();
+      if (this.courseId) this.loadCourse();
     });
   }
 
@@ -50,98 +68,202 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  loadCourse() {
+  // -----------------------------
+  // Load course and initialize arrays
+  // -----------------------------
+  loadCourse(): void {
     this.sub = this.route.paramMap.subscribe((params) => {
       this.courseId = params.get('id');
+      if (!this.courseId) return;
 
-      if (this.courseId) {
-        this.course$ = this.courseService.getCourseById(this.courseId);
-        this.course$.subscribe((course) => {
-          this.teacher = course.teacher as IUser;
-          this.assistants = course.assistants as IUser[];
-          this.recordToDelete = course;
+      this.courseService.getCourseById(this.courseId).subscribe((course) => {
+        this.course$ = new BehaviorSubject<ICourse | null>(
+          course,
+        ).asObservable();
+        this.teachers = (course.teachers as IUser[]) || [];
+        this.students$.next((course.students as IUser[]) || []);
+        this.recordToDelete = course;
 
-          this.userService.getUsers().subscribe((users) => {
-            const allTeachers = users.filter((user) => user.role === 'teacher');
-
-            this.availableTeachers = allTeachers.filter((teacher) => {
-              const isNotCurrentTeacher = teacher._id !== this.teacher?._id;
-              const isNotAssistant = !this.assistants?.some(
-                (assistant) => assistant?._id === teacher?._id
-              );
-              return isNotCurrentTeacher && isNotAssistant;
-            });
-          });
+        this.userService.getUsers().subscribe((users) => {
+          const allTeachers = users.filter((u) => u.role === 'teacher');
+          const assignedIds = new Set(this.teachers.map((t) => t._id));
+          this.availableTeachers = allTeachers.filter(
+            (t) => !assignedIds.has(t._id),
+          );
         });
-      }
+      });
     });
   }
 
+  // -----------------------------
+  // Delete course
+  // -----------------------------
   handleDelete(): void {
     this.isModalOpen = true;
   }
 
   confirmDelete(): void {
-    if (this.recordToDelete) {
-      this.courseService.delete(this.recordToDelete._id).subscribe({
-        next: () => {
-          this.notify.success('Gelukt!');
-          this.router.navigate(['/courses']);
-        },
-        error: (error) => {
-          this.notify.error(error);
-        },
-      });
-    }
+    if (!this.recordToDelete) return;
+
+    this.courseService.delete(this.recordToDelete._id).subscribe({
+      next: () => {
+        this.notify.success('Course deleted successfully!');
+        this.router.navigate(['/courses']);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(
+          error.error?.message || 'Failed to delete course: ' + error.message,
+        );
+      },
+    });
   }
 
   closeModal(): void {
     this.isModalOpen = false;
   }
 
+  // -----------------------------
+  // Check for child route
+  // -----------------------------
   isChildRouteActive(): boolean {
-    return this.route.children.length > 0; // Checkt of er een child actief is
+    return this.route.children.length > 0;
   }
 
-  assignAssistant(teacher: IUser) {
-    if (!teacher) {
-      console.log('No teacher selected.');
-      return;
-    }
+  // -----------------------------
+  // Assign or remove teacher
+  // -----------------------------
+  assignTeacher(teacher: IUser): void {
+    if (!teacher || !this.courseId) return;
 
-    if (this.courseId) {
-      this.courseAssistantService
-        .addAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully assigned.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to assign assistant.');
-          },
-        });
-    }
+    this.courseService.assignTeacher(this.courseId, teacher._id).subscribe({
+      next: () => {
+        const assignedIds = new Set(this.teachers.map((t) => t._id));
+        this.availableTeachers =
+          this.availableTeachers?.filter((t) => !assignedIds.has(t._id)) || [];
+        this.courseService.triggerRefresh();
+        this.notify.success(`${teacher.firstname} is assigned to the course.`);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to assign teacher: ' + err.message,
+        ),
+    });
   }
 
-  removeAssistant(teacher: IUser) {
-    if (!teacher) {
-      this.notify.warning('No teacher selected.');
-      return;
-    }
+  removeTeacher(teacher: IUser): void {
+    if (!teacher || !this.courseId) return;
 
-    if (this.courseId) {
-      this.courseAssistantService
-        .removeAssistant(teacher._id, this.courseId)
-        .subscribe({
-          next: () => {
-            this.notify.success('Assistant successfully removed.');
-            this.courseService.triggerRefresh();
-          },
-          error: () => {
-            this.notify.error('Failed to remove assistant.');
-          },
-        });
-    }
+    this.courseService.removeTeacher(this.courseId, teacher._id).subscribe({
+      next: () => {
+        const assignedIds = new Set(this.teachers.map((t) => t._id));
+        this.availableTeachers =
+          this.availableTeachers?.filter((t) => !assignedIds.has(t._id)) || [];
+        if (!this.availableTeachers.find((t) => t._id === teacher._id)) {
+          this.availableTeachers.push(teacher);
+        }
+        this.courseService.triggerRefresh();
+        this.notify.success(`${teacher.firstname} is removed from the course.`);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to remove teacher: ' + err.message,
+        ),
+    });
+  }
+
+  // -----------------------------
+  // Student enroll / unenroll
+  // -----------------------------
+  enroll(): void {
+    if (!this.courseId || !this.currentUser) return;
+
+    this.courseService.enroll(this.courseId).subscribe({
+      next: () => {
+        this.notify.success('Enrolled successfully!');
+        const currentStudents = this.students$.value;
+        if (
+          !currentStudents.some(
+            (s) => s._id.toString() === this.currentUser.id.toString(),
+          )
+        ) {
+          this.userService
+            .getUserById(this.currentUser.id)
+            .subscribe((user) => {
+              this.students$.next([...currentStudents, user]);
+            });
+        }
+      },
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to enroll: ' + err.message,
+        ),
+    });
+  }
+
+  unenroll(): void {
+    if (!this.courseId || !this.currentUser) return;
+
+    this.courseService.unenroll(this.courseId).subscribe({
+      next: () => {
+        this.notify.success('Unenrolled successfully!');
+        this.students$.next(
+          this.students$.value.filter(
+            (s) => s._id.toString() !== this.currentUser.id.toString(),
+          ),
+        );
+      },
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to unenroll: ' + err.message,
+        ),
+    });
+  }
+
+  // -----------------------------
+  // Post review
+  // -----------------------------
+  submitReview(): void {
+    const review: CreateReviewDto = {
+      rating: parseInt(this.reviewForm.value.rating, 10),
+      comment: this.reviewForm.value.comment,
+    };
+
+    this.courseService.postReview(this.courseId!, review).subscribe({
+      next: () => {
+        this.notify.success('Review submitted successfully!');
+        this.courseService.triggerRefresh();
+
+        this.reviewForm.reset();
+      },
+      error: (err: HttpErrorResponse) =>
+        this.notify.error(
+          err.error?.message || 'Failed to submit review: ' + err.message,
+        ),
+    });
+  }
+
+  // -----------------------------
+  // Helper functions
+  // -----------------------------
+  getStars(rating: number): string {
+    const full = Math.round(rating ?? 0);
+    const empty = 5 - full;
+    return '★'.repeat(full) + '☆'.repeat(empty);
+  }
+
+  isUser(obj: Id | IUser): obj is IUser {
+    return typeof obj !== 'string';
+  }
+
+  isStudentEnrolled(): boolean {
+    const students = this.students$.value;
+    return (
+      !!this.currentUser &&
+      students.some((s) => s._id.toString() === this.currentUser.id.toString())
+    );
+  }
+
+  canEdit(): boolean {
+    return this.currentUser?.role !== 'student';
   }
 }

@@ -10,18 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  BodyObjectIdsPipe,
-  Id,
-  IUpdateUser,
-  IUser,
-  Role,
-  stringObjectIdPipe,
-} from '@lingua/api';
+import { Id, IUpdateUser, IUser, Role } from '@lingua/api';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/role.decorator';
 import { RolesGuard } from '../auth/guards/role-auth.guard';
+import { BodyObjectIdsPipe } from '../pipes/bodyObjectIdsPipe';
+import { StringObjectIdPipe } from '../pipes/stringObjectIdPipe';
+import { Types } from 'mongoose';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -36,7 +33,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async getOne(@Param('id', stringObjectIdPipe) id: Id): Promise<IUser> {
+  async getOne(@Param('id', StringObjectIdPipe) id: Id): Promise<IUser> {
     Logger.log('getAll', this.TAG);
     return await this.userService.getOne(id);
   }
@@ -53,8 +50,8 @@ export class UserController {
   @Roles(Role.Admin)
   @Put(':id')
   async update(
-    @Param('id', stringObjectIdPipe) id: Id,
-    @Body(BodyObjectIdsPipe) body: IUpdateUser
+    @Param('id', StringObjectIdPipe) id: Id,
+    @Body(BodyObjectIdsPipe) body: IUpdateUser,
   ): Promise<IUser> {
     Logger.log('update', this.TAG);
     return await this.userService.update(id, body);
@@ -63,8 +60,25 @@ export class UserController {
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @Delete(':id')
-  async delete(@Param('id', stringObjectIdPipe) id: Id) {
+  async delete(@Param('id', StringObjectIdPipe) id: Types.ObjectId) {
     Logger.log('delete', this.TAG);
     return this.userService.delete(id);
+  }
+
+  // === Friends === //
+  @Post(':id/follow')
+  async follow(
+    @Param('id', StringObjectIdPipe) id: Id,
+    @CurrentUser() user: any,
+  ) {
+    return await this.userService.follow(user.id, id);
+  }
+
+  @Post(':id/unfollow')
+  async unfollow(
+    @Param('id', StringObjectIdPipe) id: Id,
+    @CurrentUser() user: any,
+  ) {
+    return await this.userService.unfollow(user.id, id);
   }
 }

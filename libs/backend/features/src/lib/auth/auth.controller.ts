@@ -12,7 +12,9 @@ import {
 import { AuthService } from './auth.service';
 import { ChangePasswordDto, LoginDto } from '@lingua/dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ICreateUser, Id, stringObjectIdPipe } from '@lingua/api';
+import { ICreateUser, Id } from '@lingua/api';
+import { BodyObjectIdsPipe } from '../pipes/bodyObjectIdsPipe';
+import { StringObjectIdPipe } from '../pipes/stringObjectIdPipe';
 
 @Controller('auth')
 export class AuthController {
@@ -39,9 +41,12 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id/change-password')
-  async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Param('id', stringObjectIdPipe) id: Id) {
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Param('id', StringObjectIdPipe) id: Id,
+  ) {
     Logger.log('changePassword', this.TAG);
-    
+
     return this.authService.changePassword(changePasswordDto, id);
   }
 }

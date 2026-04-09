@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {} from '@angular/common';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+
 import {
   FormGroup,
   FormControl,
@@ -13,6 +13,7 @@ import { AuthService, NotificationService } from '@lingua/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PagesModule } from '../../pages.module';
 import { ChangePasswordDto } from '@lingua/dto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-password-change',
@@ -21,6 +22,11 @@ import { ChangePasswordDto } from '@lingua/dto';
   styleUrl: './password-change.component.css',
 })
 export class PasswordChangeComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private notify = inject(NotificationService);
+
   formSub?: Subscription;
   userId?: string;
 
@@ -30,15 +36,8 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
       newPassword: new FormControl(null, Validators.required),
       repeatPassword: new FormControl(null, Validators.required),
     },
-    { validators: passwordMatchValidator() }
+    { validators: passwordMatchValidator() },
   );
-
-  constructor(
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private notify: NotificationService
-  ) {}
 
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
@@ -70,9 +69,9 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
         next: () => {
           this.notify.success('Password updated successfully!');
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.notify.error(
-            error.error.message || 'Failed to update password.'
+            error.error.message || 'Failed to update password.',
           );
         },
         complete: () => {

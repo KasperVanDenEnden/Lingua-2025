@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ICourse, ILesson, ILocation, IRoom, IUser } from '@lingua/api';
+import { ICourse, ILesson, IUser } from '@lingua/api';
 import { Subscription, Observable } from 'rxjs';
-import { LessonService, NotificationService } from '@lingua/services';
+import {
+  AuthService,
+  LessonService,
+  NotificationService,
+} from '@lingua/services';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-lesson-detail',
@@ -12,63 +17,77 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './lesson-detail.component.css',
 })
 export class LessonDetailComponent implements OnInit, OnDestroy {
-  sub!: Subscription;
+  private lessonService = inject(LessonService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
   lesson$!: Observable<ILesson>;
   lessonId?: string | null;
-  room?: IRoom | null;
-  location?: ILocation | null;
+
   course?: ICourse | null;
   teacher?: IUser | null;
+  students: IUser[] = [];
 
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
-  constructor(
-    private lessonService: LessonService,
-    private route:ActivatedRoute,
-    private router:Router,
-    private notify:NotificationService
-  ) {}
+  userSubscription!: Subscription;
+  currentUser: any | undefined = undefined;
+
+  private routeSub!: Subscription;
+  private lessonSub!: Subscription;
+  private refreshSub!: Subscription;
 
   ngOnInit(): void {
     this.loadLesson();
-    
-    this.lessonService.refresh$.subscribe(() => {
+
+    this.refreshSub = this.lessonService.refresh$.subscribe(() => {
       this.loadLesson();
-    })
-  }
+    });
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-  }
-
-  loadLesson() {
-    this.sub = this.route.paramMap.subscribe((params) => {
-      this.lessonId = params.get('id');
-
-      if (this.lessonId) {
-        this.lesson$ = this.lessonService.getLessonById(this.lessonId);
-        this.lesson$.subscribe(lesson => {
-          this.room = lesson.room as IRoom;
-          this.location = this.room.location as ILocation;
-          this.course = lesson.course as ICourse;
-          this.teacher = lesson.teacher as IUser;
-          this.recordToDelete = lesson;
-        })
-      }
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
     });
   }
 
-  getRoomSlug(): string {
-    return `${this.location?.slug}-${this.room?.floor}.${this.room?.slug}`
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
+    this.lessonSub?.unsubscribe();
+    this.refreshSub?.unsubscribe();
+  }
+
+  loadLesson(): void {
+    this.routeSub?.unsubscribe();
+    this.lessonSub?.unsubscribe();
+
+    this.routeSub = this.route.paramMap.subscribe((params) => {
+      this.lessonId = params.get('id');
+      if (!this.lessonId) return;
+
+      this.lesson$ = this.lessonService.getLessonById(this.lessonId);
+
+      this.lessonSub = this.lesson$.subscribe((lesson) => {
+        this.course = lesson.course as ICourse;
+        this.teacher = lesson.teacher as IUser;
+        this.recordToDelete = lesson;
+
+        this.students = Array.isArray(lesson.students)
+          ? (lesson.students as IUser[])
+          : [];
+      });
+    });
   }
 
   getTeacher(): string {
-    return `${this.teacher?.firstname} ${this.teacher?.lastname} ( ${this.teacher?.email} )`
+    if (!this.teacher) return '—';
+    return `${this.teacher.firstname} ${this.teacher.lastname} (${this.teacher.email})`;
   }
 
   getClass(): string {
-    return `${this.course?.title}: ${this.course?.description}`
+    if (!this.course) return '—';
+    return `${this.course.title}: ${this.course.description}`;
   }
 
   handleDelete(): void {
@@ -76,26 +95,68 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete(): void {
-    if (this.recordToDelete) {
-      this.lessonService.delete(this.recordToDelete._id).subscribe({
-        next: () => {
-          this.notify.success('Gelukt!')
-          this.router.navigate(['/lessons']);
-        },
-        error: (error) => {
-          console.error('Error deleting lesson:', error);
-          // Show error message (optional)
-        },
-      });
-    }
+    if (!this.recordToDelete) return;
+
+    this.lessonService.delete(this.recordToDelete._id).subscribe({
+      next: () => {
+        this.notify.success('Lesson succesfully deleted!');
+        this.router.navigate(['/lessons']);
+      },
+      error: (error) => {
+        console.error('Error deleting lesson:', error);
+      },
+    });
   }
-  
+
   closeModal(): void {
-    console.log('close modal');
     this.isModalOpen = false;
   }
 
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
+  }
+
+  attend(): void {
+    this.lessonService.attend(this.lessonId!).subscribe({
+      next: () => {
+        this.notify.success('Succesfully attended the lesson!');
+        this.loadLesson();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(
+          error.error?.message ||
+            'Something went wrong while attending the lesson',
+        );
+      },
+    });
+  }
+
+  unattend(): void {
+    this.lessonService.unattend(this.lessonId!).subscribe({
+      next: () => {
+        this.notify.success('Succesfully unattended the lesson!');
+        this.loadLesson();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notify.error(
+          error.error?.message ||
+            'Something went wrong while unattending the lesson',
+        );
+      },
+    });
+  }
+
+  isAttending(): boolean {
+    if (!this.currentUser) return false;
+    return this.students.some(
+      (student) => student._id === this.currentUser?.id,
+    );
+  }
+
+  canEdit(): boolean {
+    if (!this.currentUser) return false;
+    const isTeacher = this.teacher?._id === this.currentUser._id;
+    const isAdmin = this.authService.getUserRole() === 'admin';
+    return isTeacher || isAdmin;
   }
 }

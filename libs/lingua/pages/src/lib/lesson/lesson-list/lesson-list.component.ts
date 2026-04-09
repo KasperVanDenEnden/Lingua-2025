@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { ICourse, ILesson, ILocation, IRoom, IUser, LessonStatus } from '@lingua/api';
-import { LessonService, NotificationService } from '@lingua/services';
+import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
+import {
+  AuthService,
+  LessonService,
+  NotificationService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-lesson-list',
@@ -12,22 +17,29 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './lesson-list.component.css',
 })
 export class LessonListComponent implements OnInit, OnDestroy {
+  private lessonService = inject(LessonService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
   lessons!: ILesson[] | null;
   sub!: Subscription;
+  statuses = Object.values(LessonStatus);
 
   lessonList$?: Observable<ILesson[]>;
 
+  searchQuery = '';
+  selectedStatus = '';
+
   isModalOpen = false;
   recordToDelete?: ILesson | null;
-
-  constructor(private lessonService: LessonService, private route: ActivatedRoute, private notify: NotificationService) {}
 
   ngOnInit(): void {
     this.loadLessons();
 
     this.lessonService.refresh$.subscribe(() => {
       this.loadLessons();
-    })
+    });
   }
 
   ngOnDestroy(): void {
@@ -41,23 +53,29 @@ export class LessonListComponent implements OnInit, OnDestroy {
     });
   }
 
-  getClass(lesson:ILesson) {
-    return (lesson.course as ICourse)?.title || ''
+  get filteredLessons(): ILesson[] {
+    if (!this.lessons) return [];
+    return this.lessons.filter((lesson) => {
+      const matchesQuery = lesson.title
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.selectedStatus
+        ? lesson.status === this.selectedStatus
+        : true;
+
+      return matchesQuery && matchesStatus;
+    });
+  }
+
+  getClass(lesson: ILesson) {
+    return (lesson.course as ICourse)?.title || '';
   }
 
   getTeacher(lesson: ILesson): string {
     const teacher = lesson.teacher as IUser;
     if (!teacher) return '';
     return `${teacher.firstname || ''} ${teacher.lastname || ''}`.trim();
-  }
-
-  getRoom(lesson: ILesson): string | undefined {
-    const room = lesson.room as IRoom;
-    const location = room?.location as ILocation;
-  
-    if (!room || !location) return;
-  
-    return `${location.slug}-${room.floor}.${room.slug}`;
   }
 
   getStatusStyle(status: LessonStatus | undefined): string {
@@ -68,15 +86,13 @@ export class LessonListComponent implements OnInit, OnDestroy {
         return 'text-green-500 border-green-500';
       case 'Full':
         return 'text-amber-600 border-amber-500';
-      case 'Suspended':
-        return 'text-orange-500 border-orange-500';
       case 'Canceled':
         return 'text-primary-dark border-primary-dark';
       default:
         return 'text-gray-500 border-gray-500';
     }
   }
-  
+
   handleDelete(record: ILesson): void {
     console.log(record, 'record');
     this.recordToDelete = record;
@@ -86,33 +102,39 @@ export class LessonListComponent implements OnInit, OnDestroy {
   confirmDelete(): void {
     console.log('confirmed deletion');
     if (this.recordToDelete) {
-      console.log('recordToDeleteIsSet', this.recordToDelete._id)
+      console.log('recordToDeleteIsSet', this.recordToDelete._id);
       this.lessonService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           // Reload the list after successful deletion
           this.loadLessons();
           // Show success message (optional)
-          this.notify.success('Gelukt!');
+          this.notify.success('Deleted successfully!');
         },
-        error: (error) => {
-          console.error('Error deleting lesson:', error);
-          // Show error message (optional)
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(
+            error.error?.message || 'Failed to delete lesson: ' + error.message,
+          );
         },
         complete: () => {
           // Reset the recordToDelete and close modal
           this.recordToDelete = null;
           this.isModalOpen = false;
-        }
+        },
       });
     }
   }
-  
+
   closeModal(): void {
     console.log('close modal');
     this.isModalOpen = false;
   }
 
   isChildRouteActive(): boolean {
-    return this.route.children.length > 0; 
+    return this.route.children.length > 0;
+  }
+
+  canCreate(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'admin' || role === 'teacher';
   }
 }
