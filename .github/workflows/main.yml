@@ -18,8 +18,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -42,26 +42,24 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-      - name: Zip artifacts for deployment
-        run: |
-          echo ${GITHUB_WORKSPACE}
-          cd ${GITHUB_WORKSPACE}/dist/apps/data-api/ && zip ${GITHUB_WORKSPACE}/data-api-release.zip ./* -r
-          cd ${GITHUB_WORKSPACE}/dist/apps/rcmnd-api/ && zip ${GITHUB_WORKSPACE}/rcmnd-api-release.zip ./* -r
-          cd ${GITHUB_WORKSPACE}/dist/apps/frontend-app/ && zip ${GITHUB_WORKSPACE}/frontend-app-release.zip ./* -r
-
-      - name: Upload frontend-app artifact for deployment job
-        uses: actions/upload-artifact@v3
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-app
           path: frontend-app-release.zip
-          
-      - name: Upload data-api artifact for deployment job
-        uses: actions/upload-artifact@v3
+
+      - name: Upload data-api artifact
+        uses: actions/upload-artifact@v4
         with:
           name: data-api
           path: data-api-release.zip
-          
-          
+
+      - name: Upload rcmnd-api artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rcmnd-api
+          path: rcmnd-api-release.zip
+
   deploy-frontend-app:
     runs-on: ubuntu-latest
     needs: build
@@ -69,8 +67,8 @@ jobs:
       name: 'Production'
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: frontend-app
 
@@ -97,8 +95,8 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: data-api
 
@@ -125,8 +123,8 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: rcmnd-api
 
