@@ -1,185 +1,191 @@
 import { Injectable } from '@nestjs/common';
-import { Course, CourseDocument, Lesson, LessonDocument, User, UserDocument } from '@lingua/schemas';
+import {
+  Course,
+  CourseDocument,
+  Lesson,
+  LessonDocument,
+  User,
+  UserDocument,
+} from '@lingua/schemas';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
-    USER_SEED_DATA,
-    COURSE_SEED_DATA,
-    LESSON_SEED_DATA,
-    REVIEW_COMMENTS
+  USER_SEED_DATA,
+  COURSE_SEED_DATA,
+  LESSON_SEED_DATA,
+  REVIEW_COMMENTS,
 } from './seeder.data';
 import { Role } from '@lingua/api';
 
 @Injectable()
 export class MongoSeederService {
-   
-    private TAG = 'SeederService';
+  private TAG = 'SeederService';
 
-    constructor(
-        @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
-        @InjectModel(Lesson.name) private lessonModel: Model<LessonDocument>,
-    ) {}
+  constructor(
+    @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Lesson.name) private lessonModel: Model<LessonDocument>,
+  ) {}
 
-    async clearCollections(): Promise<void> {
-        Logger.log('Clearing collections', this.TAG);
-        await this.courseModel.deleteMany({});
-        await this.userModel.deleteMany({});
-        await this.lessonModel.deleteMany({});
-        Logger.log('Cleared collections', this.TAG);
+  async clearCollections(): Promise<void> {
+    Logger.log('Clearing collections', this.TAG);
+    await this.courseModel.deleteMany({});
+    await this.userModel.deleteMany({});
+    await this.lessonModel.deleteMany({});
+    Logger.log('Cleared collections', this.TAG);
+  }
+
+  async seedAll() {
+    await this.seedUsers();
+    await this.seedCourses();
+    await this.seedLessons();
+    await this.seedEnrollments();
+    await this.seedReviews();
+    await this.seedFriends();
+    await this.seedAttendance();
+  }
+
+  async seedUsers() {
+    Logger.log('Seeding users', this.TAG);
+
+    for (const user of USER_SEED_DATA) {
+      await this.userModel.create({
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        role: user.role,
+        password: await bcrypt.hash('password123', 10),
+      });
+    }
+    Logger.log('Seeding users complete', this.TAG);
+  }
+
+  async seedCourses() {
+    Logger.log('Seeding courses', this.TAG);
+    const teachers = await this.userModel.find({ role: 'teacher' });
+
+    for (const course of COURSE_SEED_DATA) {
+      const exists = await this.courseModel.findOne({ title: course.title });
+      if (exists) continue;
+
+      // Wijs willekeurig 1-2 docenten toe per course
+      const assignedTeachers = teachers.slice(0, 2).map((t) => t._id);
+
+      await this.courseModel.create({
+        ...course,
+        teachers: assignedTeachers,
+      });
     }
 
-    async seedAll() {
-        await this.seedUsers();
-        await this.seedCourses();
-        await this.seedLessons();
-        await this.seedEnrollments();
-        await this.seedReviews();
-        await this.seedFriends();
-        await this.seedAttendance();
-    }
+    Logger.log('Seeding courses complete', this.TAG);
+  }
 
-    async seedUsers() {
-        Logger.log('Seeding users', this.TAG);
-        
-        for (const user of USER_SEED_DATA) {
-            await this.userModel.create({
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email,
-                role: user.role,
-                password: await bcrypt.hash('password123', 10)
-            });
-        }
-        Logger.log('Seeding users complete', this.TAG);
-    }
+  async seedEnrollments() {
+    Logger.log('Seeding enrollments', this.TAG);
 
-    async seedCourses() {
-        Logger.log('Seeding courses', this.TAG);
-        const teachers = await this.userModel.find({ role: 'teacher' });
+    const students = await this.userModel.find({ role: 'student' });
+    const courses = await this.courseModel.find();
 
-        for (const course of COURSE_SEED_DATA) {
-            const exists = await this.courseModel.findOne({ title: course.title });
-            if (exists) continue;
+    for (const student of students) {
+      const randomCourses = courses.sort(() => Math.random() - 0.5).slice(0, 2);
 
-            // Wijs willekeurig 1-2 docenten toe per course
-            const assignedTeachers = teachers.slice(0, 2).map(t => t._id);
-
-            await this.courseModel.create({
-                ...course,
-                teachers: assignedTeachers,
-            });
-        }
-
-        Logger.log('Seeding courses complete', this.TAG);
-    }
-
-    async seedEnrollments() {
-        Logger.log('Seeding enrollments', this.TAG);
-
-        const students = await this.userModel.find({ role: 'student' });
-        const courses = await this.courseModel.find();
-
-        for (const student of students) {
-            const randomCourses = courses
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 2);
-
-            for (const course of randomCourses) {
-                course.students.push(student._id);
-                await course.save();
-            }
-        }
-        Logger.log('Seeding enrollments completed', this.TAG);
-    }
-
-    async seedReviews() {
-        const courses = await this.courseModel.find();
-
-       for (const course of courses) {
-        for (const studentId of course.students) {
-            course.reviews.push({
-                _id: new Types.ObjectId(),
-                rating: Math.floor(Math.random() * 5) + 1,
-                comment: REVIEW_COMMENTS[Math.floor(Math.random() * REVIEW_COMMENTS.length)],
-                student: studentId,
-                course: course._id,
-                createdAt: new Date(),
-            });
-        }
+      for (const course of randomCourses) {
+        course.students.push(student._id);
         await course.save();
+      }
     }
-        Logger.log('Seeding reviews completed', this.TAG);
+    Logger.log('Seeding enrollments completed', this.TAG);
+  }
+
+  async seedReviews() {
+    const courses = await this.courseModel.find();
+
+    for (const course of courses) {
+      for (const studentId of course.students) {
+        course.reviews.push({
+          _id: new Types.ObjectId(),
+          rating: Math.floor(Math.random() * 5) + 1,
+          comment:
+            REVIEW_COMMENTS[Math.floor(Math.random() * REVIEW_COMMENTS.length)],
+          student: studentId,
+          course: course._id,
+          createdAt: new Date(),
+        });
+      }
+      await course.save();
     }
+    Logger.log('Seeding reviews completed', this.TAG);
+  }
 
-    async seedLessons() {
-        Logger.log('Seeding lessons', this.TAG);
-        const courses = await this.courseModel.find();
-        if (!courses.length) throw new Error('No courses found. Seed courses first.');
-        
-        for (const course of courses) {
-            if (!course.teachers || course.teachers.length === 0) continue; // Skip courses without teachers
+  async seedLessons() {
+    Logger.log('Seeding lessons', this.TAG);
+    const courses = await this.courseModel.find();
+    if (!courses.length)
+      throw new Error('No courses found. Seed courses first.');
 
-            for (const [teacherIndex, teacherId] of course.teachers.entries()) {
-                for (const lesson of LESSON_SEED_DATA) {
-                    const day = new Date(lesson.day);
-                    day.setDate(day.getDate() + teacherIndex); // verschuif per docent
-                    
-                    await this.lessonModel.create({
-                        course: course._id,
-                        teacher: teacherId,
-                        ...lesson,
-                        day,
-                    });
-                }
-            }
+    for (const course of courses) {
+      if (!course.teachers || course.teachers.length === 0) continue; // Skip courses without teachers
+
+      for (const [teacherIndex, teacherId] of course.teachers.entries()) {
+        for (const lesson of LESSON_SEED_DATA) {
+          const day = new Date(lesson.day);
+          day.setDate(day.getDate() + teacherIndex); // verschuif per docent
+
+          await this.lessonModel.create({
+            course: course._id,
+            teacher: teacherId,
+            ...lesson,
+            day,
+          });
         }
-        
-        Logger.log('Seeding lessons complete', this.TAG);
+      }
     }
 
-    async seedFriends() {
-        Logger.log('Seeding friends', this.TAG);
+    Logger.log('Seeding lessons complete', this.TAG);
+  }
 
-        const users = await this.userModel.find({role: Role.Student}).exec()
+  async seedFriends() {
+    Logger.log('Seeding friends', this.TAG);
 
-        for (const user of users) {
-            const others = users.filter(u => !u._id.equals(user._id));
-            
-            const friends = others
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 2)
-                .map(f => f._id);
+    const users = await this.userModel.find({ role: Role.Student }).exec();
 
-            await this.userModel.findByIdAndUpdate(user._id, {
-                friends: friends,
-            });
-        }
-        
-        Logger.log('Seeding friends completed', this.TAG);
+    for (const user of users) {
+      const others = users.filter((u) => !u._id.equals(user._id));
+
+      const friends = others
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2)
+        .map((f) => f._id);
+
+      await this.userModel.findByIdAndUpdate(user._id, {
+        friends: friends,
+      });
     }
-    
-    async seedAttendance() {
-        Logger.log('Seeding attendance', this.TAG);
 
-        const lessons = await this.lessonModel.find();
+    Logger.log('Seeding friends completed', this.TAG);
+  }
 
-        for (const lesson of lessons) {
-            // Haal studenten op die enrolled zijn in de course van deze les
-            const course = await this.courseModel.findById(lesson.course);
-            if (!course || !course.students.length) continue;
+  async seedAttendance() {
+    Logger.log('Seeding attendance', this.TAG);
 
-            // Wijs willekeurig een paar studenten toe aan de les
-            const attendingStudents = course.students
-                .sort(() => Math.random() - 0.5)
-                .slice(0, Math.ceil(course.students.length / 2)); // 50% van de studenten
+    const lessons = await this.lessonModel.find();
 
-            lesson.students.push(...attendingStudents);
-            await lesson.save();
-        }
+    for (const lesson of lessons) {
+      // Haal studenten op die enrolled zijn in de course van deze les
+      const course = await this.courseModel.findById(lesson.course);
+      if (!course || !course.students.length) continue;
 
-        Logger.log('Seeding attendance complete', this.TAG);
+      // Wijs willekeurig een paar studenten toe aan de les
+      const attendingStudents = course.students
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.ceil(course.students.length / 2)); // 50% van de studenten
+
+      lesson.students.push(...attendingStudents);
+      await lesson.save();
     }
+
+    Logger.log('Seeding attendance complete', this.TAG);
+  }
 }

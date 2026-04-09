@@ -1,11 +1,18 @@
 import { IUserSchema, Role } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { IsString, IsEnum, IsNotEmpty, IsMongoId, IsArray, ArrayMinSize } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsNotEmpty,
+  IsMongoId,
+  IsArray,
+  ArrayMinSize,
+} from 'class-validator';
 
 export type UserDocument = User & Document;
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class User implements IUserSchema {
   @Prop({ type: String, enum: Object.values(Role) })
   @IsNotEmpty()
@@ -32,7 +39,7 @@ export class User implements IUserSchema {
   @IsString()
   password!: string;
 
-  token!:string;
+  token!: string;
 
   @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
   @IsNotEmpty()

@@ -27,7 +27,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('role');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'role should not be empty'
+      'role should not be empty',
     );
   });
 
@@ -37,7 +37,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('firstname');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'firstname should not be empty'
+      'firstname should not be empty',
     );
   });
 
@@ -47,7 +47,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('lastname');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'lastname should not be empty'
+      'lastname should not be empty',
     );
   });
 
@@ -57,7 +57,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('email');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'email should not be empty'
+      'email should not be empty',
     );
   });
 
@@ -67,7 +67,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'password should not be empty'
+      'password should not be empty',
     );
   });
 
@@ -79,7 +79,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('role');
     expect(errors[0].constraints?.['isEnum']).toBe(
-      'Role must be a valid enum value'
+      'Role must be a valid enum value',
     );
   });
 
@@ -89,7 +89,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('firstname');
     expect(errors[0].constraints?.['isString']).toBe(
-      'firstname must be a string'
+      'firstname must be a string',
     );
   });
 
@@ -99,7 +99,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('lastname');
     expect(errors[0].constraints?.['isString']).toBe(
-      'lastname must be a string'
+      'lastname must be a string',
     );
   });
 
@@ -117,7 +117,7 @@ describe('UserDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
     expect(errors[0].constraints?.['isString']).toBe(
-      'password must be a string'
+      'password must be a string',
     );
   });
 

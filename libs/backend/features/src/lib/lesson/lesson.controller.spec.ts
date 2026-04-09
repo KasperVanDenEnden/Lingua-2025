@@ -111,7 +111,7 @@ describe('LessonController', () => {
       const result = await controller.attend(mockLessonId, mockUser);
       expect(service.attend).toHaveBeenCalledWith(
         mockLessonId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual(mockLesson);
     });
@@ -123,7 +123,7 @@ describe('LessonController', () => {
       const result = await controller.unattend(mockLessonId, mockUser);
       expect(service.unattend).toHaveBeenCalledWith(
         mockLessonId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual(mockLesson);
     });

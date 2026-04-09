@@ -13,7 +13,7 @@ export class BodyObjectIdsPipe implements PipeTransform<any, any> {
   transform(value: any, metadata: ArgumentMetadata): any {
     if (typeof value !== 'object' || value === null) {
       throw new BadRequestException(
-        'Invalid input. Expecting an object with string properties.'
+        'Invalid input. Expecting an object with string properties.',
       );
     }
 
@@ -29,7 +29,7 @@ export class BodyObjectIdsPipe implements PipeTransform<any, any> {
       'student',
       'location',
       'course',
-      'assistant'
+      'assistant',
     ]; // Voeg hier relevante ID-velden toe
 
     objectIdFields.forEach((key) => {
@@ -41,7 +41,7 @@ export class BodyObjectIdsPipe implements PipeTransform<any, any> {
         transformedObject[key] = new Types.ObjectId(value[key]);
       } else if (value[key]) {
         throw new BadRequestException(
-          `Invalid ObjectId for property '${key}'.`
+          `Invalid ObjectId for property '${key}'.`,
         );
       }
     });

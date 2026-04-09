@@ -1,11 +1,17 @@
 import { IReviewSchema } from '@lingua/api';
 import { Types } from 'mongoose';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { IsString, IsNotEmpty, IsDate, IsInt, IsMongoId } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDate,
+  IsInt,
+  IsMongoId,
+} from 'class-validator';
 
 export type ReviewDocument = Review & Document;
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class Review implements IReviewSchema {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @IsNotEmpty()

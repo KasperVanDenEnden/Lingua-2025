@@ -1,54 +1,68 @@
 <lingua-header [pageTitle]="'Login'"></lingua-header>
 <main class="flex justify-center">
-  <div class="m-4 p-4 h-auto border border-primary-dark bg-secondary-light rounded-lg">
+  <div
+    class="m-4 p-4 h-auto border border-primary-dark bg-secondary-light rounded-lg"
+  >
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
       <div class="form-group">
-        <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold">E-mail</label>
+        <label for="email" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+          >E-mail</label
+        >
         <input
           id="email"
           type="email"
           formControlName="email"
           class="form-input border border-primary-dark rounded-md block px-2 h-8"
-          required>
-          @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
-            <div
-              class="text-red-500 text-sm mt-1">
-              @if (loginForm.get('email')?.errors?.['required']) {
-                <span>Email is required</span>
-              }
-              @if (loginForm.get('email')?.errors?.['email']) {
-                <span>Invalid email format</span>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="password" class="mb-1.5 ml-2.5 block text-sm font-semibold">Password</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            class="form-input border border-primary-dark rounded-md block px-2 h-8"
-            required>
-            @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
-              <div
-                class="text-red-500 text-sm mt-1">
-                @if (loginForm.get('password')?.errors?.['required']) {
-                  <span>Password is required</span>
-                }
-              </div>
+          required
+        />
+        @if (
+          loginForm.get('email')?.touched && loginForm.get('email')?.invalid
+        ) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (loginForm.get('email')?.errors?.['required']) {
+              <span>Email is required</span>
+            }
+            @if (loginForm.get('email')?.errors?.['email']) {
+              <span>Invalid email format</span>
             }
           </div>
-
-          <button
-            type="submit"
-            [ngClass]="{ 'bg-primary-dark hover:bg-primary-light': !loginForm.invalid, 'bg-gray-300 text-gray-500': loginForm.invalid }"
-            class="py-sm px-md text-white flex self-end"
-            [disabled]="loginForm.invalid">
-            Inloggen
-          </button>
-
-        </form>
+        }
       </div>
-    </main>
+
+      <div class="form-group">
+        <label for="password" class="mb-1.5 ml-2.5 block text-sm font-semibold"
+          >Password</label
+        >
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="form-input border border-primary-dark rounded-md block px-2 h-8"
+          required
+        />
+        @if (
+          loginForm.get('password')?.touched &&
+          loginForm.get('password')?.invalid
+        ) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (loginForm.get('password')?.errors?.['required']) {
+              <span>Password is required</span>
+            }
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [ngClass]="{
+          'bg-primary-dark hover:bg-primary-light': !loginForm.invalid,
+          'bg-gray-300 text-gray-500': loginForm.invalid,
+        }"
+        class="py-sm px-md text-white flex self-end"
+        [disabled]="loginForm.invalid"
+      >
+        Inloggen
+      </button>
+    </form>
+  </div>
+</main>

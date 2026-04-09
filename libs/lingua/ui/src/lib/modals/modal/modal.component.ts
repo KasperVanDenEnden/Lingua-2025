@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-
 @Component({
   selector: 'lingua-modal',
   imports: [],
@@ -10,19 +9,20 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ModalComponent {
   @Input() isOpen = false;
   @Input() title = 'Confirm';
-  @Input() message = 'Confirm action!'
+  @Input() message = 'Confirm action!';
   @Input() confirmText = 'Confirm';
   @Input() cancelText = 'Cancel';
 
-  @Output() confirm = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  @Output() confirmed = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
   onConfirm(): void {
-    this.confirm.emit();
-    this.close.emit();
+    this.confirmed.emit();
+    this.closed .emit();
   }
 
   onClose(): void {
-    this.close.emit();
+    this.closed.emit();
   }
 }
+  

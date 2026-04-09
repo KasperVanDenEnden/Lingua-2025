@@ -12,4 +12,4 @@ export * from './lib/lesson/lesson-form/lesson-form.component';
 export * from './lib/user/user-detail/user-detail.component';
 export * from './lib/user/user-form/user-form.component';
 export * from './lib/user/user-list/user-list.component';
-export * from './lib/user/password-change/password-change.component'
+export * from './lib/user/password-change/password-change.component';

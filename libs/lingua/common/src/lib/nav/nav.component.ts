@@ -1,7 +1,7 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { Subscription } from 'rxjs';
-import { IUser } from '@lingua/api';
+import { ICurrentUser, IUser } from '@lingua/api';
 import { AuthService } from '@lingua/services';
 import { Router, RouterLink } from '@angular/router';
 import { UiModule } from '@lingua/ui';
@@ -12,29 +12,25 @@ import { UiModule } from '@lingua/ui';
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css',
 })
-export class NavComponent implements OnInit, OnDestroy  {
+export class NavComponent implements OnInit, OnDestroy {
+  auth = inject<AuthService>(AuthService);
+
   isMobileMenuOpen = false;
   isLocationMenuOpen = false;
 
-  isClassMenuOpen = false; 
-  isLessonMenuOpen = false; 
+  isClassMenuOpen = false;
+  isLessonMenuOpen = false;
 
   userSub!: Subscription;
-  currentUser: IUser | undefined;
+  currentUser: ICurrentUser | undefined;
   email: string | undefined;
   role: string | undefined;
 
   isLogoutModalOpen = false;
 
-  constructor(
-    @Inject(AuthService) public auth: AuthService,
-    private router: Router
-  ) {}
-
   ngOnInit(): void {
     this.auth.getUserFromLocalStorage().subscribe(
-      (user:  IUser | null) => {
-        console.log(user, 'localUser in component');
+      (user: IUser | null) => {
         if (user) {
           const { role, email } = user;
           this.role = role;
@@ -43,12 +39,18 @@ export class NavComponent implements OnInit, OnDestroy  {
       },
       (error) => {
         console.error(error);
-      }
+      },
     );
 
     this.userSub = this.auth.currentUser$.subscribe({
       next: (user) => {
-        this.currentUser = user;
+        if (user) {
+          this.currentUser = {
+            id: (user as any).id.toString(),
+            email: user.email,
+            role: user.role,
+          };
+        }
       },
     });
   }
@@ -68,13 +70,13 @@ export class NavComponent implements OnInit, OnDestroy  {
   toggleClassMenu() {
     this.isClassMenuOpen = !this.isClassMenuOpen;
   }
-  
+
   toggleLessonMenu() {
     this.isLessonMenuOpen = !this.isLessonMenuOpen;
   }
 
   openLogoutModal() {
-    this.isLogoutModalOpen = true
+    this.isLogoutModalOpen = true;
   }
 
   closeLogoutModal() {
@@ -83,6 +85,6 @@ export class NavComponent implements OnInit, OnDestroy  {
 
   logout() {
     this.auth.logout();
-    
+    this.currentUser = undefined;
   }
 }

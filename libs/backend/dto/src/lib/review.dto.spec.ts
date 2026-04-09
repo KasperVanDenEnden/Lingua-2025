@@ -6,8 +6,6 @@ describe('ReviewDto Tests', () => {
 
   beforeEach(() => {
     DTO = new CreateReviewDto();
-    DTO.student = '507f1f77bcf86cd799439011';
-    DTO.course = '507f1f77bcf86cd799439011';
     DTO.comment = 'Review';
     DTO.rating = 1;
   });
@@ -19,33 +17,13 @@ describe('ReviewDto Tests', () => {
 
   // === Missing === //
 
-  it('should fail validation when student is missing', async () => {
-    DTO.student = undefined as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'student should not be empty'
-    );
-  });
-
-  it('should fail validation when course is missing', async () => {
-    DTO.course = undefined as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'course should not be empty'
-    );
-  });
-
   it('should fail validation when comment is missing', async () => {
     DTO.comment = undefined as any;
     const errors = await validate(DTO);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'comment should not be empty'
+      'comment should not be empty',
     );
   });
 
@@ -55,31 +33,11 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isNotEmpty']).toBe(
-      'rating should not be empty'
+      'rating should not be empty',
     );
   });
 
   // === Invalid type === //
-
-  it('should fail validation when student is not valid type', async () => {
-    DTO.student = 'invalid' as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('student');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'student must be a valid ObjectId'
-    );
-  });
-
-  it('should fail validation when course is not valid type', async () => {
-    DTO.course = 'invalid' as any;
-    const errors = await validate(DTO);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].property).toBe('course');
-    expect(errors[0].constraints?.['isMongoId']).toBe(
-      'course must be a valid ObjectId'
-    );
-  });
 
   it('should fail validation when comment is not valid type', async () => {
     DTO.comment = 0 as any;
@@ -87,7 +45,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('comment');
     expect(errors[0].constraints?.['isString']).toBe(
-      'comment must be a string'
+      'comment must be a string',
     );
   });
 
@@ -97,7 +55,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['isInt']).toBe(
-      'rating must be an integer number'
+      'rating must be an integer number',
     );
   });
 
@@ -109,7 +67,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['min']).toBe(
-      'rating must not be less than 0'
+      'rating must not be less than 0',
     );
   });
 
@@ -119,7 +77,7 @@ describe('ReviewDto Tests', () => {
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('rating');
     expect(errors[0].constraints?.['max']).toBe(
-      'rating must not be greater than 5'
+      'rating must not be greater than 5',
     );
   });
 });

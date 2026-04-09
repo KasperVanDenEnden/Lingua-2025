@@ -41,10 +41,7 @@ export class NotificationService {
         navigator.clipboard
           .writeText(textToCopy)
           .then(() => {
-            this.toastr.success(
-              'Text copied to clipboard!',
-              'Success'
-            );
+            this.toastr.success('Text copied to clipboard!', 'Success');
           })
           .catch((err) => {
             this.toastr.error(`Couldn't copy: ` + err, 'Error');

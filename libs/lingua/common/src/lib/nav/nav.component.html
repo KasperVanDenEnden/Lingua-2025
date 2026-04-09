@@ -1,207 +1,287 @@
 <!-- navbar.component.html -->
 <header>
-    <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-        <!-- Logo section -->
-        <div class="flex lg:flex-1">
-            <a routerLink="/dashboard" class="-m-2 p-2">
-                <span class="sr-only">Lingua</span>
-                <i class="fa-solid fa-house fa-xl text-primary-dark"></i>
-            </a>
-        </div>
-
-        <!-- Mobile menu button -->
-        <div class="flex lg:hidden">
-            <button type="button" (click)="toggleMobileMenu()"
-                class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
-                <span class="sr-only">Open main menu</span>
-                <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- Desktop menu -->
-        <div class="hidden lg:flex lg:gap-x-12">
-
-            @if (currentUser) {
-            <a routerLink="/dashboard"
-                class="flex items-center gap-x-1 text-sm font-semibold text-gray-900">Dashboard</a>
-
-            <lingua-dropdown>
-                <span dropdown-button>Courses</span>
-
-                <div dropdown-items>
-                    <a routerLink="/courses"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">All
-                        courses</a>
-                    <a routerLink="#"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">My
-                        courses</a>
-                </div>
-            </lingua-dropdown>
-
-            <lingua-dropdown>
-                <span dropdown-button>Lessons</span>
-
-                <div dropdown-items>
-                    <a routerLink="/lessons"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">All
-                        lessons</a>
-                    <a routerLink="#"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">My
-                        lessons</a>
-                </div>
-            </lingua-dropdown>
-
-            <a routerLink="/pages"
-                class="flex items-center gap-x-1 text-sm font-semibold text-gray-900 whitespace-nowrap">About</a>
-
-            } @else {
-            <a routerLink="/pages"
-                class="flex items-center gap-x-1 text-sm font-semibold text-gray-900 whitespace-nowrap">About</a>
-            <a routerLink="/login"
-                class="bg-primary-dark hover:bg-primary-light text-white rounded-md p-2 text-sm font-semibold whitespace-nowrap">
-                Log in
-            </a>
-            <a routerLink="/register"
-                class="bg-primary-dark hover:bg-primary-light text-white rounded-md p-2 text-sm font-semibold whitespace-nowrap">
-                Register
-            </a>
-            }
-        </div>
-
-        @if (currentUser) {
-        <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-
-            <lingua-dropdown>
-                <span dropdown-button><i class="fa-solid fa-user"></i></span>
-
-                <div dropdown-items>
-                    <a [routerLink]="['/user', currentUser._id]"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">
-                        <span aria-hidden="true"><i class="fa-solid fa-user mr-2"></i></span>
-                        Profile
-                    </a>
-                    <a [routerLink]="['/users']"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">
-                        <span aria-hidden="true"><i class="fa-solid fa-users mr-2"></i></span>
-                        Users
-                    </a>
-                    <a (click)="openLogoutModal()" (keydown.enter)="openLogoutModal()" tabindex="0"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap">
-                        <span aria-hidden="true"><i class="fa-solid fa-right-from-bracket mr-2"></i>
-                            Log out </span>
-                    </a>
-                    <div class="text-center pb-1 border-t">
-
-                        <span class="text-xs text-gray-500">Lingua v1.0</span>
-                    </div>
-                </div>
-            </lingua-dropdown>
-
-        </div>
-        }
-    </nav>
-
-    <!-- Mobile menu -->
-    @if (isMobileMenuOpen) {
-    <div class="lg:hidden" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 z-10"></div>
-        <div
-            class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-secondary-light px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-            <div class="flex items-center justify-between">
-                <button type="button" (click)="toggleMobileMenu()" class="-m-2.5 rounded-md p-2.5 text-gray-700">
-                    <span class="sr-only">Close menu</span>
-                    <i class="fa-solid fa-xmark text-xl text-primary-dark hover:text-primary-light"></i>
-                </button>
-            </div>
-
-            <div class="mt-6 flow-root">
-                <div class="-my-6 divide-y divide-gray-500/10">
-                    <div class="space-y-2 py-6">
-
-                        <a routerLink="/dashboard"
-                            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">Dashboard</a>
-
-                        <div class="-mx-3">
-                            <button type="button" (click)="toggleLocationMenu()"
-                                class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                                Buildings
-                                <i [class.rotate-180]="isLocationMenuOpen" class="fa-solid fa-chevron-down"></i>
-                            </button>
-
-                            @if (isLocationMenuOpen) {
-                            <div class="mt-2 space-y-2" id="disclosure-1">
-                                <a routerLink="/locations"
-                                    class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base">Locations</a>
-                                <a routerLink="/rooms"
-                                    class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base">Rooms</a>
-                            </div>
-                            }
-                        </div>
-
-                        <div class="-mx-3">
-                            <button type="button" (click)="toggleClassMenu()"
-                                class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                                Classes
-                                <i [class.rotate-180]="isClassMenuOpen" class="fa-solid fa-chevron-down"></i>
-                            </button>
-
-                            @if (isClassMenuOpen) {
-                            <div class="mt-2 space-y-2" id="disclosure-1">
-                                <a routerLink="#"
-                                    class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base">Classes</a>
-                            </div>
-                            }
-                        </div>
-
-                        <div class="-mx-3">
-                            <button type="button" (click)="toggleLessonMenu()"
-                                class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                                Lessons
-                                <i [class.rotate-180]="isLessonMenuOpen" class="fa-solid fa-chevron-down"></i>
-                            </button>
-
-                            @if (isLessonMenuOpen) {
-                            <div class="mt-2 space-y-2" id="disclosure-1">
-                                <a routerLink="#"
-                                    class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base">Lessons</a>
-                            </div>
-                            }
-                        </div>
-                        <!-- Overige mobile menu items behouden -->
-                        <a routerLink="/pages"
-                            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">About</a>
-                        @if(currentUser) {
-
-                        <a [routerLink]="['/user', currentUser._id]"
-                            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                            <span aria-hidden="true"><i class="fa-solid fa-user mr-2"></i></span>
-                            Profile
-                        </a>
-                        <a routerLink="/users"
-                            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                            <span aria-hidden="true"><i class="fa-solid fa-users mr-2"></i></span>
-                            Users
-                        </a>
-                        <a (click)="openLogoutModal()" (keydown.enter)="openLogoutModal()" tabindex="0"
-                            class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base">
-                            <span aria-hidden="true"><i class="fa-solid fa-right-from-bracket mr-2"></i>
-                                Log out </span>
-                        </a>
-                        }
-                        <div class="text-center p-1">
-                            <span class="text-xs text-gray-500">Lingua v1.0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <nav
+    class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+    aria-label="Global"
+  >
+    <!-- Logo section -->
+    <div class="flex lg:flex-1">
+      <a routerLink="/dashboard" class="-m-2 p-2">
+        <span class="text-primary-dark font-bold text-2xl">Lingua</span>
+      </a>
     </div>
+
+    <!-- Mobile menu button -->
+    <div class="flex lg:hidden">
+      <button
+        type="button"
+        (click)="toggleMobileMenu()"
+        class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg
+          class="size-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Desktop menu -->
+    <div class="hidden lg:flex lg:gap-x-12">
+      @if (currentUser) {
+        <a
+          routerLink="/dashboard"
+          class="flex items-center gap-x-1 text-sm font-semibold text-gray-900"
+          >Dashboard</a
+        >
+
+        <a
+          routerLink="/courses"
+          class="flex items-center gap-x-1 text-sm font-semibold text-gray-900"
+          >Courses</a
+        >
+
+        <a
+          routerLink="/lessons"
+          class="flex items-center gap-x-1 text-sm font-semibold text-gray-900"
+          >Lessons</a
+        >
+
+        <a
+          routerLink="/pages"
+          class="flex items-center gap-x-1 text-sm font-semibold text-gray-900 whitespace-nowrap"
+          >About</a
+        >
+      } @else {
+        <a
+          routerLink="/pages"
+          class="flex items-center gap-x-1 text-sm font-semibold text-gray-900 whitespace-nowrap"
+          >About</a
+        >
+        <a
+          routerLink="/login"
+          class="bg-primary-dark hover:bg-primary-light text-white rounded-md p-2 text-sm font-semibold whitespace-nowrap"
+        >
+          Log in
+        </a>
+        <a
+          routerLink="/register"
+          class="bg-primary-dark hover:bg-primary-light text-white rounded-md p-2 text-sm font-semibold whitespace-nowrap"
+        >
+          Register
+        </a>
+      }
+    </div>
+
+    @if (currentUser) {
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+        <lingua-dropdown>
+          <span dropdown-button><i class="fa-solid fa-user"></i></span>
+
+          <div dropdown-items>
+            <a
+              [routerLink]="['/user', currentUser.id]"
+              class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap"
+            >
+              <span aria-hidden="true"
+                ><i class="fa-solid fa-user mr-2"></i
+              ></span>
+              Profile
+            </a>
+            <a
+              [routerLink]="['/users']"
+              class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap"
+            >
+              <span aria-hidden="true"
+                ><i class="fa-solid fa-users mr-2"></i
+              ></span>
+              Users
+            </a>
+            <a
+              (click)="openLogoutModal()"
+              (keydown.enter)="openLogoutModal()"
+              tabindex="0"
+              class="block px-4 py-2 text-sm text-gray-900 hover:bg-secondary-base whitespace-nowrap"
+            >
+              <span aria-hidden="true"
+                ><i class="fa-solid fa-right-from-bracket mr-2"></i> Log out
+              </span>
+            </a>
+            <div class="text-center pb-1 border-t">
+              <span class="text-xs text-gray-500">Lingua v1.0</span>
+            </div>
+          </div>
+        </lingua-dropdown>
+      </div>
     }
+  </nav>
+
+  <!-- Mobile menu -->
+  @if (isMobileMenuOpen) {
+    <div class="lg:hidden" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 z-10"></div>
+      <div
+        class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-secondary-light px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10"
+      >
+        <div class="flex items-center justify-between">
+          <button
+            type="button"
+            (click)="toggleMobileMenu()"
+            class="-m-2.5 rounded-md p-2.5 text-gray-700"
+          >
+            <span class="sr-only">Close menu</span>
+            <i
+              class="fa-solid fa-xmark text-xl text-primary-dark hover:text-primary-light"
+            ></i>
+          </button>
+        </div>
+
+        <div class="mt-6 flow-root">
+          <div class="-my-6 divide-y divide-gray-500/10">
+            <div class="space-y-2 py-6">
+              <a
+                routerLink="/dashboard"
+                class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >Dashboard</a
+              >
+
+              <div class="-mx-3">
+                <button
+                  type="button"
+                  (click)="toggleLocationMenu()"
+                  class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  Buildings
+                  <i
+                    [class.rotate-180]="isLocationMenuOpen"
+                    class="fa-solid fa-chevron-down"
+                  ></i>
+                </button>
+
+                @if (isLocationMenuOpen) {
+                  <div class="mt-2 space-y-2" id="disclosure-1">
+                    <a
+                      routerLink="/locations"
+                      class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                      >Locations</a
+                    >
+                    <a
+                      routerLink="/rooms"
+                      class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                      >Rooms</a
+                    >
+                  </div>
+                }
+              </div>
+
+              <div class="-mx-3">
+                <button
+                  type="button"
+                  (click)="toggleClassMenu()"
+                  class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  Classes
+                  <i
+                    [class.rotate-180]="isClassMenuOpen"
+                    class="fa-solid fa-chevron-down"
+                  ></i>
+                </button>
+
+                @if (isClassMenuOpen) {
+                  <div class="mt-2 space-y-2" id="disclosure-1">
+                    <a
+                      routerLink="#"
+                      class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                      >Classes</a
+                    >
+                  </div>
+                }
+              </div>
+
+              <div class="-mx-3">
+                <button
+                  type="button"
+                  (click)="toggleLessonMenu()"
+                  class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  Lessons
+                  <i
+                    [class.rotate-180]="isLessonMenuOpen"
+                    class="fa-solid fa-chevron-down"
+                  ></i>
+                </button>
+
+                @if (isLessonMenuOpen) {
+                  <div class="mt-2 space-y-2" id="disclosure-1">
+                    <a
+                      routerLink="#"
+                      class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                      >Lessons</a
+                    >
+                  </div>
+                }
+              </div>
+              <!-- Overige mobile menu items behouden -->
+              <a
+                routerLink="/pages"
+                class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >About</a
+              >
+              @if (currentUser) {
+                <a
+                  [routerLink]="['/user', currentUser.id]"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  <span aria-hidden="true"
+                    ><i class="fa-solid fa-user mr-2"></i
+                  ></span>
+                  Profile
+                </a>
+                <a
+                  routerLink="/users"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  <span aria-hidden="true"
+                    ><i class="fa-solid fa-users mr-2"></i
+                  ></span>
+                  Users
+                </a>
+                <a
+                  (click)="openLogoutModal()"
+                  (keydown.enter)="openLogoutModal()"
+                  tabindex="0"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-secondary-base"
+                >
+                  <span aria-hidden="true"
+                    ><i class="fa-solid fa-right-from-bracket mr-2"></i> Log out
+                  </span>
+                </a>
+              }
+              <div class="text-center p-1">
+                <span class="text-xs text-gray-500">Lingua v1.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </header>
 
-<lingua-modal [isOpen]="isLogoutModalOpen" [message]="'Are you sure you want to logout?'" title="Logout confirmation"
-    (close)="closeLogoutModal()" (confirm)="logout()"></lingua-modal>
+<lingua-modal
+  [isOpen]="isLogoutModalOpen"
+  [message]="'Are you sure you want to logout?'"
+  title="Logout confirmation"
+  (closed)="closeLogoutModal()"
+  (confirmed)="logout()"
+></lingua-modal>

@@ -1,21 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
-import {
-  ICourse,
-  ICreateLesson,
-  Id,
-  ILesson,
-  IUser,
-} from '@lingua/api';
+import { ICourse, ICreateLesson, Id, ILesson, IUser } from '@lingua/api';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   LessonService,
   UserService,
   CourseService,
+  NotificationService,
 } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
+import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
 
 @Component({
   selector: 'lingua-lesson-form',
@@ -24,6 +20,13 @@ import { PagesModule } from '../../pages.module';
   styleUrl: './lesson-form.component.css',
 })
 export class LessonFormComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private lessonService = inject(LessonService);
+  private userService = inject(UserService);
+  private courseService = inject(CourseService);
+  private notify = inject(NotificationService);
+
   formSub?: Subscription;
   isEditMode?: boolean;
   existId!: Id;
@@ -37,19 +40,21 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     course: new FormControl(null, Validators.required),
     status: new FormControl(null, Validators.required),
     type: new FormControl(null, Validators.required),
-    title: new FormControl(null, Validators.required),
+    title: new FormControl(null, [
+      Validators.required,
+      Validators.minLength(3),
+    ]),
+    isWorkshop: new FormControl(false),
     day: new FormControl(null, Validators.required),
-    startTime: new FormControl(null, Validators.required),
-    endTime: new FormControl(null, Validators.required),
+    startTime: new FormControl(null, [
+      Validators.required,
+      Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'),
+    ]),
+    endTime: new FormControl(null, [
+      Validators.required,
+      Validators.pattern('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'),
+    ]),
   });
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private lessonService: LessonService,
-    private userService: UserService,
-    private courseService: CourseService
-  ) {}
 
   ngOnInit(): void {
     // Laad de docenten, kamers en klassen tegelijk
@@ -59,10 +64,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (results) => {
         this.teachers = results.teachers.filter(
-          (user) => user.role === 'teacher'
+          (user) => user.role === 'teacher',
         );
         this.courses = results.courses.filter(
-          (course) => course.status !== 'Archived'
+          (course) => course.status !== 'Archived',
         );
 
         // Nadat de gegevens geladen zijn, laad je de lesgegevens (indien bewerken)
@@ -82,8 +87,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
           this.updateTeacherOptions();
         });
       },
-      error: (err) => {
-        console.error('Fout bij het ophalen van gegevens:', err);
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(
+          err.error?.message || 'Failed to load initial data: ' + err.message,
+        );
       },
     });
   }
@@ -103,6 +110,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
           status: lesson.status,
           type: lesson.type,
           title: lesson.title,
+          isWorkshop: lesson.isWorkshop,
           day: formatDate(lesson.day, 'yyyy-MM-dd', 'en'),
           startTime: formatDate(lesson.startTime, 'HH:mm', 'en'),
           endTime: formatDate(lesson.endTime, 'HH:mm', 'en'),
@@ -114,8 +122,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
         // Selecteer de juiste leraar in de dropdown
         this.lessonForm.get('teacher')?.setValue((lesson.teacher as IUser)._id);
       },
-      error: (err) => {
-        console.error('Fout bij ophalen lesgegevens:', err);
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(
+          err.error?.message || 'Failed to load lesson data: ' + err.message,
+        );
       },
     });
   }
@@ -129,21 +139,20 @@ export class LessonFormComponent implements OnInit, OnDestroy {
     }
 
     const selectedCourse = this.courses.find(
-      (courses) => courses._id === selectedCourseId
+      (courses) => courses._id === selectedCourseId,
     );
     if (selectedCourse) {
       console.log('Filtering gestart');
 
       const assignedTeacherIds = [
         selectedCourse.teachers, // Hoofdleraar ID (direct toegevoegd)
-        
       ].filter((id) => id);
 
       console.log('Toegewezen leraren:', assignedTeacherIds);
 
       // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
       this.filteredTeachers = this.teachers.filter((teacher) =>
-        (selectedCourse.teachers as Id[]).includes(teacher._id)
+        (selectedCourse.teachers as Id[]).includes(teacher._id),
       );
     } else {
       this.filteredTeachers = [];
@@ -168,6 +177,7 @@ export class LessonFormComponent implements OnInit, OnDestroy {
       day: this.lessonForm.value.day,
       startTime: this.convertTimeStringToDate(this.lessonForm.value.startTime),
       endTime: this.convertTimeStringToDate(this.lessonForm.value.endTime),
+      isWorkshop: this.lessonForm.value.isWorkshop || false,
     };
 
     if (this.isEditMode) {

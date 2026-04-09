@@ -56,7 +56,7 @@ describe('ReviewController', () => {
       expect(service.create).toHaveBeenCalledWith(
         dto,
         mockCourseId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual(mockReview);
     });
@@ -65,11 +65,15 @@ describe('ReviewController', () => {
   describe('delete', () => {
     it('should delete a review by id', async () => {
       const mockUser = { id: mockUserId.toHexString() };
-      const result = await controller.delete(mockReviewId, mockCourseId, mockUser);
+      const result = await controller.delete(
+        mockReviewId,
+        mockCourseId,
+        mockUser,
+      );
       expect(service.delete).toHaveBeenCalledWith(
         mockReviewId,
         mockCourseId,
-        Types.ObjectId.createFromHexString(mockUser.id)
+        Types.ObjectId.createFromHexString(mockUser.id),
       );
       expect(result).toEqual({ deleted: true });
     });

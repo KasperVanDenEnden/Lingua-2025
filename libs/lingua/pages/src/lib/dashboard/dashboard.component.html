@@ -1,20 +1,87 @@
 <div class="font-mono">
-    <lingua-header [pageTitle]="'Dashboard'"></lingua-header>
-    <main
-        class="max-w-xl md:max-w-2xl lg:max-w-6xl mx-auto py-xl px-md md:px-xl grid grid-cols-1 gap-md md:grid-cols-2 lg:grid-cols-3 h-full">
+  <lingua-header [pageTitle]="'Dashboard'"></lingua-header>
 
-        <lingua-card title="Courses"
-            description="Discover the diverse range of courses we offer. Whether you're looking to enhance your skills or explore new topics, we provide high-quality learning experiences tailored to your needs."
-            link="/courses"></lingua-card>
+  <main
+    class="max-w-xl md:max-w-2xl lg:max-w-6xl mx-auto py-xl px-md md:px-xl grid grid-cols-1 gap-md md:grid-cols-2 lg:grid-cols-3 h-full"
+  >
+    <!-- Existing navigation cards -->
+    <lingua-card
+      title="Courses"
+      description="Discover the diverse range of courses we offer. Whether you're looking to enhance your skills or explore new topics, we provide high-quality learning experiences tailored to your needs."
+      link="/courses"
+    >
+    </lingua-card>
 
-        <lingua-card title="Lessons"
-            description="We offer a wide variety of lessons tailored to each course, ensuring that you receive comprehensive and engaging instruction to support your learning journey."
-            link="/lessons"></lingua-card>
+    <lingua-card
+      title="Lessons"
+      description="We offer a wide variety of lessons tailored to each course, ensuring that you receive comprehensive and engaging instruction to support your learning journey."
+      link="/lessons"
+    >
+    </lingua-card>
 
-        <lingua-card title="Users"
-            description="Find some friends or something."
-            link="/users">
-        </lingua-card>
-        
-    </main>
+    <lingua-card
+      title="Users"
+      description="Find some friends or something."
+      link="/users"
+    >
+    </lingua-card>
+  </main>
+
+  <!-- Recommendations section -->
+  <section
+    class="max-w-xl md:max-w-2xl lg:max-w-6xl mx-auto px-md md:px-xl pb-xl"
+  >
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">
+      Recommended for you
+    </h2>
+
+    <!-- Empty state -->
+    @if (!rcmndCourses.length) {
+      <div class="text-center py-10 text-gray-400">
+        No recommendations yet.
+      </div>
+    }
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (rec of rcmndCourses; track rec) {
+        <div
+          [routerLink]="['/courses', rec.course.id]"
+          class="cursor-pointer bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5 hover:shadow-md hover:scale-[1.01] transition"
+        >
+          <!-- Title -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            {{ rec.course.title }}
+          </h3>
+
+          <!-- Rating -->
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-gray-500">Rating</span>
+            <span class="text-amber-500 text-sm font-medium">
+              {{ '★'.repeat(rec.rating) }}{{ '☆'.repeat(5 - rec.rating) }}
+            </span>
+          </div>
+
+          <!-- Recommended by -->
+          <div class="flex items-center gap-3 mt-4">
+            <div
+              class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium"
+            >
+              {{ rec.recommendedBy.firstname[0]
+              }}{{ rec.recommendedBy.lastname[0] }}
+            </div>
+
+            <div>
+              <p class="text-sm font-medium text-gray-800">
+                {{ rec.recommendedBy.firstname }} {{ rec.recommendedBy.lastname }}
+              </p>
+              <p class="text-xs text-gray-400">
+                {{ rec.recommendedBy.email }}
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
 </div>

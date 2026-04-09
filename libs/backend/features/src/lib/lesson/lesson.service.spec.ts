@@ -127,7 +127,9 @@ describe('LessonService', () => {
     it('should throw if not found', async () => {
       mockLessonModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.update(mockLessonId, {} as any)).rejects.toThrow(HttpException);
+      await expect(service.update(mockLessonId, {} as any)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -171,7 +173,7 @@ describe('LessonService', () => {
       expect(mockLessonModel.findByIdAndUpdate).toHaveBeenCalledWith(
         mockLessonId,
         { $addToSet: { students: mockUserId } },
-        { new: true }
+        { new: true },
       );
 
       expect(mockNeoService.attendLesson).toHaveBeenCalled();
@@ -185,7 +187,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(null),
       });
 
-      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw if lesson in past', async () => {
@@ -196,7 +200,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(pastLesson),
       });
 
-      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw if already attending', async () => {
@@ -207,7 +213,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(lesson),
       });
 
-      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw if not enrolled in course', async () => {
@@ -221,7 +229,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(lesson),
       });
 
-      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw if lesson is full', async () => {
@@ -235,7 +245,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(lesson),
       });
 
-      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.attend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -266,7 +278,9 @@ describe('LessonService', () => {
         exec: jest.fn().mockResolvedValue(baseLesson),
       });
 
-      await expect(service.unattend(mockLessonId, mockUserId)).rejects.toThrow(HttpException);
+      await expect(service.unattend(mockLessonId, mockUserId)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 });

@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { PagesModule } from '../../pages.module';
-import { AuthService, NotificationService, UserService } from '@lingua/services';
+import {
+  AuthService,
+  NotificationService,
+  UserService,
+} from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
-import { IUser, Role } from '@lingua/api';
+import { IUser } from '@lingua/api';
 import { Observable, Subscription } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'lingua-user-list',
@@ -12,23 +17,32 @@ import { Observable, Subscription } from 'rxjs';
   styleUrl: './user-list.component.css',
 })
 export class UserListComponent implements OnInit, OnDestroy {
+  private userService = inject(UserService);
+  private route = inject(ActivatedRoute);
+  private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
   users?: IUser[];
   sub!: Subscription;
+  currentUserId?: string;
+  currentUser?: IUser | null = null;
+  friendIds: string[] = [];
+
+  searchQuery = '';
+  selectedRole = '';
 
   userList$?: Observable<IUser[]>;
 
   isModalOpen = false;
   recordToDelete?: IUser;
 
-  constructor(
-    private userService: UserService,
-    private route: ActivatedRoute,
-    private notify: NotificationService,
-    private authService: AuthService
-  ) {}
-
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+    });
+
     this.loadUsers();
+    this.loadCurrentUser();
 
     this.userService.refresh$.subscribe(() => {
       this.loadUsers();
@@ -46,6 +60,40 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadCurrentUser() {
+    this.authService.currentUser$.subscribe((user) => {
+      if (user) {
+        this.currentUserId = (user as any).id;
+        this.userService
+          .getUserById(this.currentUserId!)
+          .subscribe((fullUser) => {
+            this.friendIds = (fullUser.friends as any[]).map(
+              (f) => f._id?.toString() || f.toString(),
+            );
+          });
+      }
+    });
+  }
+
+  get filteredUsers(): IUser[] {
+    if (!this.users) return [];
+
+    return this.users.filter((user) => {
+      const fullname = user.firstname + ' ' + user.lastname;
+
+      const matchesSearch = this.searchQuery
+        ? fullname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+        : true;
+
+      const matchesRole = this.selectedRole
+        ? user.role === this.selectedRole
+        : true;
+
+      return matchesSearch && matchesRole;
+    });
+  }
+
   handleDelete(record: IUser): void {
     this.recordToDelete = record;
     this.isModalOpen = true;
@@ -58,8 +106,8 @@ export class UserListComponent implements OnInit, OnDestroy {
           this.loadUsers();
           this.notify.success('Gelukt!');
         },
-        error: (error) => {
-          this.notify.error(error);
+        error: (error: HttpErrorResponse) => {
+          this.notify.error(error.error.message || 'Failed to delete user.');
         },
         complete: () => {
           this.recordToDelete = undefined;
@@ -68,8 +116,13 @@ export class UserListComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   isAdmin(): boolean {
     return 'admin' === this.authService.getUserRole();
+  }
+
+  isFriend(userId: string): boolean {
+    return this.friendIds.includes(userId);
   }
 
   closeModal(): void {
@@ -78,5 +131,27 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   isChildRouteActive(): boolean {
     return this.route.children.length > 0;
+  }
+
+  addFriend(userId: string): void {
+    this.userService.addFriend(userId).subscribe({
+      next: () => {
+        this.friendIds.push(userId.toString());
+        this.notify.success('Added friend successfully!');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.notify.error(
+          err.error.message || 'Something went wrong while adding friend.',
+        );
+      },
+    });
+  }
+
+  canEdit(): boolean {
+    return this.currentUser?._id === this.currentUserId;
+  }
+
+  canDelete(): boolean {
+    return this.currentUser?._id === this.currentUserId || this.isAdmin();
   }
 }

@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
 
-
-
 @Component({
   selector: 'lingua-dropdown',
   imports: [],
@@ -22,13 +20,13 @@ export class DropdownComponent {
     if (this.closeTimer) {
       clearTimeout(this.closeTimer);
     }
-    
+
     // Stel een nieuwe timer in om de dropdown te sluiten na 150ms
     this.closeTimer = setTimeout(() => {
       this.isOpen = false;
     }, 150);
   }
-  
+
   cancelCloseTimer(): void {
     if (this.closeTimer) {
       clearTimeout(this.closeTimer);
