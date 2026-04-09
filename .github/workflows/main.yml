@@ -103,6 +103,8 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'nestjs'
+          slot-name: 'c9cxd8gzbyb7ajhr'
+
           publish-profile: ${{ secrets.NESTJS_PUBLISHPROFILE }}
           package: data-api            # ← verwijst naar submap
 
@@ -124,6 +126,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'rcmnd-api'
+          slot-name: 'g4dxdkcqd4fsaghr'
           publish-profile: ${{ secrets.RCMND_PUBLISHPROFILE }}
           package: rcmnd-api           # ← verwijst naar submap
 
