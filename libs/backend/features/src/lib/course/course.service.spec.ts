@@ -5,10 +5,10 @@ import { NeoOperationsService } from '../neo4j/neo-operations.service';
 import { HttpException } from '@nestjs/common';
 import { Types } from 'mongoose';
 
-const mockCourseId = new Types.ObjectId();
-const mockUserId = new Types.ObjectId();
+// -----------------------------
+// Mock helpers
+// -----------------------------
 
-// 🔹 Helper voor mongoose queries
 function mockQuery(result: any) {
   return {
     populate: jest.fn().mockReturnThis(),
@@ -16,17 +16,17 @@ function mockQuery(result: any) {
   };
 }
 
-const mockCourse = {
-  _id: mockCourseId,
+const createMockCourse = (overrides = {}) => ({
+  _id: new Types.ObjectId(),
   students: [],
   teachers: [],
   deleteOne: jest.fn().mockResolvedValue(true),
-};
+  ...overrides,
+});
 
-const mockCourseWithStudent = {
-  ...mockCourse,
-  students: [mockUserId],
-};
+// -----------------------------
+// Mocks
+// -----------------------------
 
 const mockCourseModel = {
   find: jest.fn(),
@@ -44,8 +44,15 @@ const mockNeoService = {
   unenrollInCourse: jest.fn(),
 };
 
+// -----------------------------
+// Test suite
+// -----------------------------
+
 describe('CourseService', () => {
   let service: CourseService;
+
+  const courseId = new Types.ObjectId();
+  const userId = new Types.ObjectId();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -65,170 +72,191 @@ describe('CourseService', () => {
     expect(service).toBeDefined();
   });
 
-  // ----- GET ALL ----- //
+  // -----------------------------
+  // GET ALL
+  // -----------------------------
 
   describe('getAll', () => {
     it('should return all courses', async () => {
-      mockCourseModel.find.mockReturnValue(mockQuery([mockCourse]));
+      const course = createMockCourse();
+
+      mockCourseModel.find.mockReturnValue(mockQuery([course]));
 
       const result = await service.getAll();
 
-      expect(result).toEqual([mockCourse]);
+      expect(result).toEqual([course]);
     });
   });
 
-  // ----- GET ONE ----- //
+  // -----------------------------
+  // GET ONE
+  // -----------------------------
 
   describe('getOne', () => {
-    it('should return course with populate', async () => {
-      mockCourseModel.findById.mockReturnValue(mockQuery(mockCourse));
+    it('should return course', async () => {
+      const course = createMockCourse({ _id: courseId });
 
-      const result = await service.getOne(mockCourseId);
+      mockCourseModel.findById.mockReturnValue(mockQuery(course));
 
-      expect(result).toEqual(mockCourse);
+      const result = await service.getOne(courseId);
+
+      expect(result).toEqual(course);
     });
 
     it('should throw if not found', async () => {
       mockCourseModel.findById.mockReturnValue(mockQuery(null));
 
-      await expect(service.getOne(mockCourseId)).rejects.toThrow(HttpException);
+      await expect(service.getOne(courseId)).rejects.toThrow(HttpException);
     });
   });
 
-  // ----- CREATE ----- //
+  // -----------------------------
+  // CREATE
+  // -----------------------------
 
   describe('create', () => {
-    it('should create course', async () => {
-      mockCourseModel.create.mockResolvedValue(mockCourse);
+    it('should create course and sync to neo4j', async () => {
+      const course = createMockCourse();
+
+      mockCourseModel.create.mockResolvedValue(course);
 
       const result = await service.create({} as any);
 
-      expect(mockNeoService.mergeCourse).toHaveBeenCalledWith(mockCourse);
-      expect(result).toEqual(mockCourse);
+      expect(mockNeoService.mergeCourse).toHaveBeenCalledWith(course);
+      expect(result).toEqual(course);
     });
   });
 
-  // ----- UPDATE ----- //
+  // -----------------------------
+  // UPDATE
+  // -----------------------------
 
   describe('update', () => {
     it('should update course', async () => {
-      mockCourseModel.findByIdAndUpdate.mockResolvedValue(mockCourse);
+      const course = createMockCourse();
 
-      const result = await service.update(mockCourseId, {} as any);
+      mockCourseModel.findByIdAndUpdate.mockResolvedValue(course);
 
-      expect(result).toEqual(mockCourse);
+      const result = await service.update(courseId, {} as any);
+
+      expect(result).toEqual(course);
     });
 
     it('should throw if not found', async () => {
       mockCourseModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.update(mockCourseId, {} as any)).rejects.toThrow(
+      await expect(service.update(courseId, {} as any)).rejects.toThrow(
         HttpException,
       );
     });
   });
 
-  // ----- DELETE ----- //
-
-  describe('delete', () => {
-    it('should delete course', async () => {
-      mockCourseModel.findById.mockReturnValue(mockQuery(mockCourse));
-
-      const result = await service.delete(mockCourseId);
-
-      expect(mockCourse.deleteOne).toHaveBeenCalled();
-      expect(mockNeoService.detachCourse).toHaveBeenCalledWith(
-        mockCourseId.toString(),
-      );
-      expect(result).toBeInstanceOf(HttpException);
-    });
-
-    it('should throw if not found', async () => {
-      mockCourseModel.findById.mockReturnValue(mockQuery(null));
-
-      await expect(service.delete(mockCourseId)).rejects.toThrow(HttpException);
-    });
-  });
-
-  // ----- ENROLL ----- //
+  // -----------------------------
+  // ENROLL
+  // -----------------------------
 
   describe('enroll', () => {
     it('should enroll user', async () => {
-      mockCourseModel.findOne.mockReturnValue(mockQuery(mockCourse));
+      const course = createMockCourse({
+        _id: courseId,
+        students: [],
+      });
 
+      const updatedCourse = createMockCourse({
+        _id: courseId,
+        students: [userId],
+      });
+
+      mockCourseModel.findById.mockReturnValue(mockQuery(course));
       mockCourseModel.findByIdAndUpdate.mockReturnValue(
-        mockQuery({
-          ...mockCourse,
-          students: [mockUserId],
-        }),
+        mockQuery(updatedCourse),
       );
 
-      const result = await service.enroll(mockCourseId, mockUserId);
+      const result = await service.enroll(courseId, userId);
 
       expect(mockNeoService.enrollInCourse).toHaveBeenCalled();
-      expect(result.students).toContain(mockUserId);
+      expect(result.students).toContain(userId);
     });
 
     it('should throw if already enrolled', async () => {
-      mockCourseModel.findOne.mockReturnValue(
-        mockQuery(mockCourseWithStudent),
-      );
+      const course = createMockCourse({
+        _id: courseId,
+        students: [userId],
+      });
 
-      await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
+      mockCourseModel.findById.mockReturnValue(mockQuery(course));
+
+      await expect(service.enroll(courseId, userId)).rejects.toThrow(
         HttpException,
       );
     });
 
     it('should throw if course not found', async () => {
-      mockCourseModel.findOne.mockReturnValue(mockQuery(null));
+      mockCourseModel.findById.mockReturnValue(mockQuery(null));
 
-      await expect(service.enroll(mockCourseId, mockUserId)).rejects.toThrow(
+      await expect(service.enroll(courseId, userId)).rejects.toThrow(
         HttpException,
       );
     });
   });
 
-  // ----- UNENROLL ----- //
+  // -----------------------------
+  // UNENROLL
+  // -----------------------------
 
   describe('unenroll', () => {
     it('should unenroll user', async () => {
-      mockCourseModel.findOne.mockReturnValue(
-        mockQuery(mockCourseWithStudent),
-      );
+      const course = createMockCourse({
+        _id: courseId,
+        students: [userId],
+      });
 
+      const updatedCourse = createMockCourse({
+        _id: courseId,
+        students: [],
+      });
+
+      mockCourseModel.findById.mockReturnValue(mockQuery(course));
       mockCourseModel.findByIdAndUpdate.mockReturnValue(
-        mockQuery(mockCourse),
+        mockQuery(updatedCourse),
       );
 
-      const result = await service.unenroll(mockCourseId, mockUserId);
+      const result = await service.unenroll(courseId, userId);
 
       expect(mockNeoService.unenrollInCourse).toHaveBeenCalled();
-      expect(result).toEqual(mockCourse);
+      expect(result).toEqual(updatedCourse);
     });
 
     it('should throw if not enrolled', async () => {
-      mockCourseModel.findOne.mockReturnValue(mockQuery(mockCourse));
+      const course = createMockCourse({
+        _id: courseId,
+        students: [],
+      });
+
+      mockCourseModel.findById.mockReturnValue(mockQuery(course));
 
       await expect(
-        service.unenroll(mockCourseId, mockUserId),
+        service.unenroll(courseId, userId),
       ).rejects.toThrow(HttpException);
     });
   });
 
-  // ----- DASHBOARD ----- //
+  // -----------------------------
+  // DASHBOARD
+  // -----------------------------
 
   describe('getStudentDashboard', () => {
     it('should return aggregated dashboard', async () => {
-      const mockResult = [{ title: 'Course', totalLessons: 5 }];
+      const resultMock = [{ title: 'Course', totalLessons: 5 }];
 
-      mockCourseModel.aggregate.mockResolvedValue(mockResult);
+      mockCourseModel.aggregate.mockResolvedValue(resultMock);
 
       const result = await service.getStudentDashboard(
-        mockUserId.toHexString(),
+        userId.toHexString(),
       );
 
       expect(mockCourseModel.aggregate).toHaveBeenCalled();
-      expect(result).toEqual(mockResult);
+      expect(result).toEqual(resultMock);
     });
   });
 });

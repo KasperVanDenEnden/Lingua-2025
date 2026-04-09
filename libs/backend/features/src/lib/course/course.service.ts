@@ -16,7 +16,7 @@ export class CourseService {
 
   async getAll(): Promise<ICourse[]> {
     Logger.log('getAll', this.TAG);
-    return await this.courseModel.find();
+    return await this.courseModel.find().exec();
   }
 
   async getOne(id: Id): Promise<ICourse> {
