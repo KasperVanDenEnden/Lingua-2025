@@ -103,7 +103,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'nestjs'
-          publish-profile: ${{ secrets.NEXTJS_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.NESTJS_PUBLISHPROFILE }}
           package: data-api            # ← verwijst naar submap
 
   deploy-rcmnd-api:
