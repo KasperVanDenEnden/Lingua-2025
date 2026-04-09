@@ -64,8 +64,6 @@
         Onderstaande tabel beschrijft de functionele requirements van het
         systeem volgens het MoSCoW-principe. Elke requirement is uitgewerkt met
         bijbehorende acceptatiecriteria om testbaarheid te waarborgen.
-        Requirements zijn samengevat en/of gecombineerd, zodat geen onnodige
-        herhalingen optreden en de lijst concreet blijft.
       </p>
       <table class="w-full text-sm border border-gray-200">
         <thead class="bg-gray-100 text-left">
@@ -110,7 +108,7 @@
               veilig wordt beëindigd.
             </td>
             <td class="p-sm">
-              - Logout knop<br />- Sessie beëindigd<br />- Redirect naar login
+              - Logout knop<br /> - Bevestiging modal<br />- Sessie beëindigd<br />- Redirect naar login
             </td>
             <td class="p-sm">Must</td>
           </tr>
@@ -135,7 +133,7 @@
               deelnemen.
             </td>
             <td class="p-sm">
-              - Alleen ingeschreven studenten<br />- Les koppeling opgeslagen<br />-
+              - Alleen ingeschreven studenten van een course<br />- Les koppeling opgeslagen<br />-
               Bevestiging zichtbaar
             </td>
             <td class="p-sm">Must</td>
@@ -237,7 +235,7 @@
             <td class="p-sm">
               - Admin kan account maken<br />- Rol correct ingesteld
             </td>
-            <td class="p-sm">Must</td>
+            <td class="p-sm">Should</td>
           </tr>
 
           <tr class="border-t">
@@ -271,7 +269,7 @@
               gebruikers, zodat ik kan navigeren.
             </td>
             <td class="p-sm">
-              - Lijsten laden<br />- Data correct<br />- Navigatie mogelijk
+              - Lijsten laden<br />- Data correct<br />- Navigatie mogelijk<br />- Voor ieder overzicht een aparte pagina
             </td>
             <td class="p-sm">Must</td>
           </tr>
@@ -283,7 +281,7 @@
               gebruiker, zodat ik meer informatie krijg.
             </td>
             <td class="p-sm">
-              - Detailpagina correct<br />- Relaties zichtbaar
+              - Detailpagina correct<br />- Relaties zichtbaar<br />- Voor iedere entiteit een aparte detailpagina
             </td>
             <td class="p-sm">Must</td>
           </tr>
@@ -297,6 +295,42 @@
             <td class="p-sm">
               - Alleen ingeschreven studenten<br />- Review + rating<br />-
               Opslaan en tonen
+            </td>
+            <td class="p-sm">Should</td>
+          </tr>
+
+          <tr class="border-t">
+            <td class="p-sm">FR19</td>
+            <td class="p-sm">
+              Als gebruiker kunnen filteren op overzichten van entiteiten,
+              zodat ik een passende entiteit kan vinden.
+            </td>
+            <td class="p-sm">
+              - Zoekveld<br />- Dropdown van 1 of meer andere attributen<br />- filters weghalen toont weer de gehele lijst
+            </td>
+            <td class="p-sm">Should</td>
+          </tr>
+
+          <tr class="border-t">
+            <td class="p-sm">FR20</td>
+            <td class="p-sm">
+              Als docent/adming wil ik de status van een cursus kunnen aanpassen,
+              zodat het te zien is of een cursus nog gegeven wordt.
+            </td>
+            <td class="p-sm">
+              - Opslaan en tonen
+            </td>
+            <td class="p-sm">Should</td>
+          </tr>
+
+           <tr class="border-t">
+            <td class="p-sm">FR20</td>
+            <td class="p-sm">
+              Als docent/adming wil ik de status van een lest kunnen aanpassen,
+              zodat het te zien is of een les nog gegeven wordt.
+            </td>
+            <td class="p-sm">
+              - alleen lessen die nog niet gegeven zijn <br />- Opslaan en tonen
             </td>
             <td class="p-sm">Should</td>
           </tr>
