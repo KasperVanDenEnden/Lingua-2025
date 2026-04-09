@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -40,19 +40,19 @@ jobs:
           cd ${{ github.workspace }}/dist/apps/rcmnd-api && zip ${{ github.workspace }}/rcmnd-api-release.zip ./* -r
 
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-app
           path: frontend-app-release.zip
 
       - name: Upload data-api artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: data-api
           path: data-api-release.zip
 
       - name: Upload rcmnd-api artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rcmnd-api
           path: rcmnd-api-release.zip
@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: frontend-app
 
@@ -90,7 +90,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: data-api
 
@@ -115,7 +115,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: rcmnd-api
 
