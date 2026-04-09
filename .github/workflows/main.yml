@@ -38,9 +38,9 @@ jobs:
 
       - name: Zip artifacts
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          cd ${{ github.workspace }}/dist/apps/lingua && zip ${{ github.workspace }}/frontend-app-release.zip ./* -r
+          cd ${{ github.workspace }}/dist/apps/data-api && zip ${{ github.workspace }}/data-api-release.zip ./* -r
+          cd ${{ github.workspace }}/dist/apps/rcmnd-api && zip ${{ github.workspace }}/rcmnd-api-release.zip ./* -r
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
