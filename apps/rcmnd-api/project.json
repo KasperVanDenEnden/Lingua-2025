@@ -6,15 +6,10 @@
   "tags": [],
   "targets": {
      "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "nx:run-commands",
       "options": {
-        "target": "node",
-        "compiler": "tsc",
-        "outputPath": "dist/apps/rcmnd-api",
-        "main": "apps/rcmnd-api/src/main.ts",
-        "tsConfig": "apps/rcmnd-api/tsconfig.app.json",
-        "generatePackageJson": true,
-        "externalDependencies": "none"
+        "command": "webpack-cli build",
+        "args": ["node-env=production"]
       },
       "configurations": {
         "development": {
