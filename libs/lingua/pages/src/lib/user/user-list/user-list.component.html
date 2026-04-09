@@ -138,6 +138,7 @@
         <div>Showing: {{ users.length }} entries</div>
       }
     </div>
+<<<<<<< HEAD
 
     <!-- Child component (formulier verschijnt hier als hij actief is) -->
     <div>
@@ -157,3 +158,10 @@
   (closed)="closeModal()"
   (confirmed)="confirmDelete()"
 ></lingua-modal-delete>
+=======
+  </main>
+
+  <lingua-modal-delete [isOpen]="isModalOpen"
+    [message]="recordToDelete ? 'Are you sure you want to delete ' + recordToDelete.email + '?' : ''"
+  title="Delete Record" (close)="closeModal()" (confirm)="confirmDelete()"></lingua-modal-delete>
+>>>>>>> main

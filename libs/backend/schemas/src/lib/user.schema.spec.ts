@@ -5,12 +5,10 @@ import { Test } from '@nestjs/testing';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
 import { Role } from '@lingua/api';
-
 describe('UserSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let userModel: Model<User>;
   let baseBody: Partial<User>;
-
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       imports: [
@@ -32,7 +30,6 @@ describe('UserSchema Tests', () => {
     userModel = app.get<Model<User>>(getModelToken(User.name));
     await userModel.ensureIndexes();
   });
-
   beforeEach(() => {
     baseBody = {
       role: Role.Student,
@@ -43,12 +40,10 @@ describe('UserSchema Tests', () => {
       friends: [new Types.ObjectId()], // NIEUW: ontbrak, @IsNotEmpty() zou anders falen
     };
   });
-
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
   });
-
   it('should pass validation with valid data', async () => {
     const body = { ...baseBody };
     const plain = Object.assign(new User(), body);

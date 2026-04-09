@@ -1,16 +1,13 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { disconnect, Model, Types } from 'mongoose';
 import { Test } from '@nestjs/testing';
-import { plainToInstance } from 'class-transformer';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { validate } from 'class-validator';
 import { Review, ReviewSchema } from './review.schema';
-
 describe('ReviewSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let reviewModel: Model<Review>;
   let baseBody: Partial<Review>;
-
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       imports: [
@@ -32,7 +29,6 @@ describe('ReviewSchema Tests', () => {
     reviewModel = app.get<Model<Review>>(getModelToken(Review.name));
     await reviewModel.ensureIndexes();
   });
-
   beforeEach(() => {
     baseBody = {
       student: new Types.ObjectId(),
@@ -42,12 +38,10 @@ describe('ReviewSchema Tests', () => {
       createdAt: new Date(),
     };
   });
-
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
   });
-
   it('should pass validation with valid data', async () => {
     const body = { ...baseBody };
     const plain = Object.assign(new Review(), body);

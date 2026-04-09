@@ -10,7 +10,6 @@ describe('LessonSchema Tests', () => {
   let mongod: MongoMemoryServer;
   let lessonModel: Model<Lesson>;
   let baseBody: Partial<Lesson>;
-
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       imports: [
@@ -32,7 +31,6 @@ describe('LessonSchema Tests', () => {
     lessonModel = app.get<Model<Lesson>>(getModelToken(Lesson.name));
     await lessonModel.ensureIndexes();
   });
-
   beforeEach(() => {
     baseBody = {
       course: new Types.ObjectId(),
@@ -47,12 +45,10 @@ describe('LessonSchema Tests', () => {
       endTime: new Date(),
     };
   });
-
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
   });
-
   it('should pass validation with valid data', async () => {
     const body = { ...baseBody };
     const plain = Object.assign(new Lesson(), body);
@@ -192,7 +188,6 @@ describe('LessonSchema Tests', () => {
     expect(errors[0].property).toBe('isWorkshop');
     expect(errors[0].constraints?.['isBoolean']).toBeDefined();
   });
-
   it('should fail validation if title is invalid type', async () => {
     const body = { ...baseBody, title: 0 };
     const plain = Object.assign(new Lesson(), body);
