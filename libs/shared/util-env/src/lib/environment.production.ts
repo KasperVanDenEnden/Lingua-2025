@@ -8,7 +8,7 @@ export const environment: IEnvironment = {
     'mongodb+srv://kvandenenden1_db_user:fjI2HGwNWM2pq0qv@lingua-db.v1sywge.mongodb.net/',
   SECRET_KEY: 'Blastoise',
   // NEO4J
-  neo4jUrl: 'neo4j+s://c3c35520.databases.neo4j.io:7687',
-  neo4jUser: 'neo4j',
-  neo4jPassword: 'FnSyB1u0tO8qtzy3ZZaFxkbhYpIq2G8MegejKhVIJM8',
+  neo4jUrl: 'neo4j+s://02a90c73.databases.neo4j.io',
+  neo4jUser: '02a90c73',
+  neo4jPassword: 'JxsW1VyF9SeW0VyPQ8_yqO5EKgSEOqjSzbmBbRkvI0w',
 };

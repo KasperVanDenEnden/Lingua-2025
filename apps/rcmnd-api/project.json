@@ -5,11 +5,16 @@
   "projectType": "application",
   "tags": [],
   "targets": {
-    "build": {
-      "executor": "nx:run-commands",
+     "build": {
+      "executor": "@nx/webpack:webpack",
       "options": {
-        "command": "webpack-cli build",
-        "args": ["node-env=production"]
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/rcmnd-api",
+        "main": "apps/rcmnd-api/src/main.ts",
+        "tsConfig": "apps/rcmnd-api/tsconfig.app.json",
+        "generatePackageJson": true,
+        "externalDependencies": "none"
       },
       "configurations": {
         "development": {
