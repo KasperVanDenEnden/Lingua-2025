@@ -57,9 +57,4 @@ export class CreateCourseDto implements ICreateCourse {
   @IsEnum(Level, { message: 'Language must be a valid enum value' })
   @IsNotEmpty()
   level!: Level;
-
-  @IsArray()
-  @ArrayMinSize(1, { message: 'At least one teacher is required' })
-  @IsMongoId({ each: true, message: 'Each teacher must be a valid ObjectId' })
-  teachers!: Id[];
 }

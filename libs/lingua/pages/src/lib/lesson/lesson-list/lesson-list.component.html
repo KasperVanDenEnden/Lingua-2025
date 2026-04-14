@@ -133,19 +133,21 @@
                       title="Show"
                       ><i class="fa-solid fa-eye fa-lg"></i
                     ></a>
-                    <a
-                      [routerLink]="['/lessons', lesson._id, 'edit']"
-                      class="text-primary-dark hover:text-primary-light mr-4"
-                      title="Edit"
-                      ><i class="fa-solid fa-pencil fa-lg"></i
-                    ></a>
-                    <button
-                      (click)="handleDelete(lesson)"
-                      class="text-primary-dark hover:text-primary-light mr-4"
-                      title="Delete"
-                    >
+                    @if(canEdit(lesson)) {
+                      <a
+                        [routerLink]="['/lessons', lesson._id, 'edit']"
+                        class="text-primary-dark hover:text-primary-light mr-4"
+                        title="Edit"
+                        ><i class="fa-solid fa-pencil fa-lg"></i
+                      ></a>
+                      <button
+                        (click)="handleDelete(lesson)"
+                        class="text-primary-dark hover:text-primary-light mr-4"
+                        title="Delete"
+                      >
                       <i class="fa-solid fa-trash fa-lg"></i>
                     </button>
+                    }
                   </td>
                 </tr>
               }

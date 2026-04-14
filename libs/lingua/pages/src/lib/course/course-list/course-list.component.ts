@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CourseStatus, ICourse, IUser, Language } from '@lingua/api';
+import { CourseStatus, ICourse, ICurrentUser, IUser, Language } from '@lingua/api';
 import {
   AuthService,
   CourseService,
@@ -23,12 +23,11 @@ export class CourseListComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private notify = inject(NotificationService);
   private authService = inject(AuthService);
-  private userService = inject(UserService);
 
   courses?: ICourse[] | null;
   sub!: Subscription;
   currentUserId?: string;
-  currentUser?: IUser | null = null;
+  currentUser?: ICurrentUser | null = null;
 
   statuses = Object.values(CourseStatus);
   languages = Object.values(Language);
@@ -36,6 +35,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
   searchQuery = '';
   selectedStatus = '';
   selectedLanguage = '';
+  onlyMyCourses = false;
 
   courseList$?: Observable<ICourse[]>;
 
@@ -44,8 +44,16 @@ export class CourseListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(
-      (user) => (this.currentUser = user),
-    );
+    (user) => {
+      if (user) {
+        this.currentUser = {
+          id: (user as any).id.toString(),
+          email: user?.email,
+          role: user.role
+        };
+      }
+    }
+  );
 
     this.loadCourses();
 
@@ -79,7 +87,12 @@ export class CourseListComponent implements OnInit, OnDestroy {
         ? course.language === this.selectedLanguage
         : true;
 
-      return matchesQuery && matchesStatus && matchesLanguage;
+      const myCourse = this.onlyMyCourses
+        ? course.students.some(s => s === this.currentUser?.id?.toString()) ||
+          course.teachers.some(t => t === this.currentUser?.id?.toString())
+        : true;
+
+      return matchesQuery && matchesStatus && matchesLanguage && myCourse;
     });
   }
 
@@ -121,7 +134,14 @@ export class CourseListComponent implements OnInit, OnDestroy {
     return role === 'admin' || role === 'teacher';
   }
 
-  canEdit(): boolean {
-    return this.currentUser?.role !== 'student';
+  canEdit(course: ICourse): boolean {
+    if (this.currentUser?.role === 'admin') return true;
+    if (!this.currentUser?.id) return false;
+
+    return course.teachers.some(teacher => teacher === this.currentUser!.id.toString());
+  }
+
+  canDelete(): boolean {
+    return this.currentUser?.role === 'admin';
   }
 }

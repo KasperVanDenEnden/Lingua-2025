@@ -26,6 +26,9 @@ export class LessonListComponent implements OnInit, OnDestroy {
   sub!: Subscription;
   statuses = Object.values(LessonStatus);
 
+  userSubscription!: Subscription;
+  currentUser: any | undefined = undefined;
+
   lessonList$?: Observable<ILesson[]>;
 
   searchQuery = '';
@@ -39,6 +42,10 @@ export class LessonListComponent implements OnInit, OnDestroy {
 
     this.lessonService.refresh$.subscribe(() => {
       this.loadLessons();
+    });
+
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
     });
   }
 
@@ -136,5 +143,12 @@ export class LessonListComponent implements OnInit, OnDestroy {
   canCreate(): boolean {
     const role = this.authService.getUserRole();
     return role === 'admin' || role === 'teacher';
+  }
+
+  canEdit(lesson: ILesson): boolean {
+    if (!this.currentUser) return false;
+    const isTeacher = lesson.teacher === this.currentUser._id;
+    const isAdmin = this.authService.getUserRole() === 'admin';
+    return isTeacher || isAdmin;
   }
 }

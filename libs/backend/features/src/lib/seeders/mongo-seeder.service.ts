@@ -76,6 +76,7 @@ export class MongoSeederService {
       await this.courseModel.create({
         ...course,
         teachers: assignedTeachers,
+        maxStudents: 5
       });
     }
 

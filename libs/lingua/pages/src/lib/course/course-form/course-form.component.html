@@ -165,9 +165,11 @@
             courseForm.get('maxStudents')?.invalid
           ) {
             <div class="text-red-500 text-sm mt-1">
-              @if (courseForm.get('maxStudents')?.errors?.['required']) {
-                <span>Max Students is required</span>
-              }
+             @if (courseForm.get('maxStudents')?.errors?.['required']) {
+  <span>Max Students is required</span>
+} @else if (courseForm.get('maxStudents')?.errors?.['min']) {
+  <span>Minimum of 1 student</span>
+}
             </div>
           }
         </div>
@@ -185,12 +187,10 @@
             formControlName="language"
             class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
           >
-            <option value="" disabled selected>Select a language</option>
-            <option value="Dutch">Dutch</option>
-            <option value="English">English</option>
-            <option value="French">French</option>
-            <option value="German">German</option>
-            <option value="Korean">Korean</option>
+            <option value="" disabled>Select a language</option>
+             @for (lang of languages; track lang) {
+              <option [value]="lang">{{ lang }}</option>
+            }
           </select>
           @if (
             courseForm.get('language')?.touched &&
@@ -199,6 +199,33 @@
             <div class="text-red-500 text-sm mt-1">
               @if (courseForm.get('language')?.errors?.['required']) {
                 <span>Please select a language</span>
+              }
+            </div>
+          }
+        </div>
+        <div class="form-group">
+          <label
+            for="level"
+            class="mb-1.5 ml-2.5 block text-sm font-semibold"
+            >Level</label
+          >
+          <select
+            id="level"
+            formControlName="level"
+            class="form-input border border-primary-dark rounded-md block px-2 h-8 w-full"
+          >
+            <option value="" disabled>Select a level</option>
+            @for (level of levels; track level) {
+              <option [value]="level">{{ level }}</option>
+            }
+          </select>
+          @if (
+            courseForm.get('level')?.touched &&
+            courseForm.get('level')?.invalid
+          ) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (courseForm.get('level')?.errors?.['required']) {
+                <span>Please select a level</span>
               }
             </div>
           }

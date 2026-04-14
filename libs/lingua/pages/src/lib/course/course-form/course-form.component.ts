@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { ICourse, ICreateCourse, Id, IUser, Level } from '@lingua/api';
+import { ICourse, ICreateCourse, Id, IUser, Language, Level } from '@lingua/api';
 import {
   FormGroup,
   FormControl,
@@ -28,6 +28,8 @@ export class CourseFormComponent implements OnInit, OnDestroy {
   formSub?: Subscription;
   isEditMode?: boolean;
   existId!: Id;
+  languages = Object.values(Language);
+  levels = Object.values(Level);
 
   courseForm: FormGroup = new FormGroup({
     title: new FormControl(null, Validators.required),
@@ -36,16 +38,14 @@ export class CourseFormComponent implements OnInit, OnDestroy {
     maxStudents: new FormControl(null, [
       Validators.required,
       Validators.min(1),
-      Validators.pattern('^[0-9]+$'),
+      Validators.max(20)
     ]),
     language: new FormControl(null, Validators.required),
-    status: new FormControl(null, Validators.required),
-    starts: new FormControl(null, [
-      Validators.required,
-      this.notInPastValidator(),
-    ]),
-    ends: new FormControl(null, this.dateRangeValidator()),
-  });
+    level: new FormControl('', Validators.required),
+    status: new FormControl('', Validators.required),
+    starts: new FormControl(null, Validators.required),
+    ends: new FormControl(null, ),
+  }, { validators: this.dateRangeValidator() });
 
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
@@ -81,6 +81,7 @@ export class CourseFormComponent implements OnInit, OnDestroy {
           price: courseData.price,
           maxStudents: courseData.maxStudents,
           language: courseData.language,
+          level: courseData.level,
           starts: this.formatDate(courseData.starts),
           ends: this.formatDate(courseData.ends?.toString()),
         });
@@ -99,7 +100,7 @@ export class CourseFormComponent implements OnInit, OnDestroy {
       title: this.courseForm.value.title,
       description: this.courseForm.value.description,
       language: this.courseForm.value.language,
-      level: Level.A1,
+      level: this.courseForm.value.level,
       price: this.courseForm.value.price,
       maxStudents: this.courseForm.value.maxStudents,
       starts: this.courseForm.value.starts,
