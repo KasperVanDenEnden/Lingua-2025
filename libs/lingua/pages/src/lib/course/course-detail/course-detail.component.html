@@ -208,12 +208,14 @@
                   {{ teacher.firstname }} {{ teacher.lastname }}
                 </p>
               </div>
-              <button
-                (click)="removeTeacher(teacher)"
-                class="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-0.5 rounded-md"
-              >
-                ×
-              </button>
+              @if (canEdit()) {
+                <button
+                  (click)="removeTeacher(teacher)"
+                  class="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-0.5 rounded-md"
+                  >
+                  ×
+                </button>
+              }
             </div>
           }
         </div>
@@ -221,37 +223,40 @@
         <p class="text-sm text-gray-400 mb-4">No teachers assigned yet.</p>
       }
 
-      <hr class="border-gray-200 my-4" />
+      @if(canEdit()) {
 
-      <p
-        class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3"
-      >
-        Assign teacher
-      </p>
+        <hr class="border-gray-200 my-4" />
+        
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3"
+        >
+          Assign teacher
+        </p>
 
-      @if (availableTeachers.length) {
-        <div class="flex gap-2 items-center">
-          <select
-            [(ngModel)]="selectedTeacher"
-            class="flex-1 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800"
-          >
-            @for (t of availableTeachers; track t) {
-              <option [ngValue]="t">
-                {{ t.firstname || 'No name' }} {{ t.lastname || '' }}
-              </option>
-            }
-          </select>
+        @if (availableTeachers.length) {
+          <div class="flex gap-2 items-center">
+            <select
+              [(ngModel)]="selectedTeacher"
+              class="flex-1 max-w-xs text-sm px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800"
+            >
+              @for (t of availableTeachers; track t) {
+                <option [ngValue]="t">
+                  {{ t.firstname || 'No name' }} {{ t.lastname || '' }}
+                </option>
+              }
+            </select>
 
-          <button
-            (click)="assignTeacher(selectedTeacher!)"
-            [disabled]="!selectedTeacher"
-            class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
-          >
-            Assign
-          </button>
-        </div>
-      } @else {
-        <p class="text-sm text-gray-400">No more teachers to assign!</p>
+            <button
+              (click)="assignTeacher(selectedTeacher!)"
+              [disabled]="!selectedTeacher"
+              class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
+            >
+              Assign
+            </button>
+          </div>
+        } @else {
+          <p class="text-sm text-gray-400">No more teachers to assign!</p>
+        }
       }
     </div>
 
