@@ -19,7 +19,6 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Types } from 'mongoose';
 import { BodyObjectIdsPipe } from '../pipes/bodyObjectIdsPipe';
 import { StringObjectIdPipe } from '../pipes/stringObjectIdPipe';
-import { of } from 'rxjs';
 
 @Controller('course')
 @UseGuards(JwtAuthGuard)
@@ -53,9 +52,10 @@ export class CourseController {
   @Post()
   async create(
     @Body(BodyObjectIdsPipe) body: CreateCourseDto,
+    @CurrentUser() user: any
   ): Promise<ICourse> {
     Logger.log('create', this.TAG);
-    return await this.courseService.create(body);
+    return await this.courseService.create(body, user.id);
   }
 
   @UseGuards(RolesGuard)

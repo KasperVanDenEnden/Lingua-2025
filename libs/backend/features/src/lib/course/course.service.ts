@@ -38,11 +38,14 @@ export class CourseService {
     return instance;
   }
 
-  async create(body: CreateCourseDto): Promise<ICourse> {
+  async create(body: CreateCourseDto, userId: string): Promise<ICourse> {
     Logger.log('create', this.TAG);
-
-    const mongoCourse = await this.courseModel.create(body);
-
+    
+    const mongoCourse = await this.courseModel.create({
+      ...body,
+      teachers: [new Types.ObjectId(userId)],
+    });
+    
     await this.neoService.mergeCourse(mongoCourse);
 
     return mongoCourse;
