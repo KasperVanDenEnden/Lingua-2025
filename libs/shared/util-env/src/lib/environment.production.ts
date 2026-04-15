@@ -2,8 +2,8 @@ import { IEnvironment } from './environment.interface';
 
 export const environment: IEnvironment = {
   production: true,
-  dataApiUrl: 'https://nestjs-c9cxd8gzbyb7ajhr.westeurope-01.azurewebsites.net',
-  rcmndApiUrl: 'https://rcmnd-api-g4dxdkcqd4fsaghr.westeurope-01.azurewebsites.net',
+  dataApiUrl: 'https://nestjs-c9cxd8gzbyb7ajhr.westeurope-01.azurewebsites.net/api',
+  rcmndApiUrl: 'https://rcmnd-api-g4dxdkcqd4fsaghr.westeurope-01.azurewebsites.net/api',
   mongoDbUrl: 
     'mongodb+srv://kvandenenden1_db_user:fjI2HGwNWM2pq0qv@lingua-db.v1sywge.mongodb.net/',
   SECRET_KEY: 'Blastoise',
