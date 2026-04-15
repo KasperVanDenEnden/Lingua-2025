@@ -15,14 +15,7 @@
         "browser": "apps/lingua/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/lingua/tsconfig.app.json",
-        "assets": [
-          "apps/frontend/src/assets",
-          {
-            "glob": "**/*",
-            "input": "libs/shared/assets",
-            "output": "assets/shared"
-          }
-        ],
+        "assets": ["apps/lingua/public"],
         "styles": [
           "apps/lingua/src/styles.css",
           "node_modules/@fortawesome/fontawesome-free/css/all.min.css",

@@ -6,7 +6,8 @@
 }
 
 .search-input,
-.role-select {
+.role-select,
+.course-select {
   padding: 0.5rem 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -20,12 +21,14 @@
   min-width: 200px;
 }
 
-.role-select {
+.role-select,
+.course-select {
   min-width: 160px;
 }
 
 .search-input:focus,
-.role-select:focus {
+.role-select:focus,
+.course-select:focus {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }

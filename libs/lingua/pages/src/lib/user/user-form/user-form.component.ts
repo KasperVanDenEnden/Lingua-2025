@@ -87,7 +87,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
         this.router.navigate(['/user', updatedUser._id]);
       });
     } else {
-      const newPassword = uuidv4().slice(0, 8);
+      const newPassword = 'password123';
 
       const data: ICreateUser = {
         firstname: this.userForm.value.firstname,
