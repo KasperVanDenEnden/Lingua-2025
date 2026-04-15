@@ -260,6 +260,7 @@
       }
     </div>
 
+    
     <!-- Reviews -->
     <div
       class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5"
@@ -289,16 +290,20 @@
               <p class="text-xs text-gray-500 leading-relaxed">
                 {{ review.comment || '—' }}
               </p>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                {{ (review.createdAt || '—') | date: 'longDate' }}
+              </p>
             </div>
-          }
+            }
         </div>
       } @else {
         <p class="text-sm text-gray-400">No reviews yet.</p>
       }
     </div>
   </div>
-
+  
   <!-- Post a review -->
+  @if (canReview()) {
   <div
     class="bg-secondary-light border-2 border-primary-dark rounded-lg shadow p-5 mt-4"
   >
@@ -331,16 +336,17 @@
           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
         ></textarea>
       </div>
-
+      
       <button
-        type="submit"
-        [disabled]="reviewForm.invalid"
+      type="submit"
+      [disabled]="reviewForm.invalid"
         class="px-4 py-2 text-sm font-medium rounded-md bg-primary-dark text-white hover:bg-primary-light transition"
       >
         Submit Review
       </button>
     </form>
   </div>
+}
 </main>
 
 <lingua-modal-delete
