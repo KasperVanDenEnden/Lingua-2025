@@ -270,7 +270,12 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   canAssign(): boolean {
     return this.currentUser?.role === 'admin';
   }
+
   canRemove(teacher: IUser): boolean {
     return this.currentUser?.role == 'admin' || teacher._id.toString() == this.currentUser.id.toString();
+  }
+
+  canReview(): boolean {
+    return this.currentUser?.role == 'student'
   }
 }

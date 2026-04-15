@@ -3,6 +3,7 @@ import { Observable, Subscription } from 'rxjs';
 import { ICourse, ILesson, IUser, LessonStatus } from '@lingua/api';
 import {
   AuthService,
+  CourseService,
   LessonService,
   NotificationService,
 } from '@lingua/services';
@@ -21,24 +22,33 @@ export class LessonListComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private notify = inject(NotificationService);
   private authService = inject(AuthService);
+  private courseService = inject(CourseService)
 
   lessons!: ILesson[] | null;
   sub!: Subscription;
   statuses = Object.values(LessonStatus);
+  courses: ICourse[] = []
+
+  userSubscription!: Subscription;
+  currentUser: any | undefined = undefined;
 
   userSubscription!: Subscription;
   currentUser: any | undefined = undefined;
 
   lessonList$?: Observable<ILesson[]>;
+  courseList$?: Observable<ICourse[]>;
 
   searchQuery = '';
   selectedStatus = '';
+  selectedCourse = '';
+  onlyMyLessons = false;
 
   isModalOpen = false;
   recordToDelete?: ILesson | null;
 
   ngOnInit(): void {
     this.loadLessons();
+    this.loadCourses();
 
     this.lessonService.refresh$.subscribe(() => {
       this.loadLessons();
@@ -60,6 +70,13 @@ export class LessonListComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadCourses() {
+    this.courseList$ = this.courseService.getCourses();
+    this.sub = this.courseService.getCourses().subscribe((results) => {
+      this.courses = results
+    })
+  }
+
   get filteredLessons(): ILesson[] {
     if (!this.lessons) return [];
     return this.lessons.filter((lesson) => {
@@ -71,9 +88,27 @@ export class LessonListComponent implements OnInit, OnDestroy {
         ? lesson.status === this.selectedStatus
         : true;
 
-      return matchesQuery && matchesStatus;
+      const matchesCourse = this.selectedCourse 
+        ? (lesson.course as ICourse)._id.toString() === this.selectedCourse 
+        : true; 
+
+      const myLesson = this.onlyMyLessons
+  ? lesson.students.some(s => s.toString() === this.currentUser?.id?.toString())
+    || this.isTeacher(lesson)
+  : true;
+
+      return matchesQuery && matchesStatus && myLesson && matchesCourse;
     });
   }
+
+isTeacher(lesson: any): boolean {
+  const teacherId =
+    typeof lesson.teacher === 'object'
+      ? lesson.teacher._id
+      : lesson.teacher;
+
+  return teacherId?.toString() === this.currentUser?.id?.toString();
+}
 
   getClass(lesson: ILesson) {
     return (lesson.course as ICourse)?.title || '';

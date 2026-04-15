@@ -69,7 +69,6 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
 
   async getRecomendations(id: Id) {
     const results = await this.run(RCMND_CYPHER, { userId: id });
-    console.log('results:', results);
 
     const mappedResults = results.records.map((record) => ({
       course: record.get('c').properties,
@@ -77,6 +76,10 @@ export class Neo4jService implements OnModuleInit, OnApplicationShutdown {
       recommendedBy: record.get('friend').properties,
     }));
 
-    return mappedResults;
+    const unique = Array.from(
+      new Map(mappedResults.map((r) => [r.course.id, r])).values()
+    );
+
+    return unique;
   }
 }
