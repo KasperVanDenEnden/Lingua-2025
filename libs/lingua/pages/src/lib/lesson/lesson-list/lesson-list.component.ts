@@ -32,9 +32,6 @@ export class LessonListComponent implements OnInit, OnDestroy {
   userSubscription!: Subscription;
   currentUser: any | undefined = undefined;
 
-  userSubscription!: Subscription;
-  currentUser: any | undefined = undefined;
-
   lessonList$?: Observable<ILesson[]>;
   courseList$?: Observable<ICourse[]>;
 
