@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { forkJoin, Subscription } from 'rxjs';
-import { ICourse, ICreateLesson, Id, ILesson, IUser } from '@lingua/api';
+import { forkJoin, Subscription, take } from 'rxjs';
+import { ICourse, ICreateLesson, ICurrentUser, Id, ILesson, IUser } from '@lingua/api';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   LessonService,
   UserService,
   CourseService,
   NotificationService,
+  AuthService,
 } from '@lingua/services';
 import { PagesModule } from '../../pages.module';
 import { HttpErrorResponse } from 'node_modules/@angular/common/types/_module-chunk';
@@ -26,14 +27,17 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private courseService = inject(CourseService);
   private notify = inject(NotificationService);
+  private authService = inject(AuthService);
+
 
   formSub?: Subscription;
   isEditMode?: boolean;
   existId!: Id;
-
+  
   courses?: ICourse[] | null;
   teachers?: IUser[] | null;
   filteredTeachers: IUser[] = [];
+  currentUser?: ICurrentUser | null = null;
 
   lessonForm: FormGroup = new FormGroup({
     teacher: new FormControl(null, Validators.required),
@@ -57,43 +61,52 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    // Laad de docenten, kamers en klassen tegelijk
     forkJoin({
-      teachers: this.userService.getUsers(),
-      courses: this.courseService.getCourses(),
+        teachers: this.userService.getUsers(),
+        courses: this.courseService.getCourses(),
+        currentUser: this.authService.currentUser$.pipe(take(1)),
     }).subscribe({
-      next: (results) => {
-        this.teachers = results.teachers.filter(
-          (user) => user.role === 'teacher',
-        );
-        this.courses = results.courses.filter(
-          (course) => course.status !== 'Archived',
-        );
+        next: (results) => {
+            this.currentUser = {
+                id: (results.currentUser as any).id.toString(),
+                email: results.currentUser!.email,
+                role: results.currentUser!.role,
+            };
 
-        // Nadat de gegevens geladen zijn, laad je de lesgegevens (indien bewerken)
-        this.route.parent?.paramMap.subscribe((params) => {
-          const id = params.get('id');
-          if (id) {
-            this.isEditMode = true;
-            this.existId = id;
-            this.loadLessonData(id); // Laad les na het ophalen van docenten
-          } else {
-            this.lessonForm.reset();
-            this.isEditMode = false;
-          }
-        });
+            this.teachers = results.teachers.filter(
+                (user) => user.role === 'teacher',
+            );
+            this.courses = results.courses.filter(
+                (course) =>
+                    course.status !== 'Archived' &&
+                    (course.teachers as Id[]).some(
+                        (t) => t.toString() === this.currentUser?.id
+                    )
+            );
 
-        this.lessonForm.get('course')?.valueChanges.subscribe(() => {
-          this.updateTeacherOptions();
-        });
-      },
-      error: (err: HttpErrorResponse) => {
-        this.notify.error(
-          err.error?.message || 'Failed to load initial data: ' + err.message,
-        );
-      },
+            this.route.parent?.paramMap.subscribe((params) => {
+                const id = params.get('id');
+                if (id) {
+                    this.isEditMode = true;
+                    this.existId = id;
+                    this.loadLessonData(id);
+                } else {
+                    this.lessonForm.reset();
+                    this.isEditMode = false;
+                }
+            });
+
+            this.lessonForm.get('course')?.valueChanges.subscribe(() => {
+                this.updateTeacherOptions();
+            });
+        },
+        error: (err: HttpErrorResponse) => {
+            this.notify.error(
+                err.error?.message || 'Failed to load initial data: ' + err.message,
+            );
+        },
     });
-  }
+}
 
   ngOnDestroy(): void {
     this.formSub?.unsubscribe();
@@ -102,7 +115,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   loadLessonData(id: string) {
     this.formSub = this.lessonService.getLessonById(id).subscribe({
       next: (lesson: ILesson) => {
-        console.log(lesson);
         // Update de form-waarden
         this.lessonForm.patchValue({
           teacher: (lesson.teacher as IUser)._id,
@@ -131,7 +143,6 @@ export class LessonFormComponent implements OnInit, OnDestroy {
   }
 
   updateTeacherOptions() {
-    console.log('updating teachers dropdown');
     const selectedCourseId = this.lessonForm.get('course')?.value;
     if (!selectedCourseId || !this.courses || !this.teachers) {
       this.filteredTeachers = [];
@@ -142,13 +153,10 @@ export class LessonFormComponent implements OnInit, OnDestroy {
       (courses) => courses._id === selectedCourseId,
     );
     if (selectedCourse) {
-      console.log('Filtering gestart');
 
       const assignedTeacherIds = [
         selectedCourse.teachers, // Hoofdleraar ID (direct toegevoegd)
       ].filter((id) => id);
-
-      console.log('Toegewezen leraren:', assignedTeacherIds);
 
       // 3. Filter leraren zodat ALLEEN de reeds toegewezen leraren in de dropdown blijven
       this.filteredTeachers = this.teachers.filter((teacher) =>

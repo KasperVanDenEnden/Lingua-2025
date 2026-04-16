@@ -75,6 +75,7 @@ export class LessonListComponent implements OnInit, OnDestroy {
   }
 
   get filteredLessons(): ILesson[] {
+    
     if (!this.lessons) return [];
     return this.lessons.filter((lesson) => {
       const matchesQuery = lesson.title
@@ -90,22 +91,25 @@ export class LessonListComponent implements OnInit, OnDestroy {
         : true; 
 
       const myLesson = this.onlyMyLessons
-  ? lesson.students.some(s => s.toString() === this.currentUser?.id?.toString())
-    || this.isTeacher(lesson)
-  : true;
+        ? lesson.students.some(s => {
+            const id = typeof s === 'string' ? s : s._id?.toString();
+            return id === this.currentUser?.id?.toString();
+        })
+          || this.isTeacher(lesson)
+        : true;
 
       return matchesQuery && matchesStatus && myLesson && matchesCourse;
     });
   }
 
-isTeacher(lesson: any): boolean {
-  const teacherId =
-    typeof lesson.teacher === 'object'
-      ? lesson.teacher._id
-      : lesson.teacher;
+  isTeacher(lesson: any): boolean {
+    const teacherId =
+      typeof lesson.teacher === 'object'
+        ? lesson.teacher._id
+        : lesson.teacher;
 
-  return teacherId?.toString() === this.currentUser?.id?.toString();
-}
+    return teacherId?.toString() === this.currentUser?.id?.toString();
+  }
 
   getClass(lesson: ILesson) {
     return (lesson.course as ICourse)?.title || '';
@@ -115,6 +119,12 @@ isTeacher(lesson: any): boolean {
     const teacher = lesson.teacher as IUser;
     if (!teacher) return '';
     return `${teacher.firstname || ''} ${teacher.lastname || ''}`.trim();
+  }
+
+  getCapacity(lesson: ILesson): string {
+    const course = lesson.course as ICourse;
+    if (!course) return '-';
+    return `${lesson.students.length || '0'} / ${course.maxStudents || '-'}`.trim();
   }
 
   getStatusStyle(status: LessonStatus | undefined): string {
@@ -133,15 +143,12 @@ isTeacher(lesson: any): boolean {
   }
 
   handleDelete(record: ILesson): void {
-    console.log(record, 'record');
     this.recordToDelete = record;
     this.isModalOpen = true;
   }
 
   confirmDelete(): void {
-    console.log('confirmed deletion');
     if (this.recordToDelete) {
-      console.log('recordToDeleteIsSet', this.recordToDelete._id);
       this.lessonService.delete(this.recordToDelete._id).subscribe({
         next: () => {
           // Reload the list after successful deletion
@@ -164,7 +171,6 @@ isTeacher(lesson: any): boolean {
   }
 
   closeModal(): void {
-    console.log('close modal');
     this.isModalOpen = false;
   }
 
@@ -179,7 +185,7 @@ isTeacher(lesson: any): boolean {
 
   canEdit(lesson: ILesson): boolean {
     if (!this.currentUser) return false;
-    const isTeacher = lesson.teacher === this.currentUser._id;
+    const isTeacher = (lesson.teacher as IUser)._id.toString() === this.currentUser.id.toString();
     const isAdmin = this.authService.getUserRole() === 'admin';
     return isTeacher || isAdmin;
   }

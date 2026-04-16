@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { ICourse, ICreateCourse, Id, IUser, Language, Level } from '@lingua/api';
+import { CourseStatus, ICourse, ICreateCourse, Id, IUser, Language, Level } from '@lingua/api';
 import {
   FormGroup,
   FormControl,
@@ -30,6 +30,7 @@ export class CourseFormComponent implements OnInit, OnDestroy {
   existId!: Id;
   languages = Object.values(Language);
   levels = Object.values(Level);
+  statuses = Object.values(CourseStatus);
 
   courseForm: FormGroup = new FormGroup({
     title: new FormControl(null, Validators.required),

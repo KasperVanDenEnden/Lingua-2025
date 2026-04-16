@@ -6,7 +6,7 @@ import {
   UserService,
 } from '@lingua/services';
 import { ActivatedRoute } from '@angular/router';
-import { IUser } from '@lingua/api';
+import { IUser, Role } from '@lingua/api';
 import { Observable, Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -56,7 +56,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   loadUsers() {
     this.userList$ = this.userService.getUsers();
     this.sub = this.userService.getUsers().subscribe((results) => {
-      this.users = results;
+      this.users = this.currentUser?.role ==='student' ? results.filter((user) => user.role !== 'admin') : results;
     });
   }
 
@@ -151,7 +151,8 @@ export class UserListComponent implements OnInit, OnDestroy {
     return this.currentUser?._id === this.currentUserId;
   }
 
-  canDelete(): boolean {
+  canDelete(user: IUser): boolean {
+    if (user.role === Role.Admin) return false
     return this.currentUser?._id === this.currentUserId || this.isAdmin();
   }
 }

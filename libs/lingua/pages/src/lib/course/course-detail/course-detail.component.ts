@@ -267,6 +267,10 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     return this.currentUser?.role !== 'student';
   }
 
+  canDelete(): boolean {
+    return this.currentUser?.role === 'admin';
+  }
+
   canAssign(): boolean {
     return this.currentUser?.role === 'admin';
   }

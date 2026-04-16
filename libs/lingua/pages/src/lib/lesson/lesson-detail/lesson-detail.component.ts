@@ -154,8 +154,10 @@ export class LessonDetailComponent implements OnInit, OnDestroy {
   }
 
   canEdit(): boolean {
-    if (!this.currentUser) return false;
-    const isTeacher = this.teacher?._id === this.currentUser._id;
+    if (!this.currentUser || !this.teacher) return false;
+    console.log('teacher: ', this.teacher)
+    console.log('currentUser', this.currentUser)
+    const isTeacher = this.teacher?._id === this.currentUser.id;
     const isAdmin = this.authService.getUserRole() === 'admin';
     return isTeacher || isAdmin;
   }
