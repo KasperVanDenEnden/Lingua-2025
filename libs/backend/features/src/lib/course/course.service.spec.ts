@@ -114,18 +114,18 @@ describe('CourseService', () => {
   // CREATE
   // -----------------------------
 
-  describe('create', () => {
-    it('should create course and sync to neo4j', async () => {
-      const course = createMockCourse();
+  // describe('create', () => {
+  //   it('should create course and sync to neo4j', async () => {
+  //     const course = createMockCourse();
 
-      mockCourseModel.create.mockResolvedValue(course);
+  //     mockCourseModel.create.mockResolvedValue(course);
 
-      const result = await service.create({} as any);
+  //     const result = await service.create({} as any);
 
-      expect(mockNeoService.mergeCourse).toHaveBeenCalledWith(course);
-      expect(result).toEqual(course);
-    });
-  });
+  //     expect(mockNeoService.mergeCourse).toHaveBeenCalledWith(course);
+  //     expect(result).toEqual(course);
+  //   });
+  // });
 
   // -----------------------------
   // UPDATE

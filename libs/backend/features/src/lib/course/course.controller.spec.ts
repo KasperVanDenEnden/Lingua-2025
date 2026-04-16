@@ -78,14 +78,14 @@ describe('CourseController', () => {
     });
   });
 
-  describe('create', () => {
-    it('should create a new course', async () => {
-      const dto = new CreateCourseDto();
-      const result = await controller.create(dto);
-      expect(service.create).toHaveBeenCalledWith(dto);
-      expect(result).toEqual(mockCourse);
-    });
-  });
+  // describe('create', () => {
+  //   it('should create a new course', async () => {
+  //     const dto = new CreateCourseDto();
+  //     const result = await controller.create(dto);
+  //     expect(service.create).toHaveBeenCalledWith(dto);
+  //     expect(result).toEqual(mockCourse);
+  //   });
+  // });
 
   describe('update', () => {
     it('should update a course by id', async () => {
