@@ -94,6 +94,12 @@
                   Teacher
                 </th>
                 <th
+                  class="px-6 py-3 text-left text-xs font-medium text-primary-base uppercase tracking-wider"
+                >
+                  Capacity
+                </th>
+
+                <th
                   class="px-6 py-3 text-center text-xs font-medium text-primary-base uppercase tracking-wider"
                 >
                   Actions
@@ -139,6 +145,11 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-500">
                       {{ getTeacher(lesson) }}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">
+                      {{ getCapacity(lesson) }}
                     </div>
                   </td>
                   <td

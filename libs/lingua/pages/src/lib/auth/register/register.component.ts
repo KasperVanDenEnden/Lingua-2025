@@ -44,7 +44,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         password: this.registerForm.value.password,
         role: this.registerForm.value.role,
       };
-      console.log(data);
 
       this.authService
         .register(data)
@@ -62,11 +61,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
         )
         .subscribe({
           next: () => {
-            console.log('Successfully registered and logged in');
+            this.notify.success('Successfully registered and logged in')
             this.router.navigate(['/dashboard']);
           },
           error: (err: HttpErrorResponse) => {
-            console.log('ERROR:', err);
             const message =
               err?.error?.message || 'Registration failed: ' + err.message;
             this.notify.error(message);

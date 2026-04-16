@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { PagesModule } from '../../pages.module';
-import { IUser } from '@lingua/api';
+import { IUser, Role } from '@lingua/api';
 import { Subscription, Observable, BehaviorSubject, map } from 'rxjs';
 import {
   AuthService,
@@ -25,6 +25,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
 
   sub!: Subscription;
   user$ = new BehaviorSubject<IUser | null>(null);
+  userRole?: Role | null = null;
   userId?: string | null;
   currentUser?: IUser | null = null;
 
@@ -55,8 +56,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       if (this.userId) {
         this.userService.getUserById(this.userId).subscribe((user) => {
           this.user$.next(user);
-          console.log('user van backend:', user);
-          console.log('friends:', user.friends);
+          this.userRole = user.role
         });
       }
     });
@@ -81,7 +81,6 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   }
 
   closeModal(): void {
-    console.log('close modal');
     this.isModalOpen = false;
   }
 
@@ -123,6 +122,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   }
 
   canDelete(): boolean {
+    if (this.userRole === Role.Admin) return false
     return (
       this.currentUser?._id === this.userId ||
       this.currentUser?.role === 'admin'

@@ -63,7 +63,6 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
       newPassword: this.changePasswordForm.value.newPassword,
     };
 
-    console.log(data, this.userId);
     if (this.userId) {
       this.authService.changePassword(data, this.userId).subscribe({
         next: () => {

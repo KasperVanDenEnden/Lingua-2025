@@ -18,11 +18,9 @@ export class RolesGuard implements CanActivate {
     if (!route.data || !route.data['role']) {
       return true;
     }
-    console.log('reached');
 
     const requiredRole = route.data['role'];
     if (role && role === requiredRole) {
-      console.log('Toegang verleend aan', role);
       return true;
     }
 

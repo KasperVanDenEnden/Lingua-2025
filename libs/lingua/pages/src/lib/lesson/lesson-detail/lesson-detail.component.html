@@ -10,7 +10,7 @@
     </div>
 
     <div class="flex gap-2 flex-wrap">
-      @if (currentUser) {
+      @if (currentUser && currentUser.role === 'student') {
         @if (isAttending()) {
           <button
             (click)="unattend()"
